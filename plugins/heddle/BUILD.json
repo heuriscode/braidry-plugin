@@ -1,7 +1,7 @@
 {
   "plugin": "0.2.2",
   "braid": "fairlead.lit_scoping_review@0.4.0",
-  "built_at": "2026-10-28T20:39:10Z",
+  "built_at": "2026-10-28T21:38:44Z",
   "files": {
     ".claude-plugin/plugin.json": "raw:sha256:271f5306dace7b2ddbd2bd93db476b95a8206e33243d9aa685ea5c971717da05",
     ".mcp.json": "raw:sha256:1b150d41089a2d5276b6daad345189c5e9bd48020f992b019a88749ca0f108d3",
@@ -14,7 +14,7 @@
     "agents/extractor.md": "raw:sha256:8d6a46867b77544cd9ba0d9a078c26d31c198a7d6d9922e0ad708035ae62b636",
     "agents/reviser.md": "raw:sha256:bc6422742ab5a6ad6cbbfa9eb0eb9c41cbd95b260f9928ed9814083f9e34f92c",
     "agents/searcher.md": "raw:sha256:ad2e65248e1c60aa29759b9dfe6fd9348cf1fe923d8e5452dac60097c265ca11",
-    "bundle/braids.lock.json": "raw:sha256:8319417e7887045ba5595a223b4dd9cfe99bfd0b8ed93f4f025a2bfe730aa95d",
+    "bundle/braids.lock.json": "raw:sha256:26621443e0776d9aa103a2ccd885696f3b61e4b5c1f94236585cda7d0b1bdef7",
     "bundle/bundle.json": "raw:sha256:3181240f4aba1cd2f7f11f51159366b25c096edb9d2b5346c1d83e1048482185",
     "bundle/gates/cite_gate/0.4.0/gate.js": "raw:sha256:42951c9989c9310bdbb3235f64d815e32e3987005595c2f09eb5da740fceb065",
     "bundle/gates/cite_gate/0.4.0/gate.json": "raw:sha256:865a894d4eab78b4ffb9591284660126f3f8b96322492d2214b4767d9ccb7b92",
