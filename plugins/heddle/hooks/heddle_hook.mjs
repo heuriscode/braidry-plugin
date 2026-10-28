@@ -221,6 +221,35 @@ function jcs1(value) {
   return `jcs1:sha256:${sha256Hex(canonicalBytes(value))}`;
 }
 
+// packages/hooks/dist/selfmarks.js
+var SELF_MARKS = [
+  String.raw`\b(recommended|preferred)\b`,
+  String.raw`\bwe (recommend|suggest|prefer)\b`,
+  String.raw`\((best|default)\)`,
+  String.raw`\b(the )?(best|default) (option|choice)\b`,
+  String.raw`\bour (recommendation|preference|pick)\b`
+];
+var MARKS = SELF_MARKS.map((p) => new RegExp(p, "i"));
+function selfMarked(text) {
+  return MARKS.some((m) => m.test(text));
+}
+function askFingerprint(input) {
+  const str = (v) => typeof v === "string" ? v : "";
+  const questions = input?.questions;
+  const list = Array.isArray(questions) ? questions : [];
+  return jcs1(list.map((q) => {
+    const o = q ?? {};
+    const options = Array.isArray(o.options) ? o.options : [];
+    return {
+      question: str(o.question),
+      options: options.map((x) => {
+        const y = x ?? {};
+        return { label: str(y.label), description: str(y.description) };
+      })
+    };
+  }));
+}
+
 // packages/hooks/dist/spool.js
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { existsSync, linkSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
@@ -438,7 +467,7 @@ function spawnGate(input, run, dataDir2) {
       hook_id: "BH-1",
       checks: [{ hook_id: "BH-1", check: "ticket_prompt", result: "deny", subject_fp: typeof facts.prompt_fp === "string" ? facts.prompt_fp : null }],
       facts,
-      refusal: "Heddle: a Fairlead agent starts only for a step of an open run, with its ticket (start the run with the heddle:review skill)."
+      refusal: "Heddle: a Heddle agent starts only for a step of an open run, with its ticket (start the run with the heddle:review skill)."
     };
   }
   if (run.kind === "none" || run.kind === "closed")
@@ -539,9 +568,9 @@ function pathGuard(input, run, dataDir2) {
   } else if (WRITE_TOOLS.has(tool)) {
     verdict("protected_path", paths.some((p) => protectedRoots.some((r) => within(p, r))), "Heddle: that path is protected during a braid run.");
   } else if (tool === "Grep" || tool === "Glob") {
-    verdict("protected_path", paths.some((p) => secret.some((r) => covers(p, r))), "Heddle: that search would reach files private to the Fairlead plugin.");
+    verdict("protected_path", paths.some((p) => secret.some((r) => covers(p, r))), "Heddle: that search would reach files private to the Heddle plugin.");
   } else {
-    verdict("protected_path", paths.some((p) => secret.some((r) => within(p, r))), "Heddle: that file is private to the Fairlead plugin.");
+    verdict("protected_path", paths.some((p) => secret.some((r) => within(p, r))), "Heddle: that file is private to the Heddle plugin.");
   }
   if (datafiles.length) {
     verdict("datafile_path", paths.some((p) => datafiles.some((d) => within(p, d))), "Heddle: that datafile stays out of the AI's context; its pipeline reads it.");
@@ -570,6 +599,7 @@ function observer(input, run) {
     const text = JSON.stringify(r?.answers ?? r ?? null);
     facts.via = "ask_user_question";
     facts.answer_fp = fp(text);
+    facts.asked_fp = askFingerprint(input.tool_input);
     keep(text);
   }
   if (READ_TOOLS.has(tool) && run.kind === "open") {
@@ -587,16 +617,61 @@ function observer(input, run) {
   return { hook_id: "BH-3", checks, facts, refusal: null };
 }
 function subagentClose(input) {
+  const tokens = transcriptTokens(input.agent_transcript_path);
+  const models = transcriptModels(input.agent_transcript_path);
   return {
     hook_id: "BH-4",
     checks: [],
     facts: {
       agent_transcript_path: input.agent_transcript_path ?? null,
       ticket_token: ticketToken(input.agent_transcript_path),
-      last_message_fp: fp(input.last_assistant_message ?? "")
+      last_message_fp: fp(input.last_assistant_message ?? ""),
+      ...tokens === null ? {} : { usage_tokens: tokens },
+      // One fact, comma-separated: a model name holds no comma or space.
+      ...models.length ? { models: models.join(", ") } : {}
     },
     refusal: null
   };
+}
+function transcriptTokens(transcript) {
+  if (!transcript || !existsSync2(transcript))
+    return null;
+  const byResponse = /* @__PURE__ */ new Map();
+  try {
+    for (const line of readFileSync2(transcript, "utf8").split("\n")) {
+      if (!line.trim())
+        continue;
+      const m = JSON.parse(line);
+      const u = m.type === "assistant" ? m.message?.usage : void 0;
+      if (!u || typeof m.message?.id !== "string")
+        continue;
+      const parts = ["input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens", "output_tokens"].map((k) => u[k]);
+      if (parts.some((x) => x !== void 0 && !(typeof x === "number" && Number.isSafeInteger(x) && x >= 0)))
+        continue;
+      byResponse.set(m.message.id, parts.reduce((n, x) => n + (x ?? 0), 0));
+    }
+  } catch {
+    return null;
+  }
+  return byResponse.size === 0 ? null : [...byResponse.values()].reduce((a, b) => a + b, 0);
+}
+function transcriptModels(transcript) {
+  if (!transcript || !existsSync2(transcript))
+    return [];
+  const models = [];
+  try {
+    for (const line of readFileSync2(transcript, "utf8").split("\n")) {
+      if (!line.trim())
+        continue;
+      const m = JSON.parse(line);
+      const model = m.type === "assistant" ? m.message?.model : void 0;
+      if (typeof model === "string" && /^[A-Za-z0-9][A-Za-z0-9._:@/[\]-]{0,63}$/.test(model) && !models.includes(model))
+        models.push(model);
+    }
+  } catch {
+    return [];
+  }
+  return models;
 }
 function stopGuard(run, input) {
   if (run.kind === "none")
@@ -616,7 +691,7 @@ function neutralQuestion(input, run) {
   if (run.kind !== "open" || input.agent_id)
     return allow;
   const questions = input.tool_input?.questions ?? [];
-  const steered = questions.some((q) => (q.options ?? []).some((o) => [o.label, o.description].some((t) => typeof t === "string" && /recommend/i.test(t))));
+  const steered = questions.some((q) => (q.options ?? []).some((o) => [o.label, o.description].some((t) => typeof t === "string" && selfMarked(t))));
   if (!steered)
     return allow;
   return {

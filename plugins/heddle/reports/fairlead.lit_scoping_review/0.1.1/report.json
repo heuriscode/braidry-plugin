@@ -1,0 +1,242 @@
+{
+ "schema": "fairlead.report/0.1",
+ "template_id": "fairlead.lit_scoping_review",
+ "report_version": "0.1.1",
+ "fingerprint": "jcs1:sha256:23e2eedb8beb7a0db7e1f2fa5d4b74aa4f9322674d95d278b5dc605e6d90cfda",
+ "core_compat": "~0.4.0",
+ "sections": [
+  {
+   "section_id": "heading",
+   "title": "What was asked",
+   "required": true,
+   "sources": [
+    "/focus"
+   ],
+   "block": "text",
+   "empty_text": "No focus recorded."
+  },
+  {
+   "section_id": "practice",
+   "title": "How it was checked",
+   "required": true,
+   "sources": [
+    "/practice_headline"
+   ],
+   "block": "headline",
+   "empty_text": "Practice not recorded."
+  },
+  {
+   "section_id": "executive_summary",
+   "title": "Summary",
+   "required": true,
+   "sources": [
+    "/practice_headline",
+    "/adjudications"
+   ],
+   "block": "list",
+   "empty_text": "No summary recorded."
+  },
+  {
+   "section_id": "search",
+   "title": "How the search was done",
+   "required": false,
+   "sources": [
+    "output:sources/searches",
+    "output:sources/screened"
+   ],
+   "block": "list",
+   "empty_text": "No search recorded."
+  },
+  {
+   "section_id": "evidence",
+   "title": "What the evidence says",
+   "required": false,
+   "sources": [
+    "output:evidence/rows"
+   ],
+   "block": "table",
+   "empty_text": "No evidence recorded.",
+   "apply": [
+    {
+     "rule": "columns",
+     "value": [
+      "source_id",
+      "approach",
+      "data",
+      "key_findings",
+      "evidence_strength",
+      "read_level"
+     ]
+    },
+    {
+     "rule": "max_items",
+     "value": 60
+    },
+    {
+     "rule": "label",
+     "value": "judgement"
+    }
+   ]
+  },
+  {
+   "section_id": "review",
+   "title": "The review",
+   "required": false,
+   "sources": [
+    "output:draft/sections"
+   ],
+   "block": "text",
+   "empty_text": "No review recorded."
+  },
+  {
+   "section_id": "sources",
+   "title": "Sources",
+   "required": false,
+   "sources": [
+    "output:sources/items"
+   ],
+   "block": "table",
+   "empty_text": "No sources recorded.",
+   "apply": [
+    {
+     "rule": "columns",
+     "value": [
+      "source_id",
+      "title",
+      "authors",
+      "year",
+      "venue",
+      "read_level"
+     ]
+    },
+    {
+     "rule": "sort_by",
+     "value": "source_id"
+    },
+    {
+     "rule": "max_items",
+     "value": 60
+    }
+   ]
+  },
+  {
+   "section_id": "checks",
+   "title": "What the checkers raised and how it was decided",
+   "required": false,
+   "sources": [
+    "/findings",
+    "/adjudications"
+   ],
+   "block": "list",
+   "empty_text": "No checks recorded.",
+   "apply": [
+    {
+     "rule": "omit_when_empty",
+     "value": true
+    }
+   ]
+  },
+  {
+   "section_id": "decisions",
+   "title": "Decisions you made",
+   "required": false,
+   "sources": [
+    "/decisions"
+   ],
+   "block": "list",
+   "empty_text": "No decisions recorded."
+  },
+  {
+   "section_id": "tests",
+   "title": "Tests and checks",
+   "required": true,
+   "sources": [
+    "/events",
+    "/findings",
+    "/adjudications"
+   ],
+   "block": "table",
+   "empty_text": "No tests recorded."
+  },
+  {
+   "section_id": "process",
+   "title": "How the run went",
+   "required": true,
+   "sources": [
+    "/steps",
+    "/decisions"
+   ],
+   "block": "table",
+   "empty_text": "No steps recorded."
+  },
+  {
+   "section_id": "branches",
+   "title": "Explores and changes of focus",
+   "required": false,
+   "sources": [
+    "/branches",
+    "/refines"
+   ],
+   "block": "list",
+   "empty_text": "No explores or refines.",
+   "apply": [
+    {
+     "rule": "omit_when_empty",
+     "value": true
+    }
+   ]
+  },
+  {
+   "section_id": "outcomes",
+   "title": "What was produced",
+   "required": false,
+   "sources": [
+    "/outputs",
+    "/delivery"
+   ],
+   "block": "list",
+   "empty_text": "Nothing delivered."
+  }
+ ],
+ "executive_summary": {
+  "acceptance_ratings": [
+   {
+    "rating_id": "findings_decided",
+    "label": "Checker findings decided",
+    "numerator": "/adjudications",
+    "denominator": "/findings",
+    "display": "fraction"
+   }
+  ],
+  "assumptions": null,
+  "core_insights": {
+   "source": "output:draft/sections",
+   "max_items": 5
+  },
+  "depth_and_strength": {
+   "components": [
+    "/steps",
+    "output:sources/items"
+   ],
+   "judgement_components": [
+    "/adjudications"
+   ]
+  },
+  "who_ran": true
+ },
+ "formatting": {
+  "max_words_per_section": 600,
+  "measured_label": "measured, run <run_id>",
+  "illustrative_label": "illustrative",
+  "judgement_label": "judgement",
+  "date_format": "D MMMM YYYY"
+ },
+ "renderers": {
+  "formats": [
+   "html",
+   "md"
+  ],
+  "page": "a4",
+  "style_ref": "heddle_default@0.1.0"
+ }
+}
