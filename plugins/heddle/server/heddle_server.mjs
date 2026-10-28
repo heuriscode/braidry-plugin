@@ -29,9 +29,9 @@ var __toESM = (mod4, isNodeMode, target) => (target = mod4 != null ? __create(__
   mod4
 ));
 
-// packages/contracts/node_modules/ajv/dist/compile/codegen/code.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/codegen/code.js
 var require_code = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/codegen/code.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/codegen/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.regexpCode = exports.getEsmExportName = exports.getProperty = exports.safeStringify = exports.stringify = exports.strConcat = exports.addCodeArg = exports.str = exports._ = exports.nil = exports._Code = exports.Name = exports.IDENTIFIER = exports._CodeOrName = void 0;
@@ -183,9 +183,9 @@ var require_code = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/codegen/scope.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/codegen/scope.js
 var require_scope = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ValueScope = exports.ValueScopeName = exports.Scope = exports.varKinds = exports.UsedValueState = void 0;
@@ -328,9 +328,9 @@ var require_scope = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/codegen/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/codegen/index.js
 var require_codegen = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/codegen/index.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/codegen/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.or = exports.and = exports.not = exports.CodeGen = exports.operators = exports.varKinds = exports.ValueScopeName = exports.ValueScope = exports.Scope = exports.Name = exports.regexpCode = exports.stringify = exports.getProperty = exports.nil = exports.strConcat = exports.str = exports._ = void 0;
@@ -1048,9 +1048,9 @@ var require_codegen = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/util.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/util.js
 var require_util = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/util.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.checkStrictMode = exports.getErrorPath = exports.Type = exports.useFunc = exports.setEvaluated = exports.evaluatedPropsToName = exports.mergeEvaluated = exports.eachItem = exports.unescapeJsonPointer = exports.escapeJsonPointer = exports.escapeFragment = exports.unescapeFragment = exports.schemaRefOrVal = exports.schemaHasRulesButRef = exports.schemaHasRules = exports.checkUnknownRules = exports.alwaysValidSchema = exports.toHash = void 0;
@@ -1215,9 +1215,9 @@ var require_util = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/names.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/names.js
 var require_names = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/names.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/names.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -1254,9 +1254,9 @@ var require_names = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/errors.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/errors.js
 var require_errors = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/errors.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/errors.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendErrors = exports.resetErrorsCount = exports.reportExtraError = exports.reportError = exports.keyword$DataError = exports.keywordError = void 0;
@@ -1376,9 +1376,9 @@ var require_errors = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/validate/boolSchema.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/boolSchema.js
 var require_boolSchema = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.boolOrEmptySchema = exports.topBoolOrEmptySchema = void 0;
@@ -1427,9 +1427,9 @@ var require_boolSchema = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/rules.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/rules.js
 var require_rules = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/rules.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/rules.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getRules = exports.isJSONType = void 0;
@@ -1458,9 +1458,9 @@ var require_rules = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/validate/applicability.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/applicability.js
 var require_applicability = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.shouldUseRule = exports.shouldUseGroup = exports.schemaHasRulesForType = void 0;
@@ -1481,9 +1481,9 @@ var require_applicability = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/validate/dataType.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/dataType.js
 var require_dataType = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.reportTypeError = exports.checkDataTypes = exports.checkDataType = exports.coerceAndCheckDataType = exports.getJSONTypes = exports.getSchemaTypes = exports.DataType = void 0;
@@ -1665,9 +1665,9 @@ var require_dataType = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/validate/defaults.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/defaults.js
 var require_defaults = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.assignDefaults = void 0;
@@ -1702,9 +1702,9 @@ var require_defaults = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/code.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/code.js
 var require_code2 = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/code.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateUnion = exports.validateArray = exports.usePattern = exports.callValidateCode = exports.schemaProperties = exports.allSchemaProperties = exports.noPropertyInData = exports.propertyInData = exports.isOwnProperty = exports.hasPropFunc = exports.reportMissingProp = exports.checkMissingProp = exports.checkReportMissingProp = void 0;
@@ -1835,9 +1835,9 @@ var require_code2 = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/validate/keyword.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/keyword.js
 var require_keyword = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateKeywordUsage = exports.validSchemaType = exports.funcKeywordCode = exports.macroKeywordCode = void 0;
@@ -1953,9 +1953,9 @@ var require_keyword = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/validate/subschema.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/subschema.js
 var require_subschema = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendSubschemaMode = exports.extendSubschemaData = exports.getSubschema = void 0;
@@ -2036,9 +2036,9 @@ var require_subschema = __commonJS({
   }
 });
 
-// node_modules/fast-deep-equal/index.js
+// ../../../../../../home/user/fairlead-server/node_modules/fast-deep-equal/index.js
 var require_fast_deep_equal = __commonJS({
-  "node_modules/fast-deep-equal/index.js"(exports, module) {
+  "../../../../../../home/user/fairlead-server/node_modules/fast-deep-equal/index.js"(exports, module) {
     "use strict";
     module.exports = function equal(a, b) {
       if (a === b) return true;
@@ -2071,9 +2071,9 @@ var require_fast_deep_equal = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/json-schema-traverse/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/json-schema-traverse/index.js
 var require_json_schema_traverse = __commonJS({
-  "packages/contracts/node_modules/json-schema-traverse/index.js"(exports, module) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/json-schema-traverse/index.js"(exports, module) {
     "use strict";
     var traverse = module.exports = function(schema, opts2, cb) {
       if (typeof opts2 == "function") {
@@ -2159,9 +2159,9 @@ var require_json_schema_traverse = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/resolve.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/resolve.js
 var require_resolve = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/resolve.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/resolve.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSchemaRefs = exports.resolveUrl = exports.normalizeId = exports._getFullPath = exports.getFullPath = exports.inlineRef = void 0;
@@ -2315,9 +2315,9 @@ var require_resolve = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/validate/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/index.js
 var require_validate = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/validate/index.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/validate/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getData = exports.KeywordCxt = exports.validateFunctionCode = void 0;
@@ -2823,9 +2823,9 @@ var require_validate = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/runtime/validation_error.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/runtime/validation_error.js
 var require_validation_error = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/runtime/validation_error.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/runtime/validation_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ValidationError = class extends Error {
@@ -2839,9 +2839,9 @@ var require_validation_error = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/ref_error.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/ref_error.js
 var require_ref_error = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/ref_error.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/ref_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var resolve_1 = require_resolve();
@@ -2856,9 +2856,9 @@ var require_ref_error = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/compile/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/index.js
 var require_compile = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/compile/index.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/compile/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveSchema = exports.getCompilingSchema = exports.resolveRef = exports.compileSchema = exports.SchemaEnv = void 0;
@@ -3080,9 +3080,9 @@ var require_compile = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/refs/data.json
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/data.json
 var require_data = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/refs/data.json"(exports, module) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/data.json"(exports, module) {
     module.exports = {
       $id: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
       description: "Meta-schema for $data reference (JSON AnySchema extension proposal)",
@@ -3099,9 +3099,9 @@ var require_data = __commonJS({
   }
 });
 
-// node_modules/fast-uri/lib/utils.js
+// ../../../../../../home/user/fairlead-server/node_modules/fast-uri/lib/utils.js
 var require_utils = __commonJS({
-  "node_modules/fast-uri/lib/utils.js"(exports, module) {
+  "../../../../../../home/user/fairlead-server/node_modules/fast-uri/lib/utils.js"(exports, module) {
     "use strict";
     var isUUID = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu);
     var isIPv4 = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u);
@@ -3601,9 +3601,9 @@ var require_utils = __commonJS({
   }
 });
 
-// node_modules/fast-uri/lib/schemes.js
+// ../../../../../../home/user/fairlead-server/node_modules/fast-uri/lib/schemes.js
 var require_schemes = __commonJS({
-  "node_modules/fast-uri/lib/schemes.js"(exports, module) {
+  "../../../../../../home/user/fairlead-server/node_modules/fast-uri/lib/schemes.js"(exports, module) {
     "use strict";
     var { isUUID } = require_utils();
     var URN_REG = /^([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-./:;=@]|%[\da-f]{2})+)$/iu;
@@ -3812,9 +3812,9 @@ var require_schemes = __commonJS({
   }
 });
 
-// node_modules/fast-uri/index.js
+// ../../../../../../home/user/fairlead-server/node_modules/fast-uri/index.js
 var require_fast_uri = __commonJS({
-  "node_modules/fast-uri/index.js"(exports, module) {
+  "../../../../../../home/user/fairlead-server/node_modules/fast-uri/index.js"(exports, module) {
     "use strict";
     var { normalizeIPv6, removeDotSegments, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, serializePathEncoding, normalizeQueryFragmentEncoding, encodeQuery, encodeFragment, reescapeHostDelimiters, isIPv4, nonSimpleDomain } = require_utils();
     var { SCHEMES, getSchemeHandler } = require_schemes();
@@ -4218,9 +4218,9 @@ var require_fast_uri = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/runtime/uri.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/runtime/uri.js
 var require_uri = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/runtime/uri.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/runtime/uri.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var uri = require_fast_uri();
@@ -4229,9 +4229,9 @@ var require_uri = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/core.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/core.js
 var require_core = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/core.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/core.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = void 0;
@@ -4840,9 +4840,9 @@ var require_core = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/core/id.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/core/id.js
 var require_id = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var def = {
@@ -4855,9 +4855,9 @@ var require_id = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/core/ref.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/core/ref.js
 var require_ref = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.callRef = exports.getValidate = void 0;
@@ -4977,9 +4977,9 @@ var require_ref = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/core/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/core/index.js
 var require_core2 = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var id_1 = require_id();
@@ -4998,9 +4998,9 @@ var require_core2 = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitNumber.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitNumber.js
 var require_limitNumber = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5030,9 +5030,9 @@ var require_limitNumber = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/multipleOf.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/multipleOf.js
 var require_multipleOf = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5058,9 +5058,9 @@ var require_multipleOf = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/runtime/ucs2length.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/runtime/ucs2length.js
 var require_ucs2length = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function ucs2length(str3) {
@@ -5084,9 +5084,9 @@ var require_ucs2length = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitLength.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitLength.js
 var require_limitLength = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5116,9 +5116,9 @@ var require_limitLength = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/pattern.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/pattern.js
 var require_pattern = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -5153,9 +5153,9 @@ var require_pattern = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitProperties.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitProperties.js
 var require_limitProperties = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5182,9 +5182,9 @@ var require_limitProperties = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/required.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/required.js
 var require_required = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -5264,9 +5264,9 @@ var require_required = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitItems.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitItems.js
 var require_limitItems = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5293,9 +5293,9 @@ var require_limitItems = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/runtime/equal.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/runtime/equal.js
 var require_equal = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/runtime/equal.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/runtime/equal.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var equal = require_fast_deep_equal();
@@ -5304,9 +5304,9 @@ var require_equal = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
 var require_uniqueItems = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dataType_1 = require_dataType();
@@ -5371,9 +5371,9 @@ var require_uniqueItems = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/const.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/const.js
 var require_const = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5400,9 +5400,9 @@ var require_const = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/enum.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/enum.js
 var require_enum = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5449,9 +5449,9 @@ var require_enum = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/index.js
 var require_validation = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var limitNumber_1 = require_limitNumber();
@@ -5487,9 +5487,9 @@ var require_validation = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
 var require_additionalItems = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateAdditionalItems = void 0;
@@ -5540,9 +5540,9 @@ var require_additionalItems = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/items.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/items.js
 var require_items = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateTuple = void 0;
@@ -5597,9 +5597,9 @@ var require_items = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
 var require_prefixItems = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var items_1 = require_items();
@@ -5614,9 +5614,9 @@ var require_prefixItems = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/items2020.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/items2020.js
 var require_items2020 = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5649,9 +5649,9 @@ var require_items2020 = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/contains.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/contains.js
 var require_contains = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5743,9 +5743,9 @@ var require_contains = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/dependencies.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/dependencies.js
 var require_dependencies = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateSchemaDeps = exports.validatePropertyDeps = exports.error = void 0;
@@ -5837,9 +5837,9 @@ var require_dependencies = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
 var require_propertyNames = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5880,9 +5880,9 @@ var require_propertyNames = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
 var require_additionalProperties = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -5986,9 +5986,9 @@ var require_additionalProperties = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/properties.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/properties.js
 var require_properties = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var validate_1 = require_validate();
@@ -6044,9 +6044,9 @@ var require_properties = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
 var require_patternProperties = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -6118,9 +6118,9 @@ var require_patternProperties = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/not.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/not.js
 var require_not = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -6149,9 +6149,9 @@ var require_not = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/anyOf.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/anyOf.js
 var require_anyOf = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -6166,9 +6166,9 @@ var require_anyOf = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/oneOf.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/oneOf.js
 var require_oneOf = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6224,9 +6224,9 @@ var require_oneOf = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/allOf.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/allOf.js
 var require_allOf = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -6251,9 +6251,9 @@ var require_allOf = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/if.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/if.js
 var require_if = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6320,9 +6320,9 @@ var require_if = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/thenElse.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/thenElse.js
 var require_thenElse = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -6338,9 +6338,9 @@ var require_thenElse = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/index.js
 var require_applicator = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var additionalItems_1 = require_additionalItems();
@@ -6386,9 +6386,9 @@ var require_applicator = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/dynamicAnchor.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/dynamicAnchor.js
 var require_dynamicAnchor = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/dynamicAnchor.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/dynamicAnchor.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.dynamicAnchor = void 0;
@@ -6421,9 +6421,9 @@ var require_dynamicAnchor = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/dynamicRef.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/dynamicRef.js
 var require_dynamicRef = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/dynamicRef.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/dynamicRef.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.dynamicRef = void 0;
@@ -6467,9 +6467,9 @@ var require_dynamicRef = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/recursiveAnchor.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/recursiveAnchor.js
 var require_recursiveAnchor = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/recursiveAnchor.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/recursiveAnchor.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dynamicAnchor_1 = require_dynamicAnchor();
@@ -6488,9 +6488,9 @@ var require_recursiveAnchor = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/recursiveRef.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/recursiveRef.js
 var require_recursiveRef = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/recursiveRef.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/recursiveRef.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dynamicRef_1 = require_dynamicRef();
@@ -6503,9 +6503,9 @@ var require_recursiveRef = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/index.js
 var require_dynamic = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/index.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/dynamic/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dynamicAnchor_1 = require_dynamicAnchor();
@@ -6517,9 +6517,9 @@ var require_dynamic = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/dependentRequired.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/dependentRequired.js
 var require_dependentRequired = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/dependentRequired.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/dependentRequired.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dependencies_1 = require_dependencies();
@@ -6534,9 +6534,9 @@ var require_dependentRequired = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/applicator/dependentSchemas.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/dependentSchemas.js
 var require_dependentSchemas = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/applicator/dependentSchemas.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/applicator/dependentSchemas.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dependencies_1 = require_dependencies();
@@ -6550,9 +6550,9 @@ var require_dependentSchemas = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitContains.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitContains.js
 var require_limitContains = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitContains.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/validation/limitContains.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -6570,9 +6570,9 @@ var require_limitContains = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/next.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/next.js
 var require_next = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/next.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/next.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dependentRequired_1 = require_dependentRequired();
@@ -6583,9 +6583,9 @@ var require_next = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/unevaluatedProperties.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/unevaluatedProperties.js
 var require_unevaluatedProperties = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/unevaluatedProperties.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/unevaluatedProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6649,9 +6649,9 @@ var require_unevaluatedProperties = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/unevaluatedItems.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/unevaluatedItems.js
 var require_unevaluatedItems = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/unevaluatedItems.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/unevaluatedItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6693,9 +6693,9 @@ var require_unevaluatedItems = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/index.js
 var require_unevaluated = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/index.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/unevaluated/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var unevaluatedProperties_1 = require_unevaluatedProperties();
@@ -6705,9 +6705,9 @@ var require_unevaluated = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/format/format.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/format/format.js
 var require_format = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6795,9 +6795,9 @@ var require_format = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/format/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/format/index.js
 var require_format2 = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var format_1 = require_format();
@@ -6806,9 +6806,9 @@ var require_format2 = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/metadata.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/metadata.js
 var require_metadata = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.contentVocabulary = exports.metadataVocabulary = void 0;
@@ -6829,9 +6829,9 @@ var require_metadata = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/draft2020.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/draft2020.js
 var require_draft2020 = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/draft2020.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/draft2020.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var core_1 = require_core2();
@@ -6857,9 +6857,9 @@ var require_draft2020 = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/discriminator/types.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/discriminator/types.js
 var require_types = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DiscrError = void 0;
@@ -6871,9 +6871,9 @@ var require_types = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/vocabularies/discriminator/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/discriminator/index.js
 var require_discriminator = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6976,9 +6976,9 @@ var require_discriminator = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/schema.json
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/schema.json
 var require_schema = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/schema.json"(exports, module) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/schema.json"(exports, module) {
     module.exports = {
       $schema: "https://json-schema.org/draft/2020-12/schema",
       $id: "https://json-schema.org/draft/2020-12/schema",
@@ -7036,9 +7036,9 @@ var require_schema = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/applicator.json
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/applicator.json
 var require_applicator2 = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/applicator.json"(exports, module) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/applicator.json"(exports, module) {
     module.exports = {
       $schema: "https://json-schema.org/draft/2020-12/schema",
       $id: "https://json-schema.org/draft/2020-12/meta/applicator",
@@ -7089,9 +7089,9 @@ var require_applicator2 = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/unevaluated.json
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/unevaluated.json
 var require_unevaluated2 = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/unevaluated.json"(exports, module) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/unevaluated.json"(exports, module) {
     module.exports = {
       $schema: "https://json-schema.org/draft/2020-12/schema",
       $id: "https://json-schema.org/draft/2020-12/meta/unevaluated",
@@ -7109,9 +7109,9 @@ var require_unevaluated2 = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/content.json
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/content.json
 var require_content = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/content.json"(exports, module) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/content.json"(exports, module) {
     module.exports = {
       $schema: "https://json-schema.org/draft/2020-12/schema",
       $id: "https://json-schema.org/draft/2020-12/meta/content",
@@ -7130,9 +7130,9 @@ var require_content = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/core.json
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/core.json
 var require_core3 = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/core.json"(exports, module) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/core.json"(exports, module) {
     module.exports = {
       $schema: "https://json-schema.org/draft/2020-12/schema",
       $id: "https://json-schema.org/draft/2020-12/meta/core",
@@ -7186,9 +7186,9 @@ var require_core3 = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/format-annotation.json
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/format-annotation.json
 var require_format_annotation = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/format-annotation.json"(exports, module) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/format-annotation.json"(exports, module) {
     module.exports = {
       $schema: "https://json-schema.org/draft/2020-12/schema",
       $id: "https://json-schema.org/draft/2020-12/meta/format-annotation",
@@ -7205,9 +7205,9 @@ var require_format_annotation = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/meta-data.json
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/meta-data.json
 var require_meta_data = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/meta-data.json"(exports, module) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/meta-data.json"(exports, module) {
     module.exports = {
       $schema: "https://json-schema.org/draft/2020-12/schema",
       $id: "https://json-schema.org/draft/2020-12/meta/meta-data",
@@ -7246,9 +7246,9 @@ var require_meta_data = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/validation.json
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/validation.json
 var require_validation2 = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/validation.json"(exports, module) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/meta/validation.json"(exports, module) {
     module.exports = {
       $schema: "https://json-schema.org/draft/2020-12/schema",
       $id: "https://json-schema.org/draft/2020-12/meta/validation",
@@ -7341,9 +7341,9 @@ var require_validation2 = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/index.js
 var require_json_schema_2020_12 = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/index.js"(exports) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/refs/json-schema-2020-12/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var metaSchema = require_schema();
@@ -7376,9 +7376,9 @@ var require_json_schema_2020_12 = __commonJS({
   }
 });
 
-// packages/contracts/node_modules/ajv/dist/2020.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/2020.js
 var require__ = __commonJS({
-  "packages/contracts/node_modules/ajv/dist/2020.js"(exports, module) {
+  "../../../../../../home/user/fairlead-server/packages/contracts/node_modules/ajv/dist/2020.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.MissingRefError = exports.ValidationError = exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = exports.Ajv2020 = void 0;
@@ -7462,17 +7462,17 @@ import { readFileSync as readFileSync3 } from "node:fs";
 import { hostname as hostname2 } from "node:os";
 import { join as join3 } from "node:path";
 
-// packages/dashlab-client/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/dashlab-client/dist/index.js
 import { spawn } from "node:child_process";
 import { createHash as createHash2, randomBytes } from "node:crypto";
 import { closeSync, existsSync, mkdirSync, openSync, readFileSync, renameSync, rmSync, statSync, unlinkSync, writeSync } from "node:fs";
 import { createServer } from "node:http";
 import { join } from "node:path";
 
-// packages/canon/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/canon/dist/index.js
 import { createHash } from "node:crypto";
 
-// node_modules/canonicalize/lib/canonicalize.js
+// ../../../../../../home/user/fairlead-server/node_modules/canonicalize/lib/canonicalize.js
 function serializeString(value) {
   if (!value.isWellFormed()) {
     throw new Error("Lone surrogate is not allowed");
@@ -7618,7 +7618,7 @@ function canonicalize(object) {
   return result;
 }
 
-// packages/canon/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/canon/dist/index.js
 var MAX_DEPTH = 100;
 var CanonError = class extends Error {
   name = "CanonError";
@@ -7707,7 +7707,7 @@ function selfFingerprint(record, field = "fingerprint") {
   return jcs1(Object.fromEntries(Object.entries(record).filter(([k]) => k !== field)));
 }
 
-// packages/dashlab-client/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/dashlab-client/dist/index.js
 var CONNECTOR_VERSION = "0.1.0";
 var PROTOCOL_VERSION = "2025-11-25";
 function loadSnapshot() {
@@ -8468,14 +8468,14 @@ async function plainLock(path, fn, signal) {
   }
 }
 
-// packages/online-client/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/online-client/dist/index.js
 import { createHash as createHash3, createHmac, hkdfSync, randomBytes as randomBytes7, timingSafeEqual, webcrypto } from "node:crypto";
 import { createServer as createServer2 } from "node:http";
 
-// packages/contracts/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/dist/index.js
 var import__ = __toESM(require__(), 1);
 
-// packages/contracts/dist/generated/schemas.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/dist/generated/schemas.js
 var CONTRACT_NAMES = ["agreed_focus", "braid_summary", "braid_template", "braids_lock", "context_doc", "decisions", "draft", "evidence_table", "findings", "gate", "gate_io_input", "gate_result", "option_map", "practice_headline", "primitives", "report", "report_document", "report_manifest", "revision_log", "run_record", "source_register", "synthesis", "thread", "type", "typed_output"];
 var SCHEMAS = {
   "agreed_focus": {
@@ -23580,7 +23580,7 @@ var SCHEMAS = {
   }
 };
 
-// packages/contracts/dist/generated/kit.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/dist/generated/kit.js
 var KIT_CONTRACT_NAMES = ["assumptions_register_v0_1", "braid_card_v0_1", "braid_queue_v0_1", "braid_review_log_v0_1", "chain_map_v0_1", "change_set_v0_1", "codebook_v0_1", "coded_dataset_v0_1", "dashlab_export_receipt_v0_1", "dashlab_publish_receipt_v0_1", "dashlab_receipt_v0_1", "dashlab_results_receipt_v0_1", "dashlab_run_receipt_v0_1", "dashlab_save_receipt_v0_1", "decision_card_v0_1", "decision_card_v0_2", "delivery_card_v0_1", "design_v0_1", "document_v0_1", "finding_card_v0_1", "finding_choices_v0_1", "findings_v0_2", "focus_card_v0_1", "frame_choices_v0_1", "frame_v0_1", "frame_v0_2", "frame_v0_3", "gate_results_v0_1", "json_change_set_v0_1", "local_runs_v0_1", "needs_design_change_v0_1", "pack_choice_v0_1", "person_direction_v0_1", "progress_card_v0_1", "proposal_set_v0_1", "provenance_register_v0_1", "result_thresholds_v0_1", "revision_log_v0_2", "scope_verdict_v0_1", "source_texts_v0_1", "split_view_v0_1", "threshold_choices_v0_1", "threshold_pack_v0_1"];
 var KIT_SCHEMAS = {
   "assumptions_register_v0_1": {
@@ -29760,7 +29760,7 @@ var KIT_SCHEMAS = {
   }
 };
 
-// packages/contracts/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/contracts/dist/index.js
 var ajv = new import__.Ajv2020({
   allErrors: true,
   strict: false,
@@ -29791,9 +29791,23 @@ function validator(name) {
   }
   return v;
 }
-var describe = (e) => `${e.instancePath || "/"}: ${e.message ?? e.keyword}`;
+var describe = (e) => {
+  const p = e.params;
+  const expected = e.keyword === "const" && p.allowedValue !== void 0 ? ` ${JSON.stringify(p.allowedValue)}` : e.keyword === "enum" && Array.isArray(p.allowedValues) ? ` (${p.allowedValues.map((v) => typeof v === "string" ? v : JSON.stringify(v)).join(", ")})` : "";
+  return `${e.instancePath || "/"}: ${e.message ?? e.keyword}${expected}`;
+};
 function schemaOf(name) {
+  return inlined(SCHEMAS[name]);
+}
+var KIT_NAMES = new Set(KIT_CONTRACT_NAMES);
+function schemaOfAny(name) {
+  if (isContractName(name))
+    return schemaOf(name);
+  return KIT_NAMES.has(name) ? inlined(KIT_SCHEMAS[name]) : null;
+}
+function inlined(root2) {
   const defs = SCHEMAS.primitives.$defs ?? {};
+  const own = root2?.$defs ?? {};
   const inline = (node, depth) => {
     if (depth > 40)
       return {};
@@ -29803,11 +29817,16 @@ function schemaOf(name) {
       return node;
     const o = node;
     if (typeof o.$ref === "string") {
-      const m = /^([a-z_]+)\.schema\.json(?:#\/\$defs\/([A-Za-z0-9_]+))?$/.exec(o.$ref);
-      if (m?.[2])
+      const local = /^#\/\$defs\/([A-Za-z0-9_]+)$/.exec(o.$ref);
+      if (local?.[1] !== void 0)
+        return inline(own[local[1]], depth + 1);
+      const m = /(?:^|\/)([a-z0-9_]+)\.schema\.json(?:#\/\$defs\/([A-Za-z0-9_]+))?$/.exec(o.$ref);
+      if (m?.[1] === "primitives" && m[2])
         return inline(defs[m[2]], depth + 1);
       if (m?.[1] && isContractName(m[1]))
         return inline(SCHEMAS[m[1]], depth + 1);
+      if (m?.[1] && KIT_NAMES.has(m[1]))
+        return inline(KIT_SCHEMAS[m[1]], depth + 1);
     }
     const out = {};
     for (const [k, v] of Object.entries(o))
@@ -29815,7 +29834,7 @@ function schemaOf(name) {
         out[k] = inline(v, depth + 1);
     return out;
   };
-  return inline(SCHEMAS[name], 0);
+  return inline(root2, 0);
 }
 var PRIMITIVE_DEFS = Object.keys(SCHEMAS.primitives.$defs ?? {}).sort();
 function validatePrimitive(def, value) {
@@ -29852,7 +29871,7 @@ function validateAnyContract(name, value) {
   return [`/: unknown contract ${name}`];
 }
 
-// node_modules/@noble/ciphers/utils.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/ciphers/utils.js
 /*! noble-ciphers - MIT License (c) 2023 Paul Miller (paulmillr.com) */
 function isBytes(a) {
   return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array" && "BYTES_PER_ELEMENT" in a && a.BYTES_PER_ELEMENT === 1;
@@ -30031,7 +30050,7 @@ function copyBytes(bytes) {
   return Uint8Array.from(abytes(bytes));
 }
 
-// node_modules/@noble/ciphers/_arx.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/ciphers/_arx.js
 var encodeStr = (str3) => Uint8Array.from(str3.split(""), (c) => c.charCodeAt(0));
 var sigma16_32 = /* @__PURE__ */ (() => swap32IfBE(u32(encodeStr("expand 16-byte k"))))();
 var sigma32_32 = /* @__PURE__ */ (() => swap32IfBE(u32(encodeStr("expand 32-byte k"))))();
@@ -30161,7 +30180,7 @@ function createCipher(core, opts2) {
   };
 }
 
-// node_modules/@noble/ciphers/_poly1305.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/ciphers/_poly1305.js
 function u8to16(a, i) {
   return a[i++] & 255 | (a[i++] & 255) << 8;
 }
@@ -30412,7 +30431,7 @@ var Poly1305 = class {
 };
 var poly1305 = /* @__PURE__ */ wrapMacConstructor(32, (key) => new Poly1305(key));
 
-// node_modules/@noble/ciphers/chacha.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/ciphers/chacha.js
 function chachaCore(s, k, n, out, cnt, rounds = 20) {
   let y00 = s[0], y01 = s[1], y02 = s[2], y03 = s[3], y04 = k[0], y05 = k[1], y06 = k[2], y07 = k[3], y08 = k[4], y09 = k[5], y10 = k[6], y11 = k[7], y12 = cnt, y13 = n[0], y14 = n[1], y15 = n[2];
   let x00 = y00, x01 = y01, x02 = y02, x03 = y03, x04 = y04, x05 = y05, x06 = y06, x07 = y07, x08 = y08, x09 = y09, x10 = y10, x11 = y11, x12 = y12, x13 = y13, x14 = y14, x15 = y15;
@@ -30562,7 +30581,7 @@ var chacha20poly1305 = /* @__PURE__ */ wrapCipher(
   /* @__PURE__ */ _poly1305_aead(chacha20)
 );
 
-// node_modules/@noble/hashes/_u64.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/hashes/_u64.js
 var U32_MASK64 = /* @__PURE__ */ (() => BigInt(2 ** 32 - 1))();
 var _32n = /* @__PURE__ */ BigInt(32);
 function fromBig(n, le = false) {
@@ -30605,7 +30624,7 @@ var add4H = (low, Ah, Bh, Ch, Dh) => Ah + Bh + Ch + Dh + (low / 2 ** 32 | 0) | 0
 var add5L = (Al, Bl, Cl, Dl, El) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0) + (El >>> 0);
 var add5H = (low, Ah, Bh, Ch, Dh, Eh) => Ah + Bh + Ch + Dh + Eh + (low / 2 ** 32 | 0) | 0;
 
-// node_modules/@noble/hashes/utils.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/hashes/utils.js
 function isBytes2(a) {
   return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array" && "BYTES_PER_ELEMENT" in a && a.BYTES_PER_ELEMENT === 1;
 }
@@ -30802,7 +30821,7 @@ var oidNist = (suffix) => ({
   oid: Uint8Array.from([6, 9, 96, 134, 72, 1, 101, 3, 4, 2, suffix])
 });
 
-// node_modules/@noble/hashes/_md.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/hashes/_md.js
 function Chi(a, b, c) {
   return a & b ^ ~a & c;
 }
@@ -30933,7 +30952,7 @@ var SHA512_IV = /* @__PURE__ */ Uint32Array.from([
   327033209
 ]);
 
-// node_modules/@noble/hashes/sha2.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/hashes/sha2.js
 var SHA256_K = /* @__PURE__ */ Uint32Array.from([
   1116352408,
   1899447441,
@@ -31330,7 +31349,7 @@ var sha512 = /* @__PURE__ */ createHasher(
   /* @__PURE__ */ oidNist(3)
 );
 
-// node_modules/@noble/curves/utils.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/curves/utils.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 function aarray(item, title, inner = () => {
 }) {
@@ -31513,7 +31532,7 @@ function validateObject(object, fields = {}, optFields = {}, title = "object") {
   iter(optFields, true);
 }
 
-// node_modules/@noble/curves/abstract/modular.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/curves/abstract/modular.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var _0n2 = /* @__PURE__ */ BigInt(0);
 var _1n2 = /* @__PURE__ */ BigInt(1);
@@ -31977,7 +31996,7 @@ function mapHashToField(key, fieldOrder, isLE4 = false) {
   return isLE4 ? numberToBytesLE(reduced, fieldLen) : numberToBytesBE(reduced, fieldLen);
 }
 
-// node_modules/@noble/curves/abstract/curve.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/curves/abstract/curve.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var _0n3 = /* @__PURE__ */ BigInt(0);
 var _1n3 = /* @__PURE__ */ BigInt(1);
@@ -32365,7 +32384,7 @@ function createKeygen(randomSecretKey, getPublicKey) {
   };
 }
 
-// node_modules/@noble/curves/abstract/edwards.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/curves/abstract/edwards.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var _0n4 = /* @__PURE__ */ BigInt(0);
 var _1n4 = /* @__PURE__ */ BigInt(1);
@@ -32817,7 +32836,7 @@ function eddsa(Point, cHash, eddsaOpts = {}) {
   });
 }
 
-// node_modules/@noble/curves/abstract/montgomery.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/curves/abstract/montgomery.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var _0n5 = /* @__PURE__ */ BigInt(0);
 var _1n5 = /* @__PURE__ */ BigInt(1);
@@ -32965,7 +32984,7 @@ function montgomery(curveDef) {
   });
 }
 
-// node_modules/@noble/curves/ed25519.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/curves/ed25519.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var _0n6 = /* @__PURE__ */ BigInt(0);
 var _1n6 = /* @__PURE__ */ BigInt(1);
@@ -33066,7 +33085,7 @@ var x25519 = /* @__PURE__ */ (() => {
   });
 })();
 
-// node_modules/@scure/base/index.js
+// ../../../../../../home/user/fairlead-server/node_modules/@scure/base/index.js
 /*! scure-base - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var freeze = (fn) => Object.freeze(fn());
 function isBytes4(a) {
@@ -33416,7 +33435,7 @@ function genBech32(encoding) {
 }
 var bech32 = /* @__PURE__ */ freeze(() => genBech32("bech32"));
 
-// node_modules/@noble/hashes/hmac.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/hashes/hmac.js
 var _HMAC = class {
   oHash;
   iHash;
@@ -33493,7 +33512,7 @@ var hmac = /* @__PURE__ */ (() => {
   return hmac_;
 })();
 
-// node_modules/@noble/hashes/hkdf.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/hashes/hkdf.js
 function extract(hash, ikm, salt) {
   ahash(hash);
   if (salt === void 0)
@@ -33560,7 +33579,7 @@ var hkdf = (hash, ikm, salt, info, length) => {
   return expand(hash, HMAC.digest(), info, length, HMAC);
 };
 
-// node_modules/@noble/hashes/pbkdf2.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/hashes/pbkdf2.js
 function pbkdf2Init(hash, _password, _salt, _opts) {
   ahash(hash);
   const opts2 = checkOpts2({ dkLen: 32, asyncTick: 10 }, _opts);
@@ -33635,7 +33654,7 @@ function pbkdf2(hash, password, salt, opts2) {
   return eng.output(DK);
 }
 
-// node_modules/@noble/hashes/scrypt.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/hashes/scrypt.js
 function XorAndSalsa(prev, pi, input, ii, out, oi) {
   let y00 = prev[pi++] ^ input[ii++], y01 = prev[pi++] ^ input[ii++];
   let y02 = prev[pi++] ^ input[ii++], y03 = prev[pi++] ^ input[ii++];
@@ -33793,7 +33812,7 @@ function scrypt(password, salt, opts2) {
   return scryptOutput(password, dkLen, B, V, tmp);
 }
 
-// node_modules/@noble/post-quantum/node_modules/@noble/hashes/utils.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/hashes/utils.js
 /*! noble-hashes - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 function isBytes5(a) {
   return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array";
@@ -33940,7 +33959,7 @@ var oidNist2 = (suffix) => ({
   oid: Uint8Array.from([6, 9, 96, 134, 72, 1, 101, 3, 4, 2, suffix])
 });
 
-// node_modules/@noble/post-quantum/node_modules/@noble/curves/utils.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/curves/utils.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var _0n7 = /* @__PURE__ */ BigInt(0);
 var _1n7 = /* @__PURE__ */ BigInt(1);
@@ -34090,7 +34109,7 @@ function memoized(fn) {
   };
 }
 
-// node_modules/@noble/post-quantum/node_modules/@noble/curves/abstract/modular.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/curves/abstract/modular.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var _0n8 = /* @__PURE__ */ BigInt(0);
 var _1n8 = /* @__PURE__ */ BigInt(1);
@@ -34477,7 +34496,7 @@ function mapHashToField2(key, fieldOrder, isLE4 = false) {
   return isLE4 ? numberToBytesLE2(reduced, fieldLen) : numberToBytesBE2(reduced, fieldLen);
 }
 
-// node_modules/@noble/post-quantum/node_modules/@noble/curves/abstract/curve.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/curves/abstract/curve.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var _0n9 = /* @__PURE__ */ BigInt(0);
 var _1n9 = /* @__PURE__ */ BigInt(1);
@@ -34711,7 +34730,7 @@ function createKeygen2(randomSecretKey, getPublicKey) {
   };
 }
 
-// node_modules/@noble/post-quantum/node_modules/@noble/curves/abstract/montgomery.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/curves/abstract/montgomery.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var _0n10 = BigInt(0);
 var _1n10 = BigInt(1);
@@ -34827,7 +34846,7 @@ function montgomery2(curveDef) {
   });
 }
 
-// node_modules/@noble/post-quantum/node_modules/@noble/hashes/hmac.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/hashes/hmac.js
 var _HMAC2 = class {
   oHash;
   iHash;
@@ -34898,7 +34917,7 @@ var _HMAC2 = class {
 var hmac2 = (hash, key, message) => new _HMAC2(hash, key).update(message).digest();
 hmac2.create = (hash, key) => new _HMAC2(hash, key);
 
-// node_modules/@noble/post-quantum/node_modules/@noble/curves/abstract/weierstrass.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/curves/abstract/weierstrass.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var divNearest = (num, den) => (num + (num >= 0 ? den : -den) / _2n7) / den;
 function _splitEndoScalar(k, basis, n) {
@@ -35771,7 +35790,7 @@ function ecdsa(Point, hash, ecdsaOpts = {}) {
   });
 }
 
-// node_modules/@noble/post-quantum/node_modules/@noble/hashes/_md.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/hashes/_md.js
 function Chi2(a, b, c) {
   return a & b ^ ~a & c;
 }
@@ -35902,7 +35921,7 @@ var SHA384_IV2 = /* @__PURE__ */ Uint32Array.from([
   3204075428
 ]);
 
-// node_modules/@noble/post-quantum/node_modules/@noble/hashes/_u64.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/hashes/_u64.js
 var U32_MASK642 = /* @__PURE__ */ BigInt(2 ** 32 - 1);
 var _32n2 = /* @__PURE__ */ BigInt(32);
 function fromBig2(n, le = false) {
@@ -35941,7 +35960,7 @@ var add4H2 = (low, Ah, Bh, Ch, Dh) => Ah + Bh + Ch + Dh + (low / 2 ** 32 | 0) | 
 var add5L2 = (Al, Bl, Cl, Dl, El) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0) + (El >>> 0);
 var add5H2 = (low, Ah, Bh, Ch, Dh, Eh) => Ah + Bh + Ch + Dh + Eh + (low / 2 ** 32 | 0) | 0;
 
-// node_modules/@noble/post-quantum/node_modules/@noble/hashes/sha2.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/hashes/sha2.js
 var SHA256_K2 = /* @__PURE__ */ Uint32Array.from([
   1116352408,
   1899447441,
@@ -36297,7 +36316,7 @@ var sha384 = /* @__PURE__ */ createHasher2(
   /* @__PURE__ */ oidNist2(2)
 );
 
-// node_modules/@noble/post-quantum/node_modules/@noble/curves/ed25519.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/curves/ed25519.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var _1n12 = BigInt(1);
 var _2n8 = BigInt(2);
@@ -36341,7 +36360,7 @@ var x255192 = /* @__PURE__ */ (() => {
   });
 })();
 
-// node_modules/@noble/post-quantum/node_modules/@noble/curves/nist.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/curves/nist.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var p256_CURVE = /* @__PURE__ */ (() => ({
   p: BigInt("0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff"),
@@ -36366,7 +36385,7 @@ var p256 = /* @__PURE__ */ ecdsa(p256_Point, sha2562);
 var p384_Point = /* @__PURE__ */ weierstrass(p384_CURVE);
 var p384 = /* @__PURE__ */ ecdsa(p384_Point, sha384);
 
-// node_modules/@noble/post-quantum/node_modules/@noble/hashes/hkdf.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/hashes/hkdf.js
 function extract2(hash, ikm, salt) {
   ahash2(hash);
   if (salt === void 0)
@@ -36402,7 +36421,7 @@ function expand2(hash, prk, info, length = 32) {
   return okm.slice(0, length);
 }
 
-// node_modules/@noble/post-quantum/node_modules/@noble/hashes/sha3.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/hashes/sha3.js
 var _0n12 = BigInt(0);
 var _1n13 = BigInt(1);
 var _2n9 = BigInt(2);
@@ -36601,7 +36620,7 @@ var genShake = (suffix, blockLen, outputLen, info = {}) => createHasher2((opts2 
 var shake128 = /* @__PURE__ */ genShake(31, 168, 16, /* @__PURE__ */ oidNist2(11));
 var shake256 = /* @__PURE__ */ genShake(31, 136, 32, /* @__PURE__ */ oidNist2(12));
 
-// node_modules/@noble/post-quantum/node_modules/@noble/curves/abstract/fft.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/node_modules/@noble/curves/abstract/fft.js
 function checkU32(n) {
   if (!Number.isSafeInteger(n) || n < 0 || n > 4294967295)
     throw new Error("wrong u32 integer:" + n);
@@ -36682,7 +36701,7 @@ var FFTCore = (F2, coreOpts) => {
   };
 };
 
-// node_modules/@noble/post-quantum/utils.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/utils.js
 /*! noble-post-quantum - MIT License (c) 2024 Paul Miller (paulmillr.com) */
 var randomBytes6 = randomBytes5;
 function equalBytes2(a, b) {
@@ -36767,7 +36786,7 @@ function getMask(bits) {
 }
 var EMPTY = Uint8Array.of();
 
-// node_modules/@noble/post-quantum/_crystals.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/_crystals.js
 /*! noble-post-quantum - MIT License (c) 2024 Paul Miller (paulmillr.com) */
 var genCrystals = (opts2) => {
   const { newPoly, N: N2, Q: Q2, F: F2, ROOT_OF_UNITY: ROOT_OF_UNITY2, brvBits, isKyber } = opts2;
@@ -36877,7 +36896,7 @@ var createXofShake = (shake) => (seed, blockLen) => {
 };
 var XOF128 = /* @__PURE__ */ createXofShake(shake128);
 
-// node_modules/@noble/post-quantum/ml-kem.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/ml-kem.js
 /*! noble-post-quantum - MIT License (c) 2024 Paul Miller (paulmillr.com) */
 var N = 256;
 var Q = 3329;
@@ -37145,7 +37164,7 @@ var ml_kem1024 = /* @__PURE__ */ createKyber({
   ...PARAMS[1024]
 });
 
-// node_modules/@noble/post-quantum/hybrid.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/post-quantum/hybrid.js
 /*! noble-post-quantum - MIT License (c) 2024 Paul Miller (paulmillr.com) */
 function ecKeygen(curve, allowZeroKey = false) {
   const lengths = curve.lengths;
@@ -37364,7 +37383,7 @@ var ml_kem768_p256 = /* @__PURE__ */ (() => concreteHybridKem("MLKEM768-P256", m
 var MLKEM768X25519 = ml_kem768_x25519;
 var MLKEM768P256 = ml_kem768_p256;
 
-// node_modules/@noble/curves/abstract/der.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/curves/abstract/der.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var _0n13 = /* @__PURE__ */ BigInt(0);
 var DERErr2 = class extends Error {
@@ -37492,7 +37511,7 @@ var DER2 = /* @__PURE__ */ (() => {
   return Object.freeze(_DER);
 })();
 
-// node_modules/@noble/curves/abstract/weierstrass.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/curves/abstract/weierstrass.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var divNearest2 = (num, den) => (num + (num >= 0 ? den : -den) / _2n10) / den;
 function _splitEndoScalar2(k, basis, n) {
@@ -38325,7 +38344,7 @@ function ecdsa2(Point, hash, ecdsaOpts = {}) {
   });
 }
 
-// node_modules/@noble/curves/nist.js
+// ../../../../../../home/user/fairlead-server/node_modules/@noble/curves/nist.js
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 var p256_CURVE2 = /* @__PURE__ */ (() => ({
   p: BigInt("0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff"),
@@ -38339,7 +38358,7 @@ var p256_CURVE2 = /* @__PURE__ */ (() => ({
 var p256_Point2 = /* @__PURE__ */ weierstrass2(p256_CURVE2);
 var p2562 = /* @__PURE__ */ ecdsa2(p256_Point2, sha256);
 
-// node_modules/age-encryption/dist/x25519.js
+// ../../../../../../home/user/fairlead-server/node_modules/age-encryption/dist/x25519.js
 var exportable = false;
 var webCryptoOff = false;
 async function webCryptoFallback(func, fallback) {
@@ -38410,7 +38429,7 @@ function domBuffer(arr) {
   return arr;
 }
 
-// node_modules/age-encryption/dist/io.js
+// ../../../../../../home/user/fairlead-server/node_modules/age-encryption/dist/io.js
 var LineReader = class {
   s;
   transcript = [];
@@ -38511,7 +38530,7 @@ async function read(stream2, n) {
   return { data, rest };
 }
 
-// node_modules/age-encryption/dist/format.js
+// ../../../../../../home/user/fairlead-server/node_modules/age-encryption/dist/format.js
 var Stanza = class {
   /**
    * All space-separated arguments on the first line of the stanza.
@@ -38608,7 +38627,7 @@ function encodeHeader(recipients, MAC) {
   ]);
 }
 
-// node_modules/age-encryption/dist/recipients.js
+// ../../../../../../home/user/fairlead-server/node_modules/age-encryption/dist/recipients.js
 function generateIdentity() {
   return generateX25519Identity();
 }
@@ -38951,7 +38970,7 @@ function isCryptoKey2(key) {
   return typeof CryptoKey !== "undefined" && key instanceof CryptoKey;
 }
 
-// node_modules/age-encryption/dist/stream.js
+// ../../../../../../home/user/fairlead-server/node_modules/age-encryption/dist/stream.js
 var chacha20poly1305Overhead = 16;
 var chunkSize = /* @__PURE__ */ (() => 64 * 1024)();
 var chunkSizeWithOverhead = /* @__PURE__ */ (() => chunkSize + chacha20poly1305Overhead)();
@@ -39048,7 +39067,7 @@ function ciphertextSize(plaintextSize2) {
   return plaintextSize2 + chacha20poly1305Overhead * chunks;
 }
 
-// node_modules/age-encryption/dist/index.js
+// ../../../../../../home/user/fairlead-server/node_modules/age-encryption/dist/index.js
 var Encrypter = class {
   passphrase = null;
   scryptWorkFactor = 18;
@@ -39260,7 +39279,7 @@ function isCryptoKey3(key) {
   return typeof CryptoKey !== "undefined" && key instanceof CryptoKey;
 }
 
-// packages/seal/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/seal/dist/index.js
 var SealError = class extends Error {
   name = "SealError";
   code;
@@ -39535,7 +39554,7 @@ async function sha256Hex2(bytes) {
   return Array.from(d2, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-// packages/online-client/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/online-client/dist/index.js
 var AGE_HEADER = "age-encryption.org/v1\n";
 var POLL_GAP_MS = 2e3;
 var MAX_PROOF_GETS = 5;
@@ -40037,7 +40056,7 @@ function createOnlineClient(o) {
   };
 }
 
-// packages/store/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/store/dist/index.js
 import { spawn as spawn2 } from "node:child_process";
 import { createCipheriv, createDecipheriv, randomBytes as randomBytes8 } from "node:crypto";
 import { closeSync as closeSync2, existsSync as existsSync2, fsyncSync, linkSync, mkdirSync as mkdirSync2, openSync as openSync2, readdirSync, readFileSync as readFileSync2, renameSync as renameSync2, rmSync as rmSync2, statSync as statSync2, unlinkSync as unlinkSync2, writeSync as writeSync2 } from "node:fs";
@@ -40579,7 +40598,7 @@ function dashlabFromBuild(pluginRoot, dataDir, openUrl = systemOpenUrl) {
 import { existsSync as existsSync11, mkdirSync as mkdirSync12, readFileSync as readFileSync15 } from "node:fs";
 import { dirname as dirname2, join as join16 } from "node:path";
 
-// packages/gate-runner/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/gate-runner/dist/index.js
 import { spawn as spawn3, spawnSync } from "node:child_process";
 import { randomBytes as randomBytes9 } from "node:crypto";
 import { existsSync as existsSync3, mkdirSync as mkdirSync3, readFileSync as readFileSync4, writeFileSync } from "node:fs";
@@ -40742,7 +40761,7 @@ async function runGate(opts2) {
   };
 }
 
-// packages/record/dist/events.js
+// ../../../../../../home/user/fairlead-server/packages/record/dist/events.js
 var EVENT_TYPES = [
   "run_started",
   "hooks_armed",
@@ -40834,7 +40853,7 @@ var EventLog = class {
   }
 };
 
-// packages/record/dist/headline.js
+// ../../../../../../home/user/fairlead-server/packages/record/dist/headline.js
 var HEADLINE_RULES = "0.5.0";
 function capList(c) {
   return c === void 0 ? [] : "checker_step_id" in c ? [c] : c;
@@ -41234,7 +41253,7 @@ function uniq(xs) {
   return [...new Set(xs.filter((x) => x > 0))].sort((a, b) => a - b);
 }
 
-// packages/record/dist/record.js
+// ../../../../../../home/user/fairlead-server/packages/record/dist/record.js
 var InvalidRecord = class extends Error {
   name = "InvalidRecord";
 };
@@ -41272,7 +41291,7 @@ function buildRecord(p) {
   return record;
 }
 
-// packages/hooks/dist/spool.js
+// ../../../../../../home/user/fairlead-server/packages/hooks/dist/spool.js
 import { createHmac as createHmac2, randomBytes as randomBytes10, timingSafeEqual as timingSafeEqual2 } from "node:crypto";
 import { existsSync as existsSync4, linkSync as linkSync2, mkdirSync as mkdirSync4, readFileSync as readFileSync5, readdirSync as readdirSync2, renameSync as renameSync3, rmSync as rmSync3, writeFileSync as writeFileSync2 } from "node:fs";
 import { join as join5 } from "node:path";
@@ -41372,7 +41391,7 @@ function writeState(dataDir, sessionId, state) {
   writeAtomic(join5(dir, "state.json"), dir, sign2(key, state));
 }
 
-// packages/hooks/dist/selfmarks.js
+// ../../../../../../home/user/fairlead-server/packages/hooks/dist/selfmarks.js
 var SELF_MARKS = [
   String.raw`\b(recommended|preferred)\b`,
   String.raw`\bwe (recommend|suggest|prefer)\b`,
@@ -41401,7 +41420,7 @@ function askFingerprint(input) {
   }));
 }
 
-// packages/hooks/dist/hooks.js
+// ../../../../../../home/user/fairlead-server/packages/hooks/dist/hooks.js
 var MCP = "mcp__plugin_heddle_heddle__";
 var START = `${MCP}heddle_run_start`;
 var CALLER_TOOLS = /* @__PURE__ */ new Set([`${MCP}heddle_inputs`, `${MCP}heddle_output`]);
@@ -44297,11 +44316,11 @@ function pluginName(root2) {
 import { mkdirSync as mkdirSync8, writeFileSync as writeFileSync6 } from "node:fs";
 import { join as join10 } from "node:path";
 
-// packages/report/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/report/dist/index.js
 import { existsSync as existsSync7, lstatSync, mkdirSync as mkdirSync7, readdirSync as readdirSync4, readFileSync as readFileSync8, renameSync as renameSync4, rmSync as rmSync4, statSync as statSync4, writeFileSync as writeFileSync5 } from "node:fs";
 import { join as join9 } from "node:path";
 
-// packages/report/dist/tokens.js
+// ../../../../../../home/user/fairlead-server/packages/report/dist/tokens.js
 var TOKENS_CSS = `/* Heddle design tokens: Heddle linen (Daniel, 2026-10-18).
    Source of truth for the Heddle Online browser app and the plugin's library page (CONTRACTS.md I-8).
    Change here first; online owns this file, dev consumes it.
@@ -44366,7 +44385,7 @@ var TOKENS_CSS = `/* Heddle design tokens: Heddle linen (Daniel, 2026-10-18).
 `;
 var HEDDLE_MARK = `<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 36 C 16 30, 26 40, 38 36" stroke-width="2.6"></path><path d="M8 52 C 18 56, 28 48, 38 50" stroke-width="2.6"></path><path d="M6 66 C 16 70, 26 62, 38 64" stroke-width="2.6"></path><path d="M38 36 q6 -4 12 0 t12 0 t12 0 t12 0" stroke-width="3.8"></path><path d="M38 50 q6 4 12 0 t12 0 t12 0 t12 0" stroke-width="3.8"></path><path d="M38 64 q6 -4 12 0 t12 0 t12 0 t12 0" stroke-width="3.8"></path><path d="M44 26 L44 74 M56 26 L56 74 M68 26 L68 74 M80 26 L80 74" stroke-width="3.8"></path></g></svg>`;
 
-// packages/report/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/report/dist/index.js
 var ReportRefusal = class extends Error {
   name = "ReportRefusal";
 };
@@ -44692,6 +44711,8 @@ function levelCounts(text3) {
     if (name.replace(ASCII_SPACE, "") === "" || rest.includes("/") || rest.includes("&") || OR_WORD.test(rest) || AND_WORD.test(rest))
       return null;
     if (values.some((v) => v.split("(").length !== v.split(")").length))
+      return null;
+    if (values.length > 1 && rest.split(",").length - 1 > values.length - 1)
       return null;
     const n = values.filter((v) => v.replace(ASCII_SPACE, "") !== "").length;
     if (n < 2)
@@ -45330,6 +45351,31 @@ function findingChoiceWords(c) {
   const why = typeof c.reason === "string" && c.reason.trim() ? `: ${c.reason.trim()}` : "";
   return c.choice === "accept" ? `accepted${why}` : c.choice === "reject" ? `rejected${why}` : "";
 }
+function findingIdsInWords(files, checkName2) {
+  const ORDINALS = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
+  const nth = (n) => ORDINALS[n - 1] ?? `number ${String(n)}`;
+  const named = (step) => {
+    const name = checkName2(step);
+    return /^[A-Z][a-z]/.test(name) ? `${name.charAt(0).toLowerCase()}${name.slice(1)}` : name;
+  };
+  const PREFIX2 = /^s\d{1,2}[a-z]?(?:\.\d+)?:/;
+  const entries = files.flatMap((f, k) => {
+    const pass = files.slice(0, k + 1).filter((g) => g.step === f.step).length;
+    return f.ids.map((full, i) => ({ step: f.step, pass, n: i + 1, full, bare: full.replace(PREFIX2, "") }));
+  });
+  const say = (e) => `the ${named(e.step)}'s ${nth(e.n)} finding${e.pass > 1 ? ` in its ${nth(e.pass)} pass` : ""}`;
+  return (text3, own) => text3.replace(/\b(s\d{1,2}[a-z]?)(?:\.(\d+))?:([A-Za-z][A-Za-z0-9_-]*)/g, (token2, step, pass, id) => {
+    const k = pass === void 0 ? 1 : Number(pass);
+    const e = entries.find((x) => x.full === token2) ?? entries.find((x) => x.step === step && x.pass === k && x.bare === id);
+    return e ? say(e) : `a finding of the ${named(step)}`;
+  }).replace(/\b[A-Za-z][A-Za-z0-9_-]*\b/g, (word) => {
+    const holders = entries.filter((x) => (x.bare === word || x.full === word) && (own === "" || x.step === own));
+    const [e] = holders;
+    if (!e)
+      return word;
+    return own === "" && new Set(holders.map((x) => x.step)).size > 1 ? "another finding" : say(e);
+  });
+}
 function findingsRows(ctx) {
   const writtenAt = (rel2) => {
     const fp = ctx.verified.get(rel2);
@@ -45357,34 +45403,7 @@ function findingsRows(ctx) {
     const thread = typeof s?.thread_ref === "string" ? s.thread_ref : ctx.opts?.stepThreads?.[step] ?? "";
     return ctx.checkNames[thread.split("@")[0] ?? ""] ?? (s?.kind === "recheck" ? "Recheck" : "Independent check");
   };
-  const ORDINALS = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
-  const nth = (n) => ORDINALS[n - 1] ?? `number ${String(n)}`;
-  const named = (step) => {
-    const name = checkName2(step);
-    return /^[A-Z][a-z]/.test(name) ? `${name.charAt(0).toLowerCase()}${name.slice(1)}` : name;
-  };
-  const passOf = new Map(files.map((f) => [f, files.filter((g) => g.step === f.step).indexOf(f) + 1]));
-  const place = (step, pass, id) => {
-    const f = files.find((g) => g.step === step && passOf.get(g) === pass);
-    const i = f ? f.findings.findIndex((x) => str(x.finding_id) === id) : -1;
-    return i < 0 ? null : i + 1;
-  };
-  const say = (step, pass, n) => `the ${named(step)}'s ${nth(n)} finding${pass > 1 ? ` in its ${nth(pass)} pass` : ""}`;
-  const ids = new Set(files.flatMap((f) => f.findings.map((x) => str(x.finding_id))).filter((x) => x !== ""));
-  const inWords2 = (text3, own) => text3.replace(/\b(s\d{1,2}[a-z]?)(?:\.(\d+))?:([A-Za-z][A-Za-z0-9_-]*)/g, (_, step, pass, id) => {
-    const k = pass === void 0 ? 1 : Number(pass);
-    const n = place(step, k, id);
-    return n === null ? `a finding of the ${named(step)}` : say(step, k, n);
-  }).replace(/\b[A-Za-z][A-Za-z0-9_-]*\b/g, (word) => {
-    if (!ids.has(word))
-      return word;
-    const holders = files.filter((f2) => f2.findings.some((x) => str(x.finding_id) === word) && (own === "" || f2.step === own));
-    const [f] = holders;
-    if (!f || own === "" && new Set(holders.map((g) => g.step)).size > 1)
-      return "another finding";
-    const pass = passOf.get(f) ?? 1;
-    return say(f.step, pass, place(f.step, pass, word) ?? 1);
-  });
+  const inWords2 = findingIdsInWords(files.map((f) => ({ step: f.step, ids: f.findings.map((x) => str(x.finding_id)) })), checkName2);
   const rows = [];
   for (const f of files) {
     for (const x of f.findings) {
@@ -48471,7 +48490,7 @@ import { spawnSync as spawnSync3 } from "node:child_process";
 import { readFileSync as readFileSync14, mkdirSync as mkdirSync11, writeFileSync as writeFileSync10 } from "node:fs";
 import { dirname, isAbsolute as isAbsolute3, relative as relative6, resolve as resolve6 } from "node:path";
 
-// packages/local-run/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/local-run/dist/index.js
 import { spawn as spawn5, spawnSync as spawnSync2 } from "node:child_process";
 import { existsSync as existsSync10, mkdirSync as mkdirSync10, readdirSync as readdirSync7, readFileSync as readFileSync13, rmSync as rmSync5, statSync as statSync6, writeFileSync as writeFileSync9 } from "node:fs";
 import { isAbsolute as isAbsolute2, join as join15, relative as relative5, resolve as resolve5 } from "node:path";
@@ -48912,6 +48931,8 @@ function uniqueId(base, options) {
 var text2 = (v) => typeof v === "string" ? v : "";
 var ok = (msg) => ({ text: msg });
 var refused = (msg) => ({ text: msg, isError: true });
+var DETAIL_WORDS = { possible_citation: "a possible citation", unverified_source: "an unverified source", not_in_register: "a source not in the register", unresolved_doi: "a DOI that doesn't resolve" };
+var MAX_FAILING_ITEMS = 10;
 var FairleadServer = class {
   opts;
   bundle;
@@ -49291,16 +49312,19 @@ var FairleadServer = class {
       if (!to || d2?.status !== "pending" && d2?.status !== "running")
         continue;
       repairs.push(s);
-      lines3.push(d2.status === "running" || readyIds.has(to) ? `Step ${s.step.step_id} (${s.step.kind}) failed. The person decides at step ${to} whether to send it back to be fixed: start step ${to} with heddle_step, and don't offer a waiver before then.` : `Step ${s.step.step_id} (${s.step.kind}) failed. The run carries on to step ${to}, where the person decides whether to send it back to be fixed; don't offer a waiver before then.`);
+      lines3.push((d2.status === "running" || readyIds.has(to) ? `Step ${s.step.step_id} (${s.step.kind}) failed. The person decides at step ${to} whether to send it back to be fixed: start step ${to} with heddle_step, and don't offer a waiver before then.` : `Step ${s.step.step_id} (${s.step.kind}) failed. The run carries on to step ${to}, where the person decides whether to send it back to be fixed; don't offer a waiver before then.`) + // The card at step `to` shows what failed before its options (Daniel, 2026-10-29).
+      (this.failingItems(run2, s.step.step_id).length ? ` At step ${to}, show the person these failing items before the options, every time:${this.failedCase(run2, s.step.step_id)}` : ""));
     }
     const failed = [...run2.steps.values()].filter((s) => s.status === "failed" && !repairs.includes(s));
     const [only] = failed;
     if (failed.length === 1 && only) {
       const s = only;
-      lines3.push(`Step ${s.step.step_id} (${s.step.kind}) failed. Tell the person plainly, ask with these options in this order, none marked as recommended: "Waive it and continue", "Stop the run". Then call heddle_decision with kind waiver (step_id ${s.step.step_id}) or abandon.`);
+      lines3.push(`Step ${s.step.step_id} (${s.step.kind}) failed. Show the person what failed, in plain words, before the options, every time.${this.failedCase(run2, s.step.step_id)}
+Then ask with these options in this order, none marked as recommended: "Carry on: the checkers and adjudicator will propose fixes for these", "Stop the run". Then call heddle_decision with kind waiver (step_id ${s.step.step_id}) or abandon.`);
     } else if (failed.length > 1) {
       const ids = failed.map((s) => s.step.step_id);
-      lines3.push(`Steps ${ids.join(", ")} failed. Tell the person plainly what failed, ask in one question with these options in this order, none marked as recommended: "Waive them all and continue", "Stop the run". Then call heddle_decision once with kind waiver and step_ids ${JSON.stringify(ids)}, or abandon. One answer covers one decision.`);
+      lines3.push(`Steps ${ids.join(", ")} failed. Show the person what failed at each, in plain words, before the options, every time.${failed.map((s) => this.failedCase(run2, s.step.step_id)).join("")}
+Then ask in one question with these options in this order, none marked as recommended: "Carry on with all of these: the checkers and adjudicator will propose fixes", "Stop the run". Then call heddle_decision once with kind waiver and step_ids ${JSON.stringify(ids)}, or abandon. One answer covers one decision.`);
     }
     if (lines3.length === 0)
       lines3.push("Nothing is ready. If a subagent is running, wait for it to finish, then call heddle_next again.");
@@ -49475,9 +49499,12 @@ Whole in this change set: ${ports.join(", ")}. The step that writes ${one ? "it"
     }, ticket.step_id);
     const produces = s.step.produces ?? [];
     const shapes = produces.map((p) => {
-      const c = run2.portSpec(p, s.step).contract;
-      return c && isContractName(c) ? `JSON Schema for ${p} (contract ${c}):
-${JSON.stringify(schemaOf(c))}` : `${p}: plain text (Markdown).`;
+      const spec = run2.portSpec(p, s.step);
+      const schema = spec.contract ? schemaOfAny(spec.contract) : null;
+      if (schema)
+        return `JSON Schema for ${p} (contract ${spec.contract ?? ""}):
+${JSON.stringify(schema)}`;
+      return spec.contract || spec.json === true ? `${p}: JSON${spec.contract ? ` (contract ${spec.contract})` : ""}.` : `${p}: plain text (Markdown).`;
     }).join("\n\n");
     return `${prompt}
 ---
@@ -49977,8 +50004,7 @@ ${JSON.stringify(round.input, null, 1)}
         if (typeof e.ref !== "string")
           continue;
         const key = e.ref.split("/").at(-1) ?? e.ref;
-        const stated = (k) => fields.get(k)?.status === "stated" ? fields.get(k)?.value ?? null : null;
-        const reason = e.detail === "doubtful_item" ? doubtfulReason(key, fields.get(key)?.value ?? null, pack(), label, stated) : e.detail === "value_not_in_quote" ? "the value is not in its quote from the brief" : e.detail === "rule_not_checked" ? rereadRuleNotChecked(key, pack(), label, held) : void 0;
+        const reason = e.detail === "doubtful_item" ? doubtfulReason(key, held(key) ?? fields.get(key)?.value ?? null, pack(), label, held) : e.detail === "value_not_in_quote" ? "the value is not in its quote from the brief" : e.detail === "rule_not_checked" ? rereadRuleNotChecked(key, pack(), label, held) : void 0;
         if (reason === void 0)
           continue;
         const had = keys.get(key);
@@ -49988,13 +50014,32 @@ ${JSON.stringify(round.input, null, 1)}
     return keys;
   }
   /**
+   * A failed step's failing items, as the person is shown them before deciding (Daniel, 2026-10-29: every decision
+   * shows its case): each failure in its check's latest result (the summary left out), "<what>: "<ref>"", at most
+   * MAX_FAILING_ITEMS and "and N more"; none for a step with no result.
+   */
+  failingItems(run2, stepId) {
+    const r = run2.gateResultOf(stepId)?.result;
+    const evidence = (r?.evidence ?? []).filter((e) => typeof e.ref === "string" && typeof e.detail === "string" && e.ref !== "summary");
+    const failures = typeof r?.failed === "number" ? evidence.slice(0, r.failed) : evidence;
+    const shown2 = failures.slice(0, MAX_FAILING_ITEMS).map((e) => `  - ${DETAIL_WORDS[String(e.detail)] ?? String(e.detail).replace(/_/g, " ")}: "${String(e.ref).replace(/\s+/g, " ").slice(0, 200)}"`);
+    return failures.length > MAX_FAILING_ITEMS ? [...shown2, `  - and ${String(failures.length - MAX_FAILING_ITEMS)} more`] : shown2;
+  }
+  /** "What failed" for a step, as a block the card shows before its options (Daniel, 2026-10-29). */
+  failedCase(run2, stepId) {
+    const items2 = this.failingItems(run2, stepId);
+    return items2.length ? `
+What failed at step ${stepId}:
+${items2.join("\n")}` : "";
+  }
+  /**
    * The warnings in the gate results a card is served, each with its check and what it flagged (braids' ask 59i:
    * the scouts' source warnings on the confirm card). A warning already shown against a frame item is left to it.
    */
   cardWarnings(run2, stepId) {
     const shown2 = this.doubtfulKeys(run2, stepId);
     const confirm = run2.steps.get(stepId)?.step.choose?.confirm_stated === true;
-    const words2 = { possible_citation: "a possible citation", unverified_source: "an unverified source", not_in_register: "a source not in the register", unresolved_doi: "a DOI that doesn't resolve" };
+    const words2 = DETAIL_WORDS;
     const lines3 = [];
     const stepOf = new Map([...run2.steps.values()].filter((g) => g.step.gate_ref).map((g) => [run2.gateResultOf(g.step.step_id)?.result, g.step.step_id]));
     for (const r of run2.gateResults(stepId)) {

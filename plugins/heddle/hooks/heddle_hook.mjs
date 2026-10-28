@@ -9,10 +9,10 @@ import { existsSync as existsSync2, mkdirSync as mkdirSync2, readFileSync as rea
 import { homedir, hostname } from "node:os";
 import { dirname, isAbsolute, join as join2, resolve, sep } from "node:path";
 
-// packages/canon/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/canon/dist/index.js
 import { createHash } from "node:crypto";
 
-// node_modules/canonicalize/lib/canonicalize.js
+// ../../../../../../home/user/fairlead-server/node_modules/canonicalize/lib/canonicalize.js
 function serializeString(value) {
   if (!value.isWellFormed()) {
     throw new Error("Lone surrogate is not allowed");
@@ -158,7 +158,7 @@ function canonicalize(object) {
   return result;
 }
 
-// packages/canon/dist/index.js
+// ../../../../../../home/user/fairlead-server/packages/canon/dist/index.js
 var MAX_DEPTH = 100;
 var CanonError = class extends Error {
   name = "CanonError";
