@@ -1,9 +1,9 @@
 {
-  "plugin": "0.2.3",
+  "plugin": "0.2.4",
   "braid": "fairlead.lit_scoping_review@0.4.1",
-  "built_at": "2026-10-29T03:35:26Z",
+  "built_at": "2026-10-29T04:46:49Z",
   "files": {
-    ".claude-plugin/plugin.json": "raw:sha256:b8956cae7d1ada2db69b9c9fcad0ff0dda52b6a985718500f0c2dc68ee71c3a8",
+    ".claude-plugin/plugin.json": "raw:sha256:2509ffb0372988f8fe2da78a297655167b0e8b6b4e78113e6753e02ef78b29a4",
     ".mcp.json": "raw:sha256:1b150d41089a2d5276b6daad345189c5e9bd48020f992b019a88749ca0f108d3",
     "LICENSE.md": "raw:sha256:6e65a24831ace2638f9b1238effd667e3f5578dc5fabc85a3be8ba3ac8c3b0ec",
     "README.md": "raw:sha256:ad13d7797e6273a9ea238645e89205ed1f2201049f5cbbd40c24561928a0188f",
@@ -57,8 +57,8 @@
     "hooks/hooks.json": "raw:sha256:25966ae8e3fc6bd7a73dee40701d9a82f57a06188bbf7e26952b1ad595d61421",
     "reports/fairlead.lit_scoping_review/0.1.0/report.json": "raw:sha256:39e16fdc151287ab07367d38b9e7f0f0361cf961806b2647e16cfca6af7a2817",
     "reports/fairlead.lit_scoping_review/0.1.1/report.json": "raw:sha256:984204f7f51d70b7a817019b50d0d097de073d0d365c29d26856cf4baa020006",
-    "server/heddle_server.mjs": "raw:sha256:fa3e696d96e7a83cf1c18b9983d86abeb8b2197f169bd2a5269340b886a9401a",
-    "skills/feedback/SKILL.md": "raw:sha256:34643bc3c91b2acf8e58a3d5d84f4184f9b78c5ebb22d4ada91f8bf036cc452f",
+    "server/heddle_server.mjs": "raw:sha256:eb6486d3cba057afa040599b0f28f6920c194b4603341eb8d64ac0b4dc2759a9",
+    "skills/feedback/SKILL.md": "raw:sha256:aee8ab5fd6b071003857001d55b7a641c64266c2574553f0bf0106e9ab09661b",
     "skills/library/SKILL.md": "raw:sha256:fab97bc86d43cbe44b6d348d2a2dca3596a952d4a630af274486a89e19786e0b",
     "skills/review/SKILL.md": "raw:sha256:7c0669a86a21e550286edfba7f5b640f95e3d040698a2b47aa5c9ffbe1b22857",
     "vendor/mcp_v1_snapshot.json": "raw:sha256:92db784c93043b3393d8d2c9bc7ce886d62cf2e340198a85d9b5f4c9588ba18a"

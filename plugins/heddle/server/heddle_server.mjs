@@ -43572,6 +43572,10 @@ var Run = class {
     const answers = this.log.ofType("user_answer_observed").filter((e) => e.seq > afterSeq && !this.answersUsed.has(e.seq) && e.data.source === "hook");
     return answers.at(-1) ?? null;
   }
+  /** The newest unspent answer after `afterSeq` and before `beforeSeq`, or null: a card's answer before its direction question's. */
+  findAnswerBefore(afterSeq, beforeSeq, to = () => true) {
+    return this.log.ofType("user_answer_observed").filter((e) => e.seq > afterSeq && e.seq < beforeSeq && !this.answersUsed.has(e.seq) && e.data.source === "hook" && to(e.seq)).at(-1) ?? null;
+  }
   /** Spend an answer on a decision; each answer backs one decision only. */
   useAnswer(seq) {
     this.answersUsed.add(seq);
@@ -44162,10 +44166,11 @@ var Run = class {
       for (const id of makerIds)
         this.repairResults.set(id, results);
   }
-  recordGateResult(stepId, run2) {
+  /** Keep a gate step's result; `path` is its file in the run folder, so a card can say where the full list is. */
+  recordGateResult(stepId, run2, path) {
     if (run2.result === null || run2.event === null)
       return;
-    this.gateResultsByStep.set(stepId, { result: run2.result, fingerprint: run2.event.result_fingerprint ?? "", gate_ref: run2.event.gate_ref });
+    this.gateResultsByStep.set(stepId, { result: run2.result, fingerprint: run2.event.result_fingerprint ?? "", gate_ref: run2.event.gate_ref, ...path ? { path } : {} });
   }
   /**
    * A gate step's stored result, only when the step ran this pass (done, failed or waived): one skipped or reset this
@@ -49065,7 +49070,13 @@ var TOOLS = [
   { name: "heddle_online_status", description: "Whether this Heddle is connected to Heddle Online, and as which account.", inputSchema: obj({}) },
   { name: "heddle_library_page", description: "Write the library page; with open true, Heddle opens it in the person's browser.", inputSchema: obj({ open: { type: "boolean" } }) }
 ];
-var DIRECTION_QUESTION = "If you choose another pass, what should it change?";
+function directionQuestion(directing, readsDecisions) {
+  if (directing.every((o) => o.route.action === "loop"))
+    return "What should the next pass change?";
+  if (directing.every((o) => o.route.action === "continue"))
+    return readsDecisions ? "Which of the adjudicator's decisions should change, and how?" : "What should change, and how?";
+  return "What should change?";
+}
 var NO_DIRECTION = ["No specific direction", "The checkers' findings are enough"];
 var NO_DIRECTION_OWN = ["No specific direction", "I'll say what should change"];
 var NOT_WORDS = [...NO_DIRECTION, ...NO_DIRECTION_OWN];
@@ -49082,6 +49093,44 @@ var text2 = (v) => typeof v === "string" ? v : "";
 var ok = (msg) => ({ text: msg });
 var refused = (msg) => ({ text: msg, isError: true });
 var DETAIL_WORDS = { possible_citation: "a possible citation", unverified_source: "an unverified source", not_in_register: "a source not in the register", unresolved_doi: "a DOI that doesn't resolve" };
+function itemWords(detail, refChars) {
+  const [outcome = "", ...rest] = detail.split(";").map((x) => x.trim());
+  const part = (k) => rest.find((x) => x.startsWith(`${k}=`))?.slice(k.length + 1).replace(/\s+/g, " ").trim() ?? "";
+  const found = part("found");
+  const others = rest.map((x) => /^([a-z_]+)=(.*)$/.exec(x)).filter((m) => m !== null && !["sim", "found", "read_level"].includes(m[1] ?? "")).map((m) => `${(m[1] ?? "").replace(/_/g, " ")} ${/^[0-9]+$/.test(m[2] ?? "") ? m[2] ?? "" : typographic((m[2] ?? "").replace(/\s+/g, " ").trim().slice(0, refChars))}`);
+  const extra = others.length ? ` (${others.join("; ")})` : "";
+  const starts = found && found !== "-" ? ` (the DOI's title starts ${typographic(found.slice(0, refChars))})` : "";
+  const read2 = part("read_level").replace(/_/g, " ");
+  const words2 = {
+    lookup_error: "it could not be looked up",
+    doi_not_found: "its DOI wasn't found in Crossref",
+    doi_title_mismatch: `its title doesn't match the title at its DOI${starts}`,
+    not_found: `no matching work was found${found && found !== "-" ? ` (the closest title starts ${typographic(found.slice(0, refChars))})` : ""}`,
+    unverified_url: "no matching record was found; it has a web address, which wasn't checked",
+    possible: "it may be a match, but not closely enough to confirm",
+    unresolved_citation: "the draft cites it, but it isn't among the sources",
+    unsupported_claim: "this evidence claim cites no source",
+    no_references: "the draft cites no sources",
+    reference_not_in_register: "it isn't in the source register",
+    duplicate_ref_id: "its id is used more than once",
+    duplicate_register_id: "its id is used more than once in the register",
+    unparsed_marker: "a citation marker beside it couldn't be read",
+    no_match: `the quoted text isn't in the ${read2 || "text"} read`,
+    not_in_abstract: "the quoted text isn't in the abstract",
+    unverifiable: "the quote couldn't be checked against the source",
+    quote_not_found: "the quoted text isn't in the source text read",
+    quote_on_record_read: "it's quoted, but only its bibliographic record was read",
+    duplicate_id: "its id is used more than once",
+    record_only_support: "the claim rests only on a source's bibliographic record",
+    absence_on_abstract: "an absence is claimed from an abstract alone",
+    unscoped_none: 'a "none" claim has no stated scope',
+    uncovered_change: "it changed without a recorded reason",
+    fingerprint_mismatch: "its recorded version doesn't match the file",
+    too_many_changes: "too many changes in one revision"
+  };
+  return `${words2[outcome] ?? DETAIL_WORDS[outcome] ?? outcome.replace(/_/g, " ").replace(/\s+/g, " ")}${extra}`;
+}
+var WARNING_OUTCOMES = /* @__PURE__ */ new Set(["possible", "unverified_url", "lookup_error", "unparsed_marker", "unverifiable", "not_in_abstract", "unscoped_none"]);
 var MAX_FAILING_ITEMS = 10;
 var QUESTION_ITEMS = 5;
 var FairleadServer = class {
@@ -49767,7 +49816,7 @@ ${shapes}`;
     if (result.resultPath) {
       const rel2 = run2.ref(result.resultPath);
       run2.addOutput(s, rel2, "code");
-      run2.recordGateResult(stepId, result);
+      run2.recordGateResult(stepId, result, rel2);
       const evidence = result.result?.evidence ?? [];
       for (const e of Array.isArray(evidence) ? evidence : []) {
         const m = typeof e.ref === "string" ? /^([a-z][a-z0-9_]{0,63})#superseded$/.exec(e.ref) : null;
@@ -50195,9 +50244,11 @@ ${JSON.stringify(round.input, null, 1)}
       return last.data.status === "fail" ? [] : ["  - the check did not finish, so it named no items"];
     const r = stored?.result;
     const evidence = (r?.evidence ?? []).filter((e) => typeof e.ref === "string" && typeof e.detail === "string" && e.ref !== "summary");
-    const failures = typeof r?.failed === "number" ? evidence.slice(0, r.failed) : evidence;
-    const shown2 = failures.slice(0, max).map((e) => `  - ${DETAIL_WORDS[String(e.detail)] ?? String(e.detail).replace(/_/g, " ")}: ${typographic(String(e.ref).replace(/\s+/g, " ").slice(0, refChars))}`);
-    return failures.length > max ? [...shown2, `  - and ${String(failures.length - max)} more`] : shown2;
+    const notWarning = evidence.filter((e) => !WARNING_OUTCOMES.has(String(e.detail).split(";")[0]?.trim() ?? ""));
+    const failures = typeof r?.failed === "number" ? notWarning.length >= r.failed ? notWarning.slice(0, r.failed) : evidence.slice(0, r.failed) : evidence;
+    const name = (ref) => /^[A-Za-z0-9_.:-]+$/.test(ref) ? ref : typographic(ref.replace(/\s+/g, " ").slice(0, refChars));
+    const shown2 = failures.slice(0, max).map((e) => `  - ${name(String(e.ref))}: ${itemWords(String(e.detail), refChars)}`);
+    return failures.length > max ? [...shown2, `  - and ${String(failures.length - max)} more${stored?.path ? `, listed in the run folder's ${stored.path}` : ""}`] : shown2;
   }
   /** "step s3 (the extractor)" for a step run by a thread, by the thread's name, else "step s3". */
   makerWords(run2, stepId) {
@@ -50295,7 +50346,7 @@ ${withheld}`, lines: [withheld], adjudicated: false, recheck: false, items: [] }
       return line;
     });
     if (findings.length > lim.items)
-      lines3.push(`- and ${String(findings.length - lim.items)} more, in ${versions.map((v) => v.path).join(", ")}`);
+      lines3.push(`- and ${String(findings.length - lim.items)} more, listed in the run folder's ${versions.map((v) => run2.ref(v.path)).join(", ")}`);
     const recheck = versions.some((v) => run2.steps.get(v.step_id)?.step.kind === "recheck");
     const from = [...new Set(versions.map((v) => v.step_id))].join(" and ");
     if (findings.length === 0) {
@@ -50834,7 +50885,9 @@ ${JSON.stringify(copied, null, 1)}
     const remote = this.pendingRemote;
     const card = option && s && !remote ? this.cardInForce(run2, s, offered) : null;
     const held = this.heldAnswerSeq === null ? null : run2.log.events.find((e) => e.seq === this.heldAnswerSeq) ?? null;
-    const observed = remote ? null : held ?? run2.findAnswer(startedSeq);
+    const newest = remote ? null : held ?? run2.findAnswer(startedSeq);
+    const asDirection = newest !== null && card?.direction_fp != null && run2.answerAsked.get(newest.seq) === card.direction_fp ? newest : null;
+    const observed = asDirection ? run2.findAnswerBefore(startedSeq, asDirection.seq, (seq) => run2.answerAsked.get(seq) === card?.ask_fp) ?? run2.findAnswerBefore(startedSeq, asDirection.seq) : newest;
     if (!remote && !observed)
       throw new Refusal("No answer from the person is on record for this decision. Ask them first (AskUserQuestion), then call heddle_decision.");
     const answer = observed ? { seq: observed.seq, at: observed.at, said: run2.answerText.get(observed.seq) ?? null } : { seq: null, at: remote?.answeredAt ?? "", said: remote?.note ?? null };
@@ -50879,7 +50932,14 @@ ${JSON.stringify(copied, null, 1)}
         throw new Refusal(`The person's answer does not name "${option.label}"${named.length > 0 ? ` (it names ${named.map((o) => `"${o.label}"`).join(" and ")})` : ""}. Record the option they chose, or ask them again.`);
       }
       if (takesDirection(option)) {
-        const words2 = said.filter((v) => !sameLabel(v, option.label) && !NOT_WORDS.some((n) => sameLabel(v, n))).join("\n").trim();
+        const own = (values) => values.filter((v) => !sameLabel(v, option.label) && !NOT_WORDS.some((n) => sameLabel(v, n))).join("\n").trim();
+        const asked = asDirection ? answerValues(run2.answerText.get(asDirection.seq) ?? void 0) : [];
+        const cardTakes = this.copied.get(`${run2.runId}/${s?.step.step_id ?? ""}`)?.options.find((x) => x.option_id === option.option_id)?.takes_direction === true;
+        const saidNone = [...said, ...asked].some((v) => sameLabel(v, NO_DIRECTION[0] ?? ""));
+        if (card?.direction_fp && cardTakes && own(said) === "" && own(asked) === "" && !saidNone) {
+          throw new Refusal(`"${option.label}" takes the person's direction. Ask them the direction question heddle_card gave, on its own, then record the decision.`);
+        }
+        const words2 = own(said) || own(asked);
         direction = {
           schema: "fairlead.kit.person_direction/0.1",
           decision_id: decisionId,
@@ -50967,6 +51027,8 @@ ${JSON.stringify(copied, null, 1)}
     }
     if (answer.seq !== null)
       run2.useAnswer(answer.seq);
+    if (asDirection)
+      run2.useAnswer(asDirection.seq);
     const listKey = s ? `${run2.runId}/${s.step.step_id}` : "";
     const list = this.confirmLists.get(listKey);
     const confirmed = list && !remote && this.cardsInForce.get(listKey)?.path === list.card ? list.lines : void 0;
@@ -51134,13 +51196,26 @@ ${JSON.stringify(copied, null, 1)}
     const caseLines = this.caseLines(run2, stepId);
     const parts = [card.question, ...lines3 ? [lines3.join("\n")] : [], ...caseLines.length ? [caseLines.join("\n")] : []];
     const asked = parts.length > 1 ? { ...card, question: parts.join("\n\n") } : card;
-    const ask = copied.answer_by === "question_tool" ? askInput(asked, loops ? { question: DIRECTION_QUESTION, options: [...this.directionOptions(run2, copied.options)] } : null) : null;
+    const ask = copied.answer_by === "question_tool" ? askInput(asked, null) : null;
+    const directing = copied.options.filter((o) => o.takes_direction);
+    const directionAsk = ask !== null && loops ? askInput({ question: directionQuestion(directing, (s.step.reads ?? []).includes("decisions")), options: [] }, null) : null;
+    if (directionAsk) {
+      const q = directionAsk.questions[0];
+      if (q) {
+        q.header = "Direction";
+        q.options = this.directionOptions(run2, copied.options).map((label) => ({ label, description: "No further direction." }));
+      }
+    }
+    run2.writeJson(rel2.replace(/\.json$/, ".asked.json"), ask ?? { question: asked.question, options: card.options.map((o) => ({ option_id: o.option_id, label: o.label })) });
+    if (directionAsk)
+      run2.writeJson(rel2.replace(/\.json$/, ".direction.json"), directionAsk);
     this.cardsInForce.set(key, {
       round: s.round,
       path: rel2,
       fingerprint,
       answer_by: copied.answer_by,
       ask_fp: ask === null ? null : askFingerprint(ask),
+      direction_fp: directionAsk === null ? null : askFingerprint(directionAsk),
       option_ids: copied.options.map((o) => o.option_id)
     });
     const then = `Then call heddle_decision with kind escalation, step_id ${stepId}, option_id set to the chosen option's id, and text summarising what they decided.`;
@@ -51150,7 +51225,11 @@ Show the person the context in plain words, then ask with AskUserQuestion using 
 \`\`\`json
 ${JSON.stringify(ask, null, 1)}
 \`\`\`
-` + (loops ? "The person can type their own words for the second question; pass their answers through unchanged.\n" : "") + then);
+` + (directionAsk ? `Ask this only if the person chooses ${directing.map((o) => `"${o.label}"`).join(" or ")}, as a second AskUserQuestion call on its own, using exactly this input; they can type their own words instead, and you pass their answer through unchanged. Don't ask it after any other choice.
+\`\`\`json
+${JSON.stringify(directionAsk, null, 1)}
+\`\`\`
+` : "") + then);
     }
     const list = card.options.map((o, i) => `${String(i + 1)}. ${o.option_id}: ${o.label}. ${o.summary} If chosen: ${o.what_changes}`).join("\n");
     return ok(`Decision card written: ${rel2} (${fingerprint}). answer_by: option_id.
@@ -51444,9 +51523,10 @@ ${renderDelivery({ ...last, next: items2 })}`);
     const notes = [];
     if (dropped)
       notes.push(`No more revision passes are allowed (${String(max)} of ${String(max)} have run), so the option to go back is not offered.`);
-    const directed = (o) => o.route.action === "continue" && o.takes_direction === true || o.route.action === "loop" && o.change_frame === void 0 && !this.capLoop(run2, stepId, this.loopTo(run2, stepId, o));
+    const directed = (o) => o.route.action === "continue" && o.takes_direction === true || o.route.action === "loop" && o.change_frame === void 0 && !this.capLoop(run2, stepId, this.loopTo(run2, stepId, o)) && !(s?.step.supply && run2.steps.get(o.route.to ?? "")?.step.kind === "gate");
+    const directionWords = directionQuestion(offered.filter(directed), (s?.step.reads ?? []).includes("decisions"));
     if (offered.some(directed))
-      notes.push(DIRECTION_QUESTION);
+      notes.push(`${directionWords} (asked only if you choose ${offered.filter(directed).map((o) => `"${o.label}"`).join(" or ")})`);
     this.copied.set(`${run2.runId}/${stepId}`, {
       card: "decision",
       step_id: stepId,
@@ -51459,7 +51539,7 @@ ${renderDelivery({ ...last, next: items2 })}`);
     return (cap2 ? this.capLead(run2, failedIds) : failedGate === null ? "" : `Step${failedIds.length > 1 ? "s" : ""} ${failedGate} (gate) failed.${failedIds.map((id) => this.failedCase(run2, id)).join("")}
 `) + `Show the person what needs their decision for step ${stepId} (in plain words), then ask them with AskUserQuestion, using exactly these options in this order, with these labels:
 ` + lines3.map((l) => `- ${l}`).join("\n") + `
-Tell them what each option does. Use the same wording and order every time, and never mark an option as recommended: any recommendation is information in your summary, not a choice made for them.` + (dropped ? ` No more revision passes are allowed (${String(max)} of ${String(max)} have run), so the option to go back is not offered.` : "") + (spent ? cap2 ? " Checking again has been used, so it is not offered again." : " This decision's send-backs are used up, so the option to send it back is not offered." : "") + (offered.some((o) => directed(o) && !(s?.step.supply && run2.steps.get(o.route.to ?? "")?.step.kind === "gate")) ? ((d2) => ` In the same AskUserQuestion call, ask a second question: "${DIRECTION_QUESTION}", with the options "${d2[0] ?? ""}" and "${d2[1] ?? ""}"; they can type their own words instead. Pass their answers through unchanged.`)(this.directionOptions(run2, offered.filter(directed).map((o) => ({ ...o, takes_direction: true })))) : "") + ` Then call heddle_decision with kind escalation, step_id ${stepId}, option_id set to the chosen option's id, and text summarising what they decided.`;
+Tell them what each option does. Use the same wording and order every time, and never mark an option as recommended: any recommendation is information in your summary, not a choice made for them.` + (dropped ? ` No more revision passes are allowed (${String(max)} of ${String(max)} have run), so the option to go back is not offered.` : "") + (spent ? cap2 ? " Checking again has been used, so it is not offered again." : " This decision's send-backs are used up, so the option to send it back is not offered." : "") + (offered.some((o) => directed(o) && !(s?.step.supply && run2.steps.get(o.route.to ?? "")?.step.kind === "gate")) ? ` Only if they choose ${offered.filter(directed).map((o) => `"${o.label}"`).join(" or ")}, ask them a second question on its own, "${directionWords}"; heddle_card gives its exact input. Don't ask it after any other choice.` : "") + ` Then call heddle_decision with kind escalation, step_id ${stepId}, option_id set to the chosen option's id, and text summarising what they decided.`;
   }
   /**
    * Decide steps with auto_continue whose named steps all passed this round (braids' ask 59b, m8; ruling 80), or whose
