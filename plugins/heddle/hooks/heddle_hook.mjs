@@ -337,6 +337,28 @@ var START = `${MCP}heddle_run_start`;
 var CALLER_TOOLS = /* @__PURE__ */ new Set([`${MCP}heddle_inputs`, `${MCP}heddle_output`]);
 var SPAWN_TOOLS = /* @__PURE__ */ new Set(["Agent", "Task"]);
 var ROUTE_TOOLS = /* @__PURE__ */ new Set(["SendMessage", "Workflow"]);
+var ANSWER_CAP = 32e3;
+function sentenceAnswers(text, toolInput) {
+  const qs = (Array.isArray(toolInput?.questions) ? toolInput.questions : []).map((q) => typeof q.question === "string" ? q.question : null);
+  if (qs.length === 0 || qs.some((q) => q === null))
+    return null;
+  const out = {};
+  let at = 0;
+  for (const [i, q] of qs.entries()) {
+    const head = `"${q}"="`;
+    const start = text.indexOf(head, at);
+    if (start < 0)
+      return null;
+    const from = start + head.length;
+    const next = qs[i + 1];
+    const end = next !== void 0 && next !== null ? text.indexOf(`", "${next}"="`, from) : text.lastIndexOf('"');
+    if (end < from)
+      return null;
+    out[q] = text.slice(from, end);
+    at = end;
+  }
+  return out;
+}
 var WRITE_TOOLS = /* @__PURE__ */ new Set(["Write", "Edit", "MultiEdit", "NotebookEdit"]);
 var READ_TOOLS = /* @__PURE__ */ new Set(["Read", "Grep", "Glob"]);
 var SHELL_TOOLS = /* @__PURE__ */ new Set(["Bash", "PowerShell", "Monitor"]);
@@ -580,9 +602,9 @@ function pathGuard(input, run, dataDir2) {
 function observer(input, run) {
   const facts = {};
   const checks = [];
-  const keep = (text) => {
+  const keep = (text, cap = 2e3) => {
     if (run.kind === "open")
-      facts.answer_text = text.slice(0, 2e3);
+      facts.answer_text = text.slice(0, cap);
   };
   if (input.hook_event_name === "UserPromptSubmit") {
     const text = input.prompt ?? "";
@@ -596,11 +618,11 @@ function observer(input, run) {
     checks.push({ hook_id: "BH-3", check: "heartbeat", result: "allow" });
   if (tool === "AskUserQuestion" && !input.agent_id) {
     const r = input.tool_response;
-    const text = JSON.stringify(r?.answers ?? r ?? null);
+    const text = JSON.stringify(typeof r === "string" ? sentenceAnswers(r, input.tool_input) ?? r : r?.answers ?? r ?? null);
     facts.via = "ask_user_question";
     facts.answer_fp = fp(text);
     facts.asked_fp = askFingerprint(input.tool_input);
-    keep(text);
+    keep(text, ANSWER_CAP);
   }
   if (READ_TOOLS.has(tool) && run.kind === "open") {
     const cwd = input.cwd ?? process.cwd();

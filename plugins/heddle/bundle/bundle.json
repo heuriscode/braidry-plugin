@@ -1,8 +1,8 @@
 {
   "schema": "fairlead.braid_template/0.1",
   "template_id": "fairlead.lit_scoping_review",
-  "version": "0.4.0",
-  "fingerprint": "jcs1:sha256:52dd1cfc984407c4264b323b83711a1717eefaa9e8e9b99604ca33fb5d9c861d",
+  "version": "0.4.1",
+  "fingerprint": "jcs1:sha256:4da87c31d2cf615d4b50d9d813525bc427660d101db3956e5614fca171bfaad8",
   "catalogue": {
     "command": "/fairlead:review",
     "title": "Literature scoping review",
@@ -41,8 +41,8 @@
       }
     },
     {
-      "thread_ref": "extractor@0.1.0",
-      "thread_fingerprint": "jcs1:sha256:888640aab9edde11b0e886af1a082126f22cd94ab1eccb9f7b87ba09cd2870e1",
+      "thread_ref": "extractor@0.1.1",
+      "thread_fingerprint": "jcs1:sha256:aaa39e15e29376b22670c65e0a596ddd185a15462a54eaf061a1ee0605af9778",
       "role": "maker",
       "tools": [
         "fetch",
@@ -51,7 +51,11 @@
       "reads": [
         "focus",
         "sources",
-        "search_record"
+        "search_record",
+        "draft",
+        "evidence",
+        "gate_results",
+        "person_direction"
       ],
       "returns": "draft",
       "caps": {
@@ -124,8 +128,8 @@
       }
     },
     {
-      "thread_ref": "reviser@0.4.0",
-      "thread_fingerprint": "jcs1:sha256:ec29e0930602c43ddb97966d8a4c12aaed4d8495aa0f817610e82aaa1f7354df",
+      "thread_ref": "reviser@0.4.1",
+      "thread_fingerprint": "jcs1:sha256:8bbc184a57657916f2971a8008c9f2aa43533b68b170cd335af34522a60563e1",
       "role": "reviser",
       "tools": [
         "fetch",
@@ -138,7 +142,9 @@
         "sources",
         "search_record",
         "decisions",
-        "findings"
+        "findings",
+        "gate_results",
+        "person_direction"
       ],
       "returns": "draft",
       "caps": {
@@ -181,18 +187,23 @@
     {
       "step_id": "s3",
       "kind": "make",
-      "thread_ref": "extractor@0.1.0",
+      "thread_ref": "extractor@0.1.1",
       "needs": [
         "s2"
       ],
       "reads": [
         "focus",
         "sources",
-        "search_record"
+        "search_record",
+        "draft",
+        "evidence",
+        "gate_results",
+        "person_direction"
       ],
       "produces": [
         "evidence",
-        "draft"
+        "draft",
+        "sources"
       ]
     },
     {
@@ -208,7 +219,10 @@
       ],
       "produces": [
         "gate_results"
-      ]
+      ],
+      "on_fail": {
+        "decide": "s4e"
+      }
     },
     {
       "step_id": "s4b",
@@ -223,7 +237,10 @@
       ],
       "produces": [
         "gate_results"
-      ]
+      ],
+      "on_fail": {
+        "decide": "s4e"
+      }
     },
     {
       "step_id": "s4c",
@@ -238,7 +255,10 @@
       ],
       "produces": [
         "gate_results"
-      ]
+      ],
+      "on_fail": {
+        "decide": "s4e"
+      }
     },
     {
       "step_id": "s4d",
@@ -253,6 +273,61 @@
       ],
       "produces": [
         "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s4e"
+      }
+    },
+    {
+      "step_id": "s4e",
+      "kind": "decide",
+      "needs": [
+        "s4",
+        "s4b",
+        "s4c",
+        "s4d"
+      ],
+      "reads": [
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "fix",
+          "label": "Send these back to fix",
+          "route": {
+            "action": "loop",
+            "to": "s3"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on without fixing now: the checkers and adjudicator propose fixes later",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "skip_when": {
+        "unless_failed": [
+          "s4",
+          "s4b",
+          "s4c",
+          "s4d"
+        ]
+      },
+      "produces": [
+        "person_direction"
       ]
     },
     {
@@ -263,7 +338,8 @@
         "s4",
         "s4b",
         "s4c",
-        "s4d"
+        "s4d",
+        "s4e"
       ],
       "reads": [
         "focus",
@@ -287,7 +363,8 @@
         "s4",
         "s4b",
         "s4c",
-        "s4d"
+        "s4d",
+        "s4e"
       ],
       "reads": [
         "focus",
@@ -333,12 +410,39 @@
       "reads": [
         "decisions",
         "findings"
+      ],
+      "options": [
+        {
+          "option_id": "accept",
+          "label": "Accept the adjudicator's recommendations",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "change",
+          "label": "Change some of them (say which and how)",
+          "route": {
+            "action": "continue"
+          },
+          "takes_direction": true
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "produces": [
+        "person_direction"
       ]
     },
     {
       "step_id": "s7",
       "kind": "revise",
-      "thread_ref": "reviser@0.4.0",
+      "thread_ref": "reviser@0.4.1",
       "needs": [
         "s6d"
       ],
@@ -349,7 +453,9 @@
         "sources",
         "search_record",
         "decisions",
-        "findings"
+        "findings",
+        "gate_results",
+        "person_direction"
       ],
       "produces": [
         "draft",
@@ -372,7 +478,10 @@
       ],
       "produces": [
         "gate_results"
-      ]
+      ],
+      "on_fail": {
+        "decide": "s8f"
+      }
     },
     {
       "step_id": "s8b",
@@ -387,7 +496,10 @@
       ],
       "produces": [
         "gate_results"
-      ]
+      ],
+      "on_fail": {
+        "decide": "s8f"
+      }
     },
     {
       "step_id": "s8c",
@@ -402,7 +514,10 @@
       ],
       "produces": [
         "gate_results"
-      ]
+      ],
+      "on_fail": {
+        "decide": "s8f"
+      }
     },
     {
       "step_id": "s8d",
@@ -417,7 +532,10 @@
       ],
       "produces": [
         "gate_results"
-      ]
+      ],
+      "on_fail": {
+        "decide": "s8f"
+      }
     },
     {
       "step_id": "s8e",
@@ -438,7 +556,94 @@
       "produces": [
         "gate_results",
         "diff"
+      ],
+      "on_fail": {
+        "decide": "s8g"
+      }
+    },
+    {
+      "step_id": "s8f",
+      "kind": "decide",
+      "needs": [
+        "s8",
+        "s8b",
+        "s8c",
+        "s8d"
+      ],
+      "reads": [
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "fix",
+          "label": "Send these back to fix",
+          "route": {
+            "action": "loop",
+            "to": "s7"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on without fixing now: the checkers and adjudicator propose fixes later",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "skip_when": {
+        "unless_failed": [
+          "s8",
+          "s8b",
+          "s8c",
+          "s8d"
+        ]
+      },
+      "produces": [
+        "person_direction"
       ]
+    },
+    {
+      "step_id": "s8g",
+      "kind": "decide",
+      "needs": [
+        "s8e",
+        "s8f"
+      ],
+      "reads": [
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "carry_on",
+          "label": "Carry on: a known limit of this version (the reviser cannot know fingerprints)",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "skip_when": {
+        "unless_failed": [
+          "s8e"
+        ]
+      }
     },
     {
       "step_id": "s9",
@@ -449,7 +654,9 @@
         "s8b",
         "s8c",
         "s8d",
-        "s8e"
+        "s8e",
+        "s8f",
+        "s8g"
       ],
       "reads": [
         "focus",
@@ -474,6 +681,37 @@
         "findings",
         "decisions",
         "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "deliver",
+          "label": "Deliver with these recorded as open",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "send_back",
+          "label": "Send these back to fix",
+          "route": {
+            "action": "loop",
+            "to": "s7"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "produces": [
+        "person_direction"
       ]
     },
     {
