@@ -317,6 +317,38 @@ function writeEntry(dataDir2, entry) {
   }
   throw new Error("could not claim a spool number");
 }
+function readEntries(dataDir2, sessionId, seen = /* @__PURE__ */ new Set(), keys) {
+  const dir = join(sessionDir(dataDir2, sessionId), "spool");
+  const keyPath = join(sessionDir(dataDir2, sessionId), "key");
+  const out = { entries: [], rejected: [], gaps: [] };
+  if (!existsSync(dir) || !existsSync(keyPath))
+    return out;
+  const current = readFileSync(keyPath);
+  const schedule = keys && keys.length > 0 ? [...keys].sort((a, b) => a.fromN - b.fromN) : [{ fromN: 1, key: current }];
+  const keyFor = (n) => schedule.filter((k) => k.fromN <= n).at(-1)?.key ?? current;
+  const present = /* @__PURE__ */ new Set();
+  for (const name of readdirSync(dir).filter((f) => f.endsWith(".json")).sort()) {
+    const file = join(dir, name);
+    const m = NAME.exec(name);
+    if (m)
+      present.add(Number(m[1]));
+    if (seen.has(file))
+      continue;
+    const text = readFileSync(file, "utf8");
+    const json = m ? verify(keyFor(Number(m[1])), text) : null;
+    const entry = json === null ? null : JSON.parse(json);
+    if (!m || entry?.session_id !== sessionId || entry.n !== Number(m[1]))
+      out.rejected.push(file);
+    else
+      out.entries.push({ file, entry, mac: text.slice(0, 64) });
+  }
+  const max = Math.max(0, ...present);
+  for (let i = 1; i <= max; i++)
+    if (!present.has(i))
+      out.gaps.push(i);
+  out.entries.sort((a, b) => a.entry.n - b.entry.n);
+  return out;
+}
 function readState(dataDir2, sessionId) {
   const dir = sessionDir(dataDir2, sessionId);
   const path = join(dir, "state.json");
@@ -519,7 +551,7 @@ function spawnGate(input, run, dataDir2) {
   };
   add("ticket_prompt", ticket !== null, { subject_fp: promptFp, ticket_id: ticket?.ticket_id ?? null });
   add("agent_type", ticket !== null && facts.subagent_type === ticket.agent_type, { ticket_id: ticket?.ticket_id ?? null });
-  add("foreground", facts.run_in_background !== true);
+  add("foreground", ti.run_in_background === false);
   if (ticket && (ticket.kind === "check" || ticket.kind === "recheck"))
     add("gates_before_check", ticket.gates_ok, { ticket_id: ticket.ticket_id });
   if (ticket)
@@ -533,7 +565,7 @@ function spawnGate(input, run, dataDir2) {
   const reasons = {
     ticket_prompt: run.kind === "invalid" ? "Heddle: the run state could not be verified, so no subagent may start." : "Heddle: during a braid run a subagent starts only with its step's ticket as the whole prompt (call heddle_ticket).",
     agent_type: "Heddle: this ticket is for a different agent type.",
-    foreground: "Heddle: ticketed steps run in the foreground; do not set run_in_background.",
+    foreground: "Heddle: ticketed steps run in the foreground: start it again with run_in_background: false, set explicitly.",
     gates_before_check: "Heddle: this check cannot start until its gates have passed (call heddle_gate first).",
     decision_before_step: "Heddle: this step waits for the person's decision (ask them, then call heddle_decision)."
   };
@@ -695,11 +727,35 @@ function transcriptModels(transcript) {
   }
   return models;
 }
-function stopGuard(run, input) {
+function subagentsRunning(dataDir2, sessionId) {
+  const open = /* @__PURE__ */ new Set();
+  for (const { entry: e } of readEntries(dataDir2, sessionId).entries) {
+    if (e.agent_id === null)
+      continue;
+    if (e.event === "SubagentStart")
+      open.add(e.agent_id);
+    else if (e.event === "SubagentStop")
+      open.delete(e.agent_id);
+  }
+  return open.size;
+}
+function stopGuard(run, input, dataDir2) {
   if (run.kind === "none")
     return { hook_id: "BH-5", checks: [], facts: {}, refusal: null };
+  const live = run.kind === "open" ? run.state.tickets.filter((t) => t.state === "live").map((t) => t.step_id) : [];
+  const working = live.length > 0 && subagentsRunning(dataDir2, input.session_id) > 0 ? live : [];
+  if (working.length > 0) {
+    const steps = working.length === 1 ? `step ${working[0] ?? ""} is` : `steps ${working.join(", ")} are`;
+    return {
+      hook_id: "BH-5",
+      checks: [{ hook_id: "BH-5", check: "run_open_at_stop", result: "allow" }],
+      facts: {},
+      refusal: null,
+      stdout: JSON.stringify({ systemMessage: `Heddle: ${steps} still working; the run carries on when it hands back.` })
+    };
+  }
   const open = run.kind === "open" && input.stop_hook_active !== true;
-  const reason = "Heddle: a braid run is still open. Finish it with heddle_deliver, or ask the person whether to abandon it and record their answer with heddle_decision (kind abandon).";
+  const reason = "Heddle: a braid run is still open. Carry on with heddle_next. If the person has said to stop, record it with heddle_decision (kind abandon); don't ask them whether to stop unless they raised it.";
   return {
     hook_id: "BH-5",
     checks: [{ hook_id: "BH-5", check: "run_open_at_stop", result: open ? "deny" : "allow" }],
@@ -761,7 +817,7 @@ function handleHook(input, ctx) {
         d.facts = {};
       break;
     case "Stop":
-      d = stopGuard(run, input);
+      d = stopGuard(run, input, ctx.dataDir);
       break;
     default:
       d = { hook_id: "BH-3", checks: [], facts: {}, refusal: null };

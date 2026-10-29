@@ -12796,7 +12796,8 @@ var SCHEMAS = {
           "skipped",
           "blocked",
           "waived",
-          "timeout"
+          "timeout",
+          "stopped"
         ]
       },
       "isolation": {
@@ -16554,6 +16555,37 @@ var SCHEMAS = {
                 },
                 "maxItems": 60
               },
+              "item_choices": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "step_id": {
+                      "$ref": "primitives.schema.json#/$defs/step_id"
+                    },
+                    "item_ref": {
+                      "type": "string",
+                      "maxLength": 200,
+                      "minLength": 1
+                    },
+                    "outcome": {
+                      "$ref": "primitives.schema.json#/$defs/name"
+                    },
+                    "option_id": {
+                      "$ref": "primitives.schema.json#/$defs/name"
+                    }
+                  },
+                  "required": [
+                    "step_id",
+                    "item_ref",
+                    "outcome",
+                    "option_id"
+                  ]
+                },
+                "maxItems": 60,
+                "minItems": 1
+              },
               "card_ref": {
                 "type": "object",
                 "additionalProperties": false,
@@ -18884,6 +18916,24 @@ var SCHEMAS = {
                 },
                 "takes_direction": {
                   "type": "boolean"
+                },
+                "direction": {
+                  "type": "string",
+                  "maxLength": 500,
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "verifies": {
+                  "const": true
+                },
+                "for_outcomes": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "primitives.schema.json#/$defs/name"
+                  },
+                  "maxItems": 20,
+                  "minItems": 1,
+                  "uniqueItems": true
                 }
               },
               "required": [
@@ -19000,6 +19050,60 @@ var SCHEMAS = {
                               "continue",
                               "loop"
                             ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "required": [
+                      "direction"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "route": {
+                        "properties": {
+                          "action": {
+                            "const": "loop"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "required": [
+                      "direction"
+                    ]
+                  },
+                  "then": {
+                    "not": {
+                      "anyOf": [
+                        {
+                          "required": [
+                            "takes_direction"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "required": [
+                      "verifies"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "route": {
+                        "properties": {
+                          "action": {
+                            "const": "continue"
                           }
                         }
                       }
@@ -19415,6 +19519,85 @@ var SCHEMAS = {
             "required": [
               "none"
             ]
+          },
+          "other": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "as_option": {
+                    "$ref": "primitives.schema.json#/$defs/name"
+                  }
+                },
+                "required": [
+                  "as_option"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "none": {
+                    "type": "string",
+                    "maxLength": 300,
+                    "minLength": 1,
+                    "pattern": "\\S"
+                  }
+                },
+                "required": [
+                  "none"
+                ]
+              }
+            ]
+          },
+          "typical_minutes": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "low": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 240
+              },
+              "high": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 240
+              },
+              "from_run_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "primitives.schema.json#/$defs/id_run"
+                },
+                "maxItems": 20,
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "low",
+              "high",
+              "from_run_ids"
+            ]
+          },
+          "limits": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "searches": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 500
+              },
+              "minutes": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 240
+              }
+            },
+            "required": [],
+            "minProperties": 1
           }
         },
         "required": [
@@ -19552,6 +19735,42 @@ var SCHEMAS = {
           },
           {
             "if": {
+              "not": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "make",
+                      "check",
+                      "recheck",
+                      "adjudicate",
+                      "revise"
+                    ]
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "typical_minutes"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "limits"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
               "properties": {
                 "kind": {
                   "enum": [
@@ -19619,6 +19838,33 @@ var SCHEMAS = {
                   {
                     "required": [
                       "options"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "not": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "decide"
+                    ]
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "other"
                     ]
                   }
                 ]
@@ -49050,7 +49296,7 @@ var TOOLS = [
   { name: "heddle_run_start", description: "Start a Heddle braid run. Pass a fresh random nonce and the person's starting request verbatim.", inputSchema: obj({ nonce: str2, prompt: str2 }, ["nonce", "prompt"]) },
   { name: "heddle_arm", description: "Call straight after heddle_run_start: confirms the plugin's hooks are live for this run.", inputSchema: obj({}) },
   { name: "heddle_next", description: "What to do next in the open run: the ready steps and exactly how to run each.", inputSchema: obj({}) },
-  { name: "heddle_ticket", description: "Issue the ticket for a ready step that runs as a subagent. Then start that subagent with the Agent tool, in the foreground, with the ticket text as its whole prompt.", inputSchema: obj({ step_id: str2 }, ["step_id"]) },
+  { name: "heddle_ticket", description: "Issue the ticket for a ready step that runs as a subagent. Then start that subagent with the Agent tool in the foreground (run_in_background: false, set explicitly), with the ticket text as its whole prompt.", inputSchema: obj({ step_id: str2 }, ["step_id"]) },
   { name: "heddle_inputs", description: "For a step's subagent only: fetch your task and inputs with your ticket id. Long inputs come in parts: call again with part 2, 3 ... as the reply says.", inputSchema: obj({ ticket: str2, part: { type: "integer", minimum: 1 } }, ["ticket"]) },
   { name: "heddle_output", description: "For a step's subagent only: hand back one output port under your ticket. content is the JSON value (or text for text ports).", inputSchema: obj({ ticket: str2, port: str2, content: {} }, ["ticket", "port", "content"]) },
   { name: "heddle_gate", description: "Run a ready gate step on the user's machine.", inputSchema: obj({ step_id: str2 }, ["step_id"]) },
@@ -49089,6 +49335,31 @@ function uniqueId(base, options) {
 }
 var takesDirection = (o) => o.route.action === "loop" || o.route.action === "continue" && o.takes_direction === true;
 var typographic = (t) => `\u201C${t.replace(/["“”„‟«»]/g, "'")}\u201D`;
+var STOP_WORDS = /\b(stop|stopping|cancel|cancelling|canceling|abandon|abandoning|quit|quitting|halt|terminate|end the run)\b(?!-)/i;
+var NEGATION = /\b(no|not|never|none|nothing|without|yet|neither|nor|cannot)\b|n't\b|\bdont\b/i;
+var saysStop = (said) => {
+  const s = said.replace(/[\u2018\u2019]/g, "'");
+  return STOP_WORDS.test(s) && !NEGATION.test(s) && !s.includes("?");
+};
+var STOP_RUN = "Stop the run";
+var STOP_ASK = {
+  questions: [
+    {
+      question: "Stop this run now? Its record is kept as it stands.",
+      header: "Stop run",
+      multiSelect: false,
+      options: [
+        { label: STOP_RUN, description: "End the run here. Nothing more is made or checked." },
+        { label: "Carry on", description: "Go on with the run from where it is." }
+      ]
+    }
+  ]
+};
+var STOP_ASK_FP = askFingerprint(STOP_ASK);
+var stopRepair = (why) => new Refusal(`${why} If they may want to stop, ask them with AskUserQuestion using exactly this input, then call heddle_decision with kind abandon again.
+\`\`\`json
+${JSON.stringify(STOP_ASK, null, 1)}
+\`\`\``);
 var text2 = (v) => typeof v === "string" ? v : "";
 var ok = (msg) => ({ text: msg });
 var refused = (msg) => ({ text: msg, isError: true });
@@ -49174,6 +49445,8 @@ var FairleadServer = class {
   copied = /* @__PURE__ */ new Map();
   /** The card in force for a step: the latest written in its current round, by run and step. */
   cardsInForce = /* @__PURE__ */ new Map();
+  /** An answer in the person's own words put back to them, by run and step: Heddle's confirm question (braids' ask 110). */
+  otherPending = /* @__PURE__ */ new Map();
   /** Cards written so far, by run, step and round (deliver cards by run and "deliver"). */
   cardCounts = /* @__PURE__ */ new Map();
   /** The last delivery card written, by run. */
@@ -49593,7 +49866,7 @@ Then ask in one question with these options in this order, none marked as recomm
       closed_by: null
     });
     s.ticket_id = ticketId;
-    return ok(`Ticket issued for step ${stepId}. Now use the Agent tool, in the foreground (do not set run_in_background), with subagent_type "${agentType}" and this exact text as the whole prompt, nothing added:
+    return ok(`Ticket issued for step ${stepId}. Now use the Agent tool in the foreground, with run_in_background: false set explicitly, with subagent_type "${agentType}" and this exact text as the whole prompt, nothing added:
 
 ${text3}`);
   }
@@ -50813,12 +51086,156 @@ ${JSON.stringify(copied, null, 1)}
       this.pendingRemote = null;
     }
   }
+  /**
+   * Check that the answer behind a stop says to stop (ask 106; blind checks of d098eba7 and e3384bba): an answer to
+   * a direction or round question is about the work; at an open card, an answer naming an option that carries on is
+   * that choice; otherwise the person's words must say to stop, or say yes to Claude's own question about stopping.
+   * True when they chose the card's own stop option.
+   */
+  stopIsTheirs(run2, s, optionId, answer) {
+    const routed = s !== void 0 && s.step.kind === "decide" && (s.step.options?.length ?? 0) > 0;
+    const key = s ? `${run2.runId}/${s.step.step_id}` : "";
+    const offered = routed ? this.offered.get(key) ?? s.step.options ?? [] : [];
+    if (optionId) {
+      const named = offered.find((o) => o.option_id === optionId);
+      if (!named)
+        throw new Refusal(routed ? `option_id must be one of the options offered: ${offered.map((o) => o.option_id).join(", ")}.` : "No card is open, so a stop names no option_id: leave it out.");
+      if (named.route.action !== "stop")
+        throw new Refusal(`A decision at step ${s?.step.step_id ?? ""} is kind escalation with the option_id the person chose (${named.option_id}).`);
+    }
+    const asked = answer.seq === null ? void 0 : run2.answerAsked.get(answer.seq);
+    const prefix = `${run2.runId}/`;
+    const aboutTheWork = /* @__PURE__ */ new Set();
+    for (const [k, c] of this.cardsInForce)
+      if (k.startsWith(prefix) && c.direction_fp)
+        aboutTheWork.add(c.direction_fp);
+    for (const [k, c] of this.choiceCards)
+      if (k.startsWith(prefix) && c.asked)
+        aboutTheWork.add(c.asked.fp);
+    if (asked !== void 0 && aboutTheWork.has(asked)) {
+      throw new Refusal("That answer is the person's direction for the work, not a word to stop. Stop only when they say so: ask them, then call heddle_decision with kind abandon.");
+    }
+    const onCard = routed ? this.cardsInForce.get(key) : void 0;
+    const said = answer.said ?? "";
+    const values = answerValues(said);
+    if (asked === STOP_ASK_FP) {
+      if (values.some((v) => sameLabel(v, STOP_RUN) || saysStop(v)))
+        return false;
+      if (values.some((v) => sameLabel(v, "Carry on")))
+        throw new Refusal("The person chose to carry on, not to stop. Go on with the run.");
+      throw stopRepair("The person's answer to the stop question doesn't say they want to stop the run.");
+    }
+    if (onCard && asked !== void 0 && asked === onCard.ask_fp) {
+      const chose = offered.filter((o) => values.some((v) => sameLabel(v, o.label)));
+      const carriesOn = chose.find((o) => o.route.action !== "stop");
+      if (carriesOn)
+        throw new Refusal(`The person chose "${carriesOn.label}" on the card, not to stop: record it as kind escalation with that option_id.`);
+      if (chose.length > 0)
+        return true;
+      if (values.some(saysStop))
+        return false;
+    } else if (asked === void 0) {
+      const m = routed ? matchOptionAnswer(said, offered) : null;
+      const named = m && !("problem" in m) ? m.option : null;
+      if (saysStop(said))
+        return named?.route.action === "stop" && onCard?.answer_by === "option_id";
+      if (named?.route.action === "stop" && onCard?.answer_by === "option_id" && !NEGATION.test(said.replace(/[\u2018\u2019]/g, "'")) && !said.includes("?"))
+        return true;
+      if (named && named.route.action !== "stop")
+        throw new Refusal(`The person chose "${named.label}" on the card, not to stop: record it as kind escalation with that option_id.`);
+    } else if (values.some(saysStop)) {
+      return false;
+    }
+    throw stopRepair(`The person's answer doesn't say they want to stop the run, in plain words with no "not" and no question.`);
+  }
+  /**
+   * An answer in the person's own words at a routed card (braids' ask 110; Daniel, 2026-10-29: "a way to manage 'other'
+   * without failing"). Nothing is recorded until the person confirms through Heddle's own question, known by its
+   * fingerprint: it quotes their words and names the route (the option Claude proposed, else the step's `other`, else
+   * its first loop or directed continue). Returns what to tell Claude, the confirmed route, or null for an ordinary answer.
+   */
+  otherAnswer(run2, s, offered, proposed, startedSeq) {
+    const key = `${run2.runId}/${s.step.step_id}`;
+    const card = this.cardsInForce.get(key);
+    const newest = run2.findAnswer(startedSeq);
+    if (!card || !newest || proposed && !offered.some((o) => o.option_id === proposed))
+      return null;
+    const asked = run2.answerAsked.get(newest.seq);
+    const said = run2.answerText.get(newest.seq) ?? "";
+    const values = answerValues(said);
+    const again = "Ask the person the card again, with exactly the AskUserQuestion input heddle_card gave, then record their answer.";
+    let words2 = null;
+    const pending = this.otherPending.get(key);
+    if (pending && asked === pending.fp) {
+      const yes = pending.spent ? "Carry on with this flagged" : "Yes, do that";
+      if (values.some((v) => sameLabel(v, yes))) {
+        const option = pending.spent ? pending.carryOn : pending.option;
+        if (option)
+          return { option, words: pending.words };
+      } else if (pending.spent && values.some((v) => sameLabel(v, STOP_RUN))) {
+        if (pending.stop)
+          return { option: pending.stop, words: pending.words };
+        return { result: "The person chose to stop the run: call heddle_decision with kind abandon." };
+      } else if (values.some((v) => sameLabel(v, "Choose a different option"))) {
+        this.otherPending.delete(key);
+        return { result: `The person wants a different option: nothing is recorded. ${again}` };
+      } else
+        words2 = values.join("\n").trim();
+    } else if (asked !== void 0 && asked === card.ask_fp) {
+      if ([...offered, ...s.step.options ?? []].some((o) => values.some((v) => sameLabel(v, o.label))))
+        return null;
+      words2 = values.join("\n").trim();
+    } else if (asked === void 0) {
+      const m = matchOptionAnswer(said, offered);
+      if (!("problem" in m) || !/names none/.test(m.problem))
+        return null;
+      words2 = said.trim();
+    } else
+      return null;
+    if (!words2)
+      return null;
+    const quoted = typographic(words2);
+    const directed = (o) => o.route.action === "loop" || takesDirection(o);
+    const notStop = (o) => o !== void 0 && o.route.action !== "stop";
+    const named = offered.find((o) => o.option_id === proposed);
+    const other = s.step.other;
+    const declared = other && "as_option" in other ? other.as_option : null;
+    const fallback = (s.step.options ?? []).find(directed);
+    const routeId = other && "none" in other ? null : declared ?? fallback?.option_id ?? null;
+    const target = notStop(named) ? named : offered.find((o) => o.option_id === routeId && notStop(o));
+    if (!target && other && "none" in other)
+      return { result: `Tell the person, in these words: ${other.none} Their words were: ${quoted}. Nothing is recorded. ${again}` };
+    const carryOn = offered.find((o) => o.route.action === "continue" || o.route.action === "skip") ?? null;
+    const stop = offered.find((o) => o.route.action === "stop") ?? null;
+    let input;
+    let spent = false;
+    if (target) {
+      const budget = target.route.action === "loop" ? this.repairBudget(run2, s.step.step_id, target) : null;
+      const does = target.route.action === "loop" ? `send it back ("${target.label}") with your words as the direction${budget ? ` (send-back ${String(budget.next)} of ${String(budget.max)})` : ""}` : `go on as "${target.label}"${takesDirection(target) ? ", with your words as the direction" : ""}`;
+      input = { questions: [{ question: `You said ${quoted}. Heddle will ${does}. Do that?`, header: "Your words", multiSelect: false, options: [{ label: "Yes, do that", description: `Record "${target.label}" with your words.` }, { label: "Choose a different option", description: "Nothing is recorded; the card is asked again." }] }] };
+    } else if (routeId !== null) {
+      spent = true;
+      const route = (s.step.options ?? []).find((o) => o.option_id === routeId);
+      const budget = route ? this.repairBudget(run2, s.step.step_id, route) : null;
+      const why = budget && !budget.allowed ? "The send-backs for this step are used up, so Heddle can't send it back again." : `"${route?.label ?? routeId}" isn't open at this step now.`;
+      const options = carryOn ? [{ label: "Carry on with this flagged", description: `Go on as "${carryOn.label}"; what failed stays flagged in the record.` }, { label: STOP_RUN, description: "End the run here; its record is kept as it stands." }] : [{ label: STOP_RUN, description: "End the run here; its record is kept as it stands." }, { label: "Choose a different option", description: "Nothing is recorded; the card is asked again." }];
+      input = { questions: [{ question: `You said ${quoted}. ${why} ${carryOn ? "Carry on with this flagged, or stop the run?" : "Stop the run, or choose a different option?"}`, header: "Your words", multiSelect: false, options }] };
+    } else {
+      return { result: `Tell the person Heddle can't act on their own words at this step; only the card's options can be recorded here. Their words were: ${quoted}. Nothing is recorded. ${again}` };
+    }
+    const fp = askFingerprint(input);
+    this.otherPending.set(key, { fp, words: words2, option: target ?? carryOn ?? offered[0], carryOn, stop, spent });
+    return { result: `The person answered in their own words, so nothing is recorded yet. Ask them with AskUserQuestion using exactly this input, then call heddle_decision again with step_id ${s.step.step_id} and kind escalation.
+\`\`\`json
+${JSON.stringify(input, null, 1)}
+\`\`\`` };
+  }
   decision(run2, args) {
     let kind2 = text2(args.kind);
     const kinds = ["focus_accept", "focus_change", "escalation", "branch_outcome", "output_choice", "waiver", "input_rule_loosen", "abandon"];
     if (!kinds.includes(kind2))
       throw new Refusal(`kind must be one of: ${kinds.join(", ")}.`);
-    const stepId = typeof args.step_id === "string" && args.step_id ? args.step_id : null;
+    let stepId = typeof args.step_id === "string" && args.step_id ? args.step_id : null;
     let waived = kind2 === "waiver" && Array.isArray(args.step_ids) ? args.step_ids.filter((x) => typeof x === "string") : stepId ? [stepId] : [];
     if (kind2 === "waiver") {
       if (waived.length === 0)
@@ -50827,14 +51244,16 @@ ${JSON.stringify(copied, null, 1)}
         if (run2.steps.get(id)?.status !== "failed")
           throw new Refusal(`Step ${id} has not failed, so there is nothing to waive.`);
     }
-    const s = stepId ? run2.steps.get(stepId) : void 0;
-    if (stepId && !s)
+    if (stepId && !run2.steps.has(stepId))
       throw new Refusal(`Unknown step ${stepId}.`);
+    const routedRunning = [...run2.steps.values()].find((x) => x.status === "running" && x.step.kind === "decide" && (x.step.options?.length ?? 0) > 0);
+    if (kind2 === "abandon" && routedRunning)
+      stepId = routedRunning.step.step_id;
+    const s = stepId ? run2.steps.get(stepId) : void 0;
     if (s && (s.step.kind === "refine" || s.step.kind === "decide") && s.status !== "running") {
       throw new Refusal(`Start step ${s.step.step_id} with heddle_step first, then ask the person.`);
     }
-    const routedRunning = [...run2.steps.values()].find((x) => x.status === "running" && x.step.kind === "decide" && (x.step.options?.length ?? 0) > 0);
-    if (routedRunning && s !== routedRunning && kind2 !== "waiver") {
+    if (routedRunning && s !== routedRunning && kind2 !== "waiver" && kind2 !== "abandon") {
       throw new Refusal(`Step ${routedRunning.step.step_id} is waiting for the person's choice: call heddle_decision with step_id ${routedRunning.step.step_id} and the option_id they chose.`);
     }
     if (kind2 === "focus_accept") {
@@ -50846,13 +51265,14 @@ ${JSON.stringify(copied, null, 1)}
     }
     const startedSeq = s && (s.step.kind === "refine" || s.step.kind === "decide") ? run2.log.ofType("step_started").filter((e) => e.step_id === s.step.step_id).at(-1)?.seq ?? 0 : run2.log.ofType("decision_recorded").at(-1)?.seq ?? 0;
     let choice = s?.step.choose || s?.step.thresholds || s?.step.supply || s?.step.choose_findings ? this.choiceCards.get(`${run2.runId}/${s.step.step_id}`) : void 0;
-    if (choice && !choice.done && (choice.kind !== "thresholds" || choice.held !== null && this.heldAnswerSeq === null)) {
+    if (kind2 !== "abandon" && choice && !choice.done && (choice.kind !== "thresholds" || choice.held !== null && this.heldAnswerSeq === null)) {
       const n = cardRounds(choice);
       throw new Refusal(`Step ${s?.step.step_id ?? ""} is a ${choice.kind === "thresholds" ? "threshold" : choice.kind === "findings" ? "finding" : "choice"} card: ask the person round ${String(choice.round + 1)} of ${String(n)} first (heddle_step), then decide.`);
     }
     let option = null;
     let offered = [];
-    const routed = s !== void 0 && s.step.kind === "decide" && (s.step.options?.length ?? 0) > 0;
+    let otherWords = null;
+    const routed = s !== void 0 && s.step.kind === "decide" && (s.step.options?.length ?? 0) > 0 && kind2 !== "abandon";
     if (routed) {
       offered = this.offered.get(`${run2.runId}/${s.step.step_id}`) ?? [];
       const ids = offered.map((o) => o.option_id).join(", ");
@@ -50861,7 +51281,15 @@ ${JSON.stringify(copied, null, 1)}
         throw new Refusal(`A decision at step ${s.step.step_id} is kind escalation with the option_id the person chose (${ids}).`);
       }
       if (kind2 === "escalation") {
-        const chosen = text2(args.option_id);
+        const replayed = this.heldAnswerSeq !== null && typeof args.held_own_words === "string" ? args.held_own_words : null;
+        if (replayed !== null)
+          otherWords = replayed;
+        const own = this.pendingRemote || this.heldAnswerSeq !== null ? null : this.otherAnswer(run2, s, offered, text2(args.option_id), startedSeq);
+        if (own && "result" in own)
+          return ok(own.result);
+        if (own)
+          otherWords = own.words;
+        const chosen = own ? own.option.option_id : text2(args.option_id);
         if (!chosen)
           throw new Refusal(`This decision needs option_id: the id of the option the person chose (${ids}).`);
         option = offered.find((o) => o.option_id === chosen) ?? null;
@@ -50891,6 +51319,16 @@ ${JSON.stringify(copied, null, 1)}
     if (!remote && !observed)
       throw new Refusal("No answer from the person is on record for this decision. Ask them first (AskUserQuestion), then call heddle_decision.");
     const answer = observed ? { seq: observed.seq, at: observed.at, said: run2.answerText.get(observed.seq) ?? null } : { seq: null, at: remote?.answeredAt ?? "", said: remote?.note ?? null };
+    if (otherWords !== null)
+      answer.said = JSON.stringify({ own_words: otherWords, confirmed: answer.said });
+    let stopOnCard = option?.route.action === "stop";
+    if (kind2 === "abandon" && remote) {
+      const signed = (this.offered.get(`${run2.runId}/${s?.step.step_id ?? ""}`) ?? s?.step.options ?? []).find((o) => o.option_id === text2(args.option_id));
+      if (signed?.route.action !== "stop")
+        throw new Refusal(`The person chose "${signed?.label ?? text2(args.option_id)}" on Heddle Online, not to stop: record it as kind escalation with remote true.`);
+      stopOnCard = true;
+    } else if (kind2 === "abandon" && !option)
+      stopOnCard = this.stopIsTheirs(run2, s, text2(args.option_id), answer);
     let direction = null;
     const decisionId = newId("dec", this.now().getTime());
     if (option && remote) {
@@ -50901,6 +51339,13 @@ ${JSON.stringify(copied, null, 1)}
           option_id: option.option_id,
           text: capChars(remote.note || `The person chose "${option.label}" and gave no further direction.`, 2e3)
         };
+        const bad = validateKit("person_direction_v0_1", direction);
+        if (bad.length)
+          throw new Refusal(`The person's direction could not be recorded: ${bad.slice(0, 2).join("; ")}`);
+      }
+    } else if (option && otherWords !== null) {
+      if (takesDirection(option)) {
+        direction = { schema: "fairlead.kit.person_direction/0.1", decision_id: decisionId, option_id: option.option_id, text: capChars(otherWords, 2e3) };
         const bad = validateKit("person_direction_v0_1", direction);
         if (bad.length)
           throw new Refusal(`The person's direction could not be recorded: ${bad.slice(0, 2).join("; ")}`);
@@ -51020,7 +51465,7 @@ ${JSON.stringify(copied, null, 1)}
       moved = thresholdChanges(choice.defaults, choice.picks, tm.misses, tm.current);
     }
     if (option && choice?.kind === "thresholds" && !choice.done && option.route.action === "continue" && s) {
-      choice.held = { args: { ...args }, answerSeq: answer.seq, remote };
+      choice.held = { args: otherWords !== null ? { ...args, option_id: option.option_id, held_own_words: otherWords } : { ...args }, answerSeq: answer.seq, remote };
       if (answer.seq !== null)
         run2.useAnswer(answer.seq);
       return ok(this.askRound(run2, s.step.step_id, choice));
@@ -51046,9 +51491,12 @@ ${JSON.stringify(copied, null, 1)}
         run2.log.append("hook_check", { source: "mcp_server", hook_id: "BH-2", check: "protected_path", tool: "integrity", result: "deny", subject_fingerprint: null, cites: [] });
       }
     }
+    const stoppedAt = kind2 === "abandon" ? s?.status === "running" ? s.step.step_id : run2.runningStepId() ?? run2.readySteps()[0]?.step.step_id ?? stepId : null;
     if (kind2 === "abandon" && s?.step.kind === "decide" && s.status === "running")
-      run2.endStep(s.step.step_id, "done");
+      run2.endStep(s.step.step_id, stopOnCard || (s.step.options?.length ?? 0) === 0 ? "done" : "blocked");
     const focusVersion = kind2 === "focus_accept" && s ? run2.putPort("focus", args.focus, s.step, null, "model") : null;
+    if (otherWords !== null && s)
+      this.otherPending.delete(`${run2.runId}/${s.step.step_id}`);
     const outcome = decisionOutcome(kind2, option);
     run2.log.append("decision_recorded", {
       source: "mcp_server",
@@ -51105,9 +51553,10 @@ ${JSON.stringify(copied, null, 1)}
       }
     }
     if (kind2 === "abandon") {
+      const at = stoppedAt;
       run2.abandoned = true;
-      this.finish(run2, []);
-      return ok("The run is abandoned and its record is frozen. Tell the person where it is.");
+      const recordPath = this.finish(run2, []);
+      return ok(`Stopped by the person${at ? ` at step ${at}` : ""}. The run's record is frozen at ${run2.ref(recordPath)}: tell the person where it is. Heddle no longer gates this session: the conversation can carry on as usual, or the person can start a new run with /heddle:review.`);
     }
     if (kind2 === "waiver") {
       for (const id of waived) {
@@ -51218,7 +51667,7 @@ ${JSON.stringify(copied, null, 1)}
       direction_fp: directionAsk === null ? null : askFingerprint(directionAsk),
       option_ids: copied.options.map((o) => o.option_id)
     });
-    const then = `Then call heddle_decision with kind escalation, step_id ${stepId}, option_id set to the chosen option's id, and text summarising what they decided.`;
+    const then = `Then call heddle_decision with kind escalation, step_id ${stepId}, option_id set to the chosen option's id, and text summarising what they decided. If they answer in their own words instead (Other, or a typed reply): when it is a question, answer it from the case and ask the card again, without calling heddle_decision; otherwise call heddle_decision with kind escalation and the option_id their words fit, or none if none fits. Heddle never refuses their words: it gives you a question to put to them first, and records nothing until they confirm.`;
     if (ask !== null) {
       return ok(`Decision card written: ${rel2} (${fingerprint}). answer_by: question_tool.
 Show the person the context in plain words, then ask with AskUserQuestion using exactly this input, unchanged: the same question, options, order and descriptions. A question that differs is refused when the decision is recorded.${caseLines.length ? " The question already carries the decision's case: don't list it again before asking." : ""}
@@ -51993,7 +52442,9 @@ function splitParts(text3, max = 3e4) {
 }
 var MAIN_ONLY = /* @__PURE__ */ new Set(["heddle_ticket", "heddle_gate", "heddle_step", "heddle_decision", "heddle_deliver", "heddle_next", "heddle_card", "heddle_online_ask"]);
 function integrityMessage(run2) {
-  return `This run can no longer be trusted: ${run2.integrity.join("; ")}. Tell the person plainly. The only way forward is to abandon this run (ask them, then call heddle_decision with kind abandon) and start a new one.`;
+  return `This run can no longer be trusted: ${run2.integrity.join("; ")}. Tell the person plainly. The only way forward is to abandon this run and start a new one: ask them with AskUserQuestion using exactly this input, then call heddle_decision with kind abandon.
+\`\`\`json
+` + JSON.stringify(STOP_ASK, null, 1) + "\n```";
 }
 function howTo(run2, stepId) {
   const s = run2.steps.get(stepId);

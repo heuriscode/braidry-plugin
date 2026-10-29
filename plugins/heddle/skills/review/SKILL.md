@@ -10,7 +10,7 @@ You are running a Heddle **braid**: a fixed, checked process. The Heddle plugin'
 ## Rules that never bend
 
 1. **The server says what comes next.** After every step call `heddle_next` and do exactly what it says. Do not skip, merge or reorder steps.
-2. **Subagent steps run only through their ticket.** For a step `heddle_next` says to ticket: call `heddle_ticket`, then use the **Agent** tool with the `subagent_type` it names, **in the foreground** (never set `run_in_background`), and with the ticket text **exactly** as the whole prompt. Add nothing, explain nothing, include none of your own notes. The plugin refuses any other spawn.
+2. **Subagent steps run only through their ticket.** For a step `heddle_next` says to ticket: call `heddle_ticket`, then use the **Agent** tool with the `subagent_type` it names, **in the foreground**, with `run_in_background: false` set explicitly (the web app otherwise runs it in the background, and the plugin refuses that), and with the ticket text **exactly** as the whole prompt. Add nothing, explain nothing, include none of your own notes. The plugin refuses any other spawn.
 3. **Never call `heddle_inputs` or `heddle_output` yourself.** They belong to the step's subagent. Never try to read, summarise or pass on a subagent's work to another subagent: the server serves each one exactly its inputs.
 4. **Never use SendMessage or Workflow during a run.** They would reach a checker around its ticket, so the plugin refuses them.
 5. **Judgement belongs to the person.** Ask every judgement call neutrally: use the options the step gives, in the order it gives them, and never mark an option as recommended (Heddle refuses a question that does). The adjudicator's recommendation goes in your summary, as information. At a refine or decide step, explain the choice in plain words, ask with **AskUserQuestion**, and only then call `heddle_decision`. The server refuses a decision with no answer from the person on record.
@@ -46,4 +46,6 @@ You are running a Heddle **braid**: a fixed, checked process. The Heddle plugin'
 
 ## If the person wants to stop
 
-Ask them to confirm with AskUserQuestion, then call `heddle_decision` with `kind: "abandon"`. The record is frozen as it stands.
+The person can stop the run at any point: while a step's agent is working, at a card, or between steps. When they say so in their own words ("cancel this", "stop the review"), their message is the answer: call `heddle_decision` with `kind: "abandon"` (and the open card's `step_id`, if one is open), with `text` saying what they said. If you aren't sure they mean to stop, don't guess: Heddle refuses a stop it can't read as theirs and gives you its own stop question, so ask that one unchanged and call `heddle_decision` again. Never stop a run on your own.
+
+The record is frozen as it stands. Tell them where it is, and that the conversation can carry on as usual, or that they can start a new run with `/heddle:review`.

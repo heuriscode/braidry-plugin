@@ -1,9 +1,9 @@
 {
-  "plugin": "0.2.4",
+  "plugin": "0.2.5",
   "braid": "fairlead.lit_scoping_review@0.4.1",
-  "built_at": "2026-10-29T04:46:49Z",
+  "built_at": "2026-10-29T09:57:59Z",
   "files": {
-    ".claude-plugin/plugin.json": "raw:sha256:2509ffb0372988f8fe2da78a297655167b0e8b6b4e78113e6753e02ef78b29a4",
+    ".claude-plugin/plugin.json": "raw:sha256:9fac1870d4cf8327ee3c7616317de7501ffb32a7725a6f47dafdb189d8bf6a3b",
     ".mcp.json": "raw:sha256:1b150d41089a2d5276b6daad345189c5e9bd48020f992b019a88749ca0f108d3",
     "LICENSE.md": "raw:sha256:6e65a24831ace2638f9b1238effd667e3f5578dc5fabc85a3be8ba3ac8c3b0ec",
     "README.md": "raw:sha256:ad13d7797e6273a9ea238645e89205ed1f2201049f5cbbd40c24561928a0188f",
@@ -14,7 +14,7 @@
     "agents/extractor.md": "raw:sha256:8d6a46867b77544cd9ba0d9a078c26d31c198a7d6d9922e0ad708035ae62b636",
     "agents/reviser.md": "raw:sha256:bc6422742ab5a6ad6cbbfa9eb0eb9c41cbd95b260f9928ed9814083f9e34f92c",
     "agents/searcher.md": "raw:sha256:ad2e65248e1c60aa29759b9dfe6fd9348cf1fe923d8e5452dac60097c265ca11",
-    "bundle/braids.lock.json": "raw:sha256:d4079df1d9671843eb9307790c8aa727998d5031d0cc589fbffab204a0dce57e",
+    "bundle/braids.lock.json": "raw:sha256:cef733948e742329e46021ccdba112ff38b5a5d8f41f767b261857c978eac1cb",
     "bundle/bundle.json": "raw:sha256:63b53f8460b8a0671baddbd952df06de4a7c4bef847358ae98192140e46795da",
     "bundle/gates/cite_gate/0.4.0/gate.js": "raw:sha256:42951c9989c9310bdbb3235f64d815e32e3987005595c2f09eb5da740fceb065",
     "bundle/gates/cite_gate/0.4.0/gate.json": "raw:sha256:865a894d4eab78b4ffb9591284660126f3f8b96322492d2214b4767d9ccb7b92",
@@ -53,14 +53,14 @@
     "bundle/types/search_record/0.1.0/type.json": "raw:sha256:6c2d34baeeab17f87c37208035f37fd7ae481698a66fde1c3425517e089b1c28",
     "bundle/types/source_register/0.1.0/type.json": "raw:sha256:97679c8a537c79b66e5d903d32e5ad21fe13b3d5ec0d80f77b34bc63bcf3ff55",
     "heddle_build.json": "raw:sha256:191b52056302b1dc81ebaaa567c8670b8c9f2aa6b3ebe8bb09c46679ab715316",
-    "hooks/heddle_hook.mjs": "raw:sha256:1c6d4db985bc5878518673e2c0ee98db0401434fb155eb15d933f98eae332492",
+    "hooks/heddle_hook.mjs": "raw:sha256:510370bd50ee1b6316f45cbac6ef1cfc29da64619416af09ad091519aa9093a4",
     "hooks/hooks.json": "raw:sha256:25966ae8e3fc6bd7a73dee40701d9a82f57a06188bbf7e26952b1ad595d61421",
     "reports/fairlead.lit_scoping_review/0.1.0/report.json": "raw:sha256:39e16fdc151287ab07367d38b9e7f0f0361cf961806b2647e16cfca6af7a2817",
     "reports/fairlead.lit_scoping_review/0.1.1/report.json": "raw:sha256:984204f7f51d70b7a817019b50d0d097de073d0d365c29d26856cf4baa020006",
-    "server/heddle_server.mjs": "raw:sha256:eb6486d3cba057afa040599b0f28f6920c194b4603341eb8d64ac0b4dc2759a9",
-    "skills/feedback/SKILL.md": "raw:sha256:aee8ab5fd6b071003857001d55b7a641c64266c2574553f0bf0106e9ab09661b",
+    "server/heddle_server.mjs": "raw:sha256:96a4710afc41418c3e324e8c9dd3b6b5a7d17a716cd985f34e4e38d48f4b95ee",
+    "skills/feedback/SKILL.md": "raw:sha256:e6f7ed32123885201aca9a80e640de18a242fd6e15ca34747b306e5ab21147c2",
     "skills/library/SKILL.md": "raw:sha256:fab97bc86d43cbe44b6d348d2a2dca3596a952d4a630af274486a89e19786e0b",
-    "skills/review/SKILL.md": "raw:sha256:7c0669a86a21e550286edfba7f5b640f95e3d040698a2b47aa5c9ffbe1b22857",
+    "skills/review/SKILL.md": "raw:sha256:5133a5fd8e8aa122b3e127d1c60d1e6759303300d58fe8ea2373f881e7d4d105",
     "vendor/mcp_v1_snapshot.json": "raw:sha256:92db784c93043b3393d8d2c9bc7ce886d62cf2e340198a85d9b5f4c9588ba18a"
   }
 }
