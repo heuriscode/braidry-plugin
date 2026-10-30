@@ -10570,6 +10570,100 @@ var SCHEMAS = {
       "signature": {
         "type": "null",
         "description": "Reserved; scheme open (O-6)."
+      },
+      "phases": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "phase_id": {
+              "$ref": "primitives.schema.json#/$defs/name"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 40,
+              "minLength": 1,
+              "pattern": "^[^\\n]*\\S[^\\n]*(?![\\s\\S])"
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "$ref": "primitives.schema.json#/$defs/step_id"
+              },
+              "maxItems": 60,
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "typical_minutes": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "low": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 240
+                },
+                "high": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 240
+                },
+                "from_run_ids": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "primitives.schema.json#/$defs/id_run"
+                  },
+                  "maxItems": 20,
+                  "minItems": 1,
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "low",
+                "high",
+                "from_run_ids"
+              ]
+            }
+          },
+          "required": [
+            "phase_id",
+            "label",
+            "steps"
+          ]
+        },
+        "maxItems": 12,
+        "minItems": 2
+      },
+      "typical_minutes": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "low": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 240
+          },
+          "high": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 240
+          },
+          "from_run_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "primitives.schema.json#/$defs/id_run"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "low",
+          "high",
+          "from_run_ids"
+        ]
       }
     },
     "required": [
@@ -12558,6 +12652,31 @@ var SCHEMAS = {
           ]
         },
         "maxItems": 10
+      },
+      "verified_steps": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "step_id": {
+              "$ref": "primitives.schema.json#/$defs/step_id"
+            },
+            "decision_id": {
+              "$ref": "primitives.schema.json#/$defs/id_dec"
+            },
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "step_id",
+            "decision_id",
+            "items"
+          ]
+        },
+        "maxItems": 20
       }
     },
     "required": [
@@ -12809,7 +12928,8 @@ var SCHEMAS = {
           "blocked",
           "waived",
           "timeout",
-          "stopped"
+          "stopped",
+          "verified"
         ]
       },
       "isolation": {
@@ -12830,7 +12950,8 @@ var SCHEMAS = {
           "input_rule_loosen",
           "abandon",
           "input_replace",
-          "run_location"
+          "run_location",
+          "verification"
         ]
       },
       "read_level": {
@@ -16571,6 +16692,14 @@ var SCHEMAS = {
                 },
                 "maxItems": 60
               },
+              "verified_step_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "primitives.schema.json#/$defs/step_id"
+                },
+                "maxItems": 60,
+                "minItems": 1
+              },
               "item_choices": {
                 "type": "array",
                 "items": {
@@ -16775,6 +16904,41 @@ var SCHEMAS = {
                 "then": {
                   "required": [
                     "auto"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "required": [
+                    "verified_step_ids"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "kind": {
+                      "const": "verification"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "kind": {
+                      "const": "verification"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "verified_step_ids",
+                    "item_choices"
                   ]
                 }
               },
@@ -18351,6 +18515,7 @@ var SCHEMAS = {
               "abandon",
               "input_replace",
               "run_location",
+              "verification",
               "admin_change",
               "lead_handover",
               "lead_claim",
@@ -28481,6 +28646,9 @@ var KIT_SCHEMAS = {
             },
             "waived": {
               "type": "boolean"
+            },
+            "verified": {
+              "type": "boolean"
             }
           },
           "required": [
@@ -28488,7 +28656,21 @@ var KIT_SCHEMAS = {
             "gate_ref",
             "status",
             "waived"
-          ]
+          ],
+          "not": {
+            "properties": {
+              "waived": {
+                "const": true
+              },
+              "verified": {
+                "const": true
+              }
+            },
+            "required": [
+              "waived",
+              "verified"
+            ]
+          }
         },
         "maxItems": 40
       }
@@ -41345,7 +41527,7 @@ var EventLog = class {
 };
 
 // ../../../../../../home/user/fairlead-server/packages/record/dist/headline.js
-var HEADLINE_RULES = "0.5.0";
+var HEADLINE_RULES = "0.6.0";
 function capList(c) {
   return c === void 0 ? [] : "checker_step_id" in c ? [c] : c;
 }
@@ -41619,18 +41801,38 @@ function generateHeadline(events, facts) {
   let repaired = 0;
   if (facts.rules !== "0.1.0" && facts.rules !== "0.2.0") {
     const open3 = /* @__PURE__ */ new Set();
+    const everVerified = /* @__PURE__ */ new Set();
     for (const e of events) {
       const id = e.step_id ?? "";
       if (e.type === "gate_exit" && id) {
         const status = d(e).status;
         if (status === "fail")
           open3.add(id);
-        else if (open3.delete(id) && (status === "pass" || status === "warn"))
+        else if (open3.delete(id) && (status === "pass" || status === "warn") && !everVerified.has(id))
           repaired++;
       } else if (e.type === "decision_recorded" && d(e).kind === "waiver" && Array.isArray(d(e).waived_step_ids)) {
         for (const w of d(e).waived_step_ids)
           if (typeof w === "string")
             open3.delete(w);
+      } else if (verificationRules(facts.rules) && e.type === "decision_recorded" && d(e).kind === "verification" && Array.isArray(d(e).verified_step_ids)) {
+        for (const w of d(e).verified_step_ids) {
+          if (typeof w !== "string")
+            continue;
+          open3.delete(w);
+          everVerified.add(w);
+        }
+      }
+    }
+  }
+  const verified = /* @__PURE__ */ new Map();
+  if (verificationRules(facts.rules)) {
+    for (const e of events) {
+      if (e.type !== "decision_recorded" || d(e).kind !== "verification" || !Array.isArray(d(e).verified_step_ids))
+        continue;
+      const choices = Array.isArray(d(e).item_choices) ? d(e).item_choices : [];
+      for (const w of d(e).verified_step_ids) {
+        if (typeof w === "string" && !verified.has(w))
+          verified.set(w, { decision_id: String(d(e).decision_id), items: Math.max(1, choices.filter((c) => c.step_id === w).length) });
       }
     }
   }
@@ -41680,14 +41882,15 @@ function generateHeadline(events, facts) {
     items: items2,
     floors,
     input_rule_alert: null,
-    judgement_items: ["adjudication of checker findings", "the person's decisions"],
-    line: fitLine(lineOf(items2) + count(allSkips.filter((e) => d(e).skip_rule !== "skip_when").length, "step", "skipped by choice") + count(allSkips.filter((e) => d(e).skip_rule === "skip_when").length, "step", "skipped as not needed") + count(events.filter((e) => e.type === "port_withheld").length, "result", "withheld as superseded") + (repaired > 0 ? ` \xB7 ${String(repaired)} ${repaired === 1 ? "check failed and was fixed" : "checks failed and were fixed"}` : "") + (waived.size > 0 ? ` \xB7 ${String(waived.size)} ${waived.size === 1 ? "check failed and was waived" : "checks failed and were waived"}` : "") + capSentence(capsNamed) + count(remoteSteps.length, "decision", "answered on Heddle Online, signed") + count(allAutos.length, "decision", "taken by Heddle automatically") + resumedSentence(events)),
+    judgement_items: ["adjudication of checker findings", "the person's decisions", ...verified.size > 0 ? ["the person's verification of failing items"] : []],
+    line: fitLine(lineOf(items2) + count(allSkips.filter((e) => d(e).skip_rule !== "skip_when").length, "step", "skipped by choice") + count(allSkips.filter((e) => d(e).skip_rule === "skip_when").length, "step", "skipped as not needed") + count(events.filter((e) => e.type === "port_withheld").length, "result", "withheld as superseded") + (repaired > 0 ? ` \xB7 ${String(repaired)} ${repaired === 1 ? "check failed and was fixed" : "checks failed and were fixed"}` : "") + (waived.size > 0 ? ` \xB7 ${String(waived.size)} ${waived.size === 1 ? "check failed and was waived" : "checks failed and were waived"}` : "") + (verified.size > 0 ? ` \xB7 ${String(verified.size)} ${verified.size === 1 ? "check failed and was verified" : "checks failed and were verified"} by the person (judgement, not a test)` : "") + capSentence(capsNamed) + count(remoteSteps.length, "decision", "answered on Heddle Online, signed") + count(allAutos.length, "decision", "taken by Heddle automatically") + resumedSentence(events)),
     ...skipped.length > 0 ? { skipped_steps: skipped } : {},
     ...withheld.length > 0 ? { withheld_ports: withheld } : {},
     ...remote.length > 0 ? { remote_decisions: remote } : {},
     ...autos.length > 0 ? { auto_continues: autos } : {},
     ...waived.size > 0 ? { waived_steps: [...waived].slice(0, 20).map(([step_id, decision_id]) => ({ step_id, decision_id })) } : {},
-    ...capsNamed.length > 0 ? { caps_reached: capsNamed } : {}
+    ...capsNamed.length > 0 ? { caps_reached: capsNamed } : {},
+    ...verified.size > 0 ? { verified_steps: [...verified].slice(0, 20).map(([step_id, v]) => ({ step_id, decision_id: v.decision_id, items: v.items })) } : {}
   };
 }
 var LABEL = {
@@ -41724,6 +41927,9 @@ function count(n, noun, what) {
 var LINE_MAX = 400;
 function capRules(rules) {
   return rules !== "0.1.0" && rules !== "0.2.0" && rules !== "0.3.0" && rules !== "0.4.0";
+}
+function verificationRules(rules) {
+  return capRules(rules) && rules !== "0.5.0";
 }
 function waivedCapGates(events) {
   const out = [];
@@ -44634,7 +44840,7 @@ var Run = class _Run {
         return false;
       if (s.step.kind !== "gate" && s.step.kind !== "preflight")
         return true;
-      return s.status === "done" || s.status === "waived" || s.status === "skipped";
+      return s.status === "done" || s.status === "waived" || s.status === "verified" || s.status === "skipped";
     });
   }
   /** Steps whose needs are all met and that have not started. */
@@ -44696,7 +44902,7 @@ var Run = class _Run {
       return rule.unless_failed.some((id) => this.steps.get(id)?.status === "failed") ? null : { unless_failed: [...rule.unless_failed], failed: [] };
     if ("gate_step" in rule) {
       const gs = this.steps.get(rule.gate_step)?.status;
-      const res = gs === "done" || gs === "failed" || gs === "waived" ? this.gateResultsByStep.get(rule.gate_step)?.result : void 0;
+      const res = gs === "done" || gs === "failed" || gs === "waived" || gs === "verified" ? this.gateResultsByStep.get(rule.gate_step)?.result : void 0;
       const about = (e) => !rule.refs || typeof e.ref === "string" && rule.refs.some((r) => e.ref === r || e.ref.startsWith(`${r} `) || e.ref.startsWith(`${r}:`));
       const details = (res?.evidence ?? []).filter(about).map((e) => e.detail);
       if (details.some((d2) => typeof d2 === "string" && rule.without.includes(d2)))
@@ -44724,7 +44930,7 @@ var Run = class _Run {
   readySteps() {
     const ok2 = (id, by) => {
       const s = this.steps.get(id);
-      if (s?.status === "done" || s?.status === "waived" || s?.status === "skipped")
+      if (s?.status === "done" || s?.status === "waived" || s?.status === "verified" || s?.status === "skipped")
         return true;
       const to = s?.status === "failed" ? s.step.on_fail?.decide : void 0;
       if (to === void 0)
@@ -44735,7 +44941,7 @@ var Run = class _Run {
     };
     const cardDone = (id) => {
       const card = this.waitsOn.get(id);
-      return card === void 0 || ["done", "skipped", "waived"].includes(this.steps.get(card)?.status ?? "");
+      return card === void 0 || ["done", "skipped", "waived", "verified"].includes(this.steps.get(card)?.status ?? "");
     };
     return [...this.steps.values()].filter((s) => s.status === "pending" && s.step.needs.every((n) => ok2(n, s.step.step_id)) && cardDone(s.step.step_id));
   }
@@ -44771,7 +44977,7 @@ var Run = class _Run {
    */
   ranResult(stepId) {
     const st = this.steps.get(stepId)?.status;
-    return st === "done" || st === "failed" || st === "waived" ? this.gateResultsByStep.get(stepId) : void 0;
+    return st === "done" || st === "failed" || st === "waived" || st === "verified" ? this.gateResultsByStep.get(stepId) : void 0;
   }
   /** A gate step's latest result, with its gate_ref, if it has run. */
   gateResultOf(stepId) {
@@ -44809,7 +45015,7 @@ var Run = class _Run {
       const d2 = this.steps.get(n);
       if (d2?.step.kind !== "decide")
         return [];
-      const repaired = [...this.steps.values()].filter((g) => g.step.on_fail?.decide === n && (g.status === "failed" || g.status === "waived"));
+      const repaired = [...this.steps.values()].filter((g) => g.step.on_fail?.decide === n && (g.status === "failed" || g.status === "waived" || g.status === "verified"));
       const ids = /* @__PURE__ */ new Set([n, ...repaired.map((g) => g.step.step_id)]);
       const choice = this.log.events.filter((e) => e.type === "decision_recorded" && (ids.has(String(e.data.blocking_step_id)) || Array.isArray(e.data.waived_step_ids) && e.data.waived_step_ids.some((w) => ids.has(String(w))))).at(-1);
       const option = d2.step.options?.find((o) => o.option_id === choice?.data.option_id);
@@ -44848,12 +45054,12 @@ var Run = class _Run {
     const results = (this.steps.get(stepId)?.step.needs ?? []).flatMap((n) => {
       const g = this.steps.get(n);
       const r = this.gateResultsByStep.get(n);
-      if (!g?.step.gate_ref || !r || !["done", "failed", "waived"].includes(g.status))
+      if (!g?.step.gate_ref || !r || !["done", "failed", "waived", "verified"].includes(g.status))
         return [];
       const status = r.result.status;
       if (status !== "pass" && status !== "warn" && status !== "fail")
         return [];
-      return [{ step_id: n, gate_ref: g.step.gate_ref, status, waived: g.status === "waived" }];
+      return [{ step_id: n, gate_ref: g.step.gate_ref, status, waived: g.status === "waived", ...g.status === "verified" ? { verified: true } : {} }];
     });
     const value = { schema: "fairlead.kit.gate_results/0.1", results };
     const dir2 = join8(this.folder, "gate_inputs");
@@ -45405,7 +45611,24 @@ function waivedFailedSteps(log) {
   }
   return out;
 }
+function verifiedFailedSteps(log) {
+  const events = log.filter(isObj);
+  const latest = /* @__PURE__ */ new Map();
+  for (const e of events)
+    if (e.type === "gate_exit" && typeof e.step_id === "string")
+      latest.set(e.step_id, e);
+  const out = [];
+  for (const [step, e] of latest) {
+    if (!isObj(e.data) || e.data.status !== "fail")
+      continue;
+    const verified = events.some((d2) => d2.type === "decision_recorded" && Number(d2.seq) > Number(e.seq) && isObj(d2.data) && d2.data.kind === "verification" && Array.isArray(d2.data.verified_step_ids) && d2.data.verified_step_ids.includes(step));
+    if (verified)
+      out.push({ step_id: step, result_fingerprint: str(e.data.result_fingerprint) });
+  }
+  return out;
+}
 var QUIET_OUTCOMES = /* @__PURE__ */ new Set(["rule_skipped"]);
+var WARNING_OUTCOMES = /* @__PURE__ */ new Set(["possible", "unverified_url", "lookup_error", "unparsed_marker", "unverifiable", "not_in_abstract", "unscoped_none"]);
 var RULE_NOT_CHECKED = {
   sample_size: { words: "The sample rule of thumb was not checked: the attributes' levels could not be read.", advice: "Write them as 'name: level, level; \u2026' or check the sample yourself.", yourself: "Check the sample yourself." },
   items_per_task: { words: "The items-per-task check was not made: the items could not be counted.", advice: "List one item per line or separated by ';'.", yourself: "Check the items per task yourself." }
@@ -45609,8 +45832,8 @@ function capWaiverLine(ctx, gates, waiver, marked) {
   const again = counts.some((c) => c.offered && c.k === 0) ? " without checking again" : counts.some((c) => c.k > 0) ? ` after checking again ${times2(Math.min(...counts.filter((c) => c.k > 0).map((c) => c.k)))}` : "";
   return [n === 1 ? `One checker stopped at the most issues it reports, and the study lead carried on${again}, so problems beyond those it reported may remain.` : `${String(n)} checkers stopped at the most issues they report, and the study lead carried on${again}, so problems beyond those they reported may remain.`];
 }
-function waivedFailures(ctx) {
-  const steps = waivedFailedSteps(ctx.events);
+function waivedFailures(ctx, verified = false) {
+  const steps = verified ? verifiedFailedSteps(ctx.events) : waivedFailedSteps(ctx.events);
   if (!steps.length)
     return [];
   const files = resultFiles(ctx.folder);
@@ -45635,7 +45858,9 @@ function unverifiedSourceIds(items2, failed) {
       continue;
     const gate = str(r.gate_ref).split("@")[0];
     const idOf = (ref) => gate === "resolve_gate" ? ref.split(" ")[0] ?? "" : gate === "ref_integrity_gate" && ref.startsWith("provenance_register#") ? ref.slice("provenance_register#".length) : "";
-    const entries = r.evidence.filter(isObj).filter((e) => e.ref !== "summary").slice(0, r.failed);
+    const all = r.evidence.filter(isObj).filter((e) => e.ref !== "summary");
+    const failing = all.filter((e) => !WARNING_OUTCOMES.has(str(e.detail).split(";")[0]?.trim() ?? ""));
+    const entries = failing.length >= r.failed ? failing.slice(0, r.failed) : all.slice(0, r.failed);
     for (const e of entries) {
       const id = typeof e.ref === "string" ? idOf(e.ref) : "";
       if (ids.has(id))
@@ -45975,7 +46200,7 @@ function fillPlaceholdersMarked(texts, docs) {
     }
   }));
 }
-function renderCitations(texts, items2, unverified = /* @__PURE__ */ new Set()) {
+function renderCitations(texts, items2, unverified = /* @__PURE__ */ new Set(), byHand = /* @__PURE__ */ new Set()) {
   const byId = new Map(items2.filter((x) => typeof x.source_id === "string").map((x) => [String(x.source_id), x]));
   const cited = [];
   const missing = [];
@@ -46011,9 +46236,12 @@ function renderCitations(texts, items2, unverified = /* @__PURE__ */ new Set()) 
     const where = pub ? ` ${str(pub.container)}${typeof pub.volume === "string" && pub.volume ? `, ${pub.volume}${typeof pub.issue === "string" && pub.issue ? `(${pub.issue})` : ""}` : ""}${typeof pub.pages === "string" && pub.pages ? `, ${pub.pages}` : ""}.` : "";
     const loc = isObj(x.locator) ? x.locator : {};
     const doi = typeof loc.doi === "string" && loc.doi ? ` https://doi.org/${loc.doi}` : typeof loc.url === "string" && /^https?:\/\/\S+$/.test(loc.url) ? ` ${loc.url}` : "";
-    return `${who ? `${who} ` : ""}(${year}). ${str(x.title).replace(/\.$/, "")}.${where}${doi}${unverified.has(id) ? " (not verified)" : ""}`;
+    return `${who ? `${who} ` : ""}(${year}). ${str(x.title).replace(/\.$/, "")}.${where}${doi}${unverified.has(id) ? " (not verified)" : byHand.has(id) ? " (checked by hand)" : ""}`;
   });
-  return { texts: out, references, missing, unverified: cited.filter((id) => unverified.has(id)) };
+  return { texts: out, references, missing, unverified: cited.filter((id) => unverified.has(id)), byHand: cited.filter((id) => byHand.has(id) && !unverified.has(id)) };
+}
+function checkedByHandWords(ids) {
+  return `Checked by hand: ${ids.join(", ")} ${ids.length === 1 ? "was" : "were"} confirmed by the person who ran the review; the citation check could not match ${ids.length === 1 ? "it" : "them"}.`;
 }
 function notVerifiedWords(ids) {
   return `Not verified: ${ids.join(", ")} ${ids.length === 1 ? "failed its source check, which was" : "failed their source checks, which were"} waived.`;
@@ -46033,6 +46261,7 @@ function textFinisher(ctx, sec) {
   let docs = null;
   let items2 = null;
   let unverified = null;
+  let byHand = null;
   let recorded = null;
   return (texts) => {
     let out = texts;
@@ -46055,12 +46284,13 @@ function textFinisher(ctx, sec) {
         items2 = (Array.isArray(reg) ? reg : reg.items).filter(isObj);
       }
       unverified ??= unverifiedSourceIds(items2, waivedFailures(ctx));
-      const r = renderCitations(out, items2, unverified);
+      byHand ??= unverifiedSourceIds(items2, waivedFailures(ctx, true));
+      const r = renderCitations(out, items2, unverified, byHand);
       out = r.texts;
       if (r.references.length > LIMITS.listItems)
         throw new ReportRefusal(`The section cites ${String(r.references.length)} sources, over the ${String(LIMITS.listItems)} a reference list can hold.`);
       references = r.references.map((x) => cap(x, LIMITS.itemChars));
-      const said = [...r.missing.length ? [`Not checked: ${r.missing.join(", ")} ${r.missing.length === 1 ? "is" : "are"} cited but not in the source register, so ${r.missing.length === 1 ? "it has" : "they have"} no reference-list entry.`] : [], ...r.unverified.length ? [notVerifiedWords(r.unverified)] : []];
+      const said = [...r.missing.length ? [`Not checked: ${r.missing.join(", ")} ${r.missing.length === 1 ? "is" : "are"} cited but not in the source register, so ${r.missing.length === 1 ? "it has" : "they have"} no reference-list entry.`] : [], ...r.unverified.length ? [notVerifiedWords(r.unverified)] : [], ...r.byHand.length ? [checkedByHandWords(r.byHand)] : []];
       if (said.length)
         notChecked = cap(said.join(" "), LIMITS.itemChars);
     }
@@ -46253,8 +46483,11 @@ function auditRows(record, facts) {
         const between = events.slice(i + 1, until < 0 ? void 0 : until).filter((x) => x.type === "decision_recorded" && isObj(x.data));
         const waiver = between.find((x) => x.data.kind === "waiver" && Array.isArray(x.data.waived_step_ids) && x.data.waived_step_ids.includes(id));
         const loop = between.map((x) => facts.choice(str(x.data.decision_id))).find((c) => c?.loops === true);
+        const verification = between.find((x) => x.data.kind === "verification" && Array.isArray(x.data.verified_step_ids) && x.data.verified_step_ids.includes(id));
         if (waiver)
           handling = "waived by the study lead";
+        else if (verification)
+          handling = "each failing item verified by the study lead (judgement, not a check)";
         else if (loop)
           handling = `sent back ("${loop.label}"); next run ${exitWords(until)}`;
       }
@@ -46373,7 +46606,7 @@ function testsContent(ctx) {
       continue;
     const id = str(e.step_id);
     const status = str(e.data.status);
-    const shownStatus = status === "fail" && steps.get(id)?.status === "waived" ? "failed, then waived" : status;
+    const shownStatus = status === "fail" && steps.get(id)?.status === "waived" ? "failed, then waived" : status === "fail" && steps.get(id)?.status === "verified" ? "failed, then verified by the person (judgement, not a check)" : status;
     rows.push(["gate", id, str(e.data.gate_ref), shownStatus, "definitive"]);
   }
   for (const s of steps.values()) {
@@ -46393,6 +46626,9 @@ function testsContent(ctx) {
       continue;
     rows.push(["skipped", str(e.step_id), `skipped by your choice (${str(e.data.option_id)})`, "skipped", "reason: your choice"]);
   }
+  for (const v of itemsVerified(ctx)) {
+    rows.push(["verified", v.step_id, `${v.item_ref === "rest" ? "the rest of the failing items" : v.item_ref}: verified by your decision on ${formatDate(v.at, ctx.dateFormat)} ("${v.label}")`, "verified by the person", "judgement"]);
+  }
   return fitRows(["entry", "step", "detail", "status", "kind"], rows);
 }
 var GATE_WORDS = { pass: "passed", warn: "passed, with warnings", fail: "failed", skipped: "not run", error: "could not run" };
@@ -46408,7 +46644,8 @@ function personTestsContent(ctx) {
     if (typeof name !== "string" || name.length === 0)
       throw new ReportRefusal(`formatting.check_names has no plain name for ${gateId}, a check this run used, so the report for the person cannot name it.`);
     const status = str(e.data.status);
-    const words2 = status === "fail" && steps.get(str(e.step_id))?.status === "waived" ? "failed, then waived by the study lead" : GATE_WORDS[status];
+    const after = steps.get(str(e.step_id))?.status;
+    const words2 = status === "fail" && after === "waived" ? "failed, then waived by the study lead" : status === "fail" && after === "verified" ? "failed, then verified by the study lead (judgement, not a check)" : GATE_WORDS[status];
     if (words2 === void 0)
       throw new ReportRefusal(`A check ended with a status the report cannot put in words (${status}).`);
     const counts = results.get(name) ?? /* @__PURE__ */ new Map();
@@ -46419,6 +46656,11 @@ function personTestsContent(ctx) {
   const tripwire = ctx.checkNames.tripwire_gate;
   if (typeof tripwire === "string" && sampleRuleOf(ctx).short === "found")
     rows.push([tripwire, `passed with a warning. ${SAMPLE_SHORTFALL_WORDS}`]);
+  const verified = itemsVerified(ctx);
+  if (verified.length > 0) {
+    const names = verified.map((v) => v.item_ref === "rest" ? "the rest of the failing items" : v.item_ref);
+    rows.push([`${String(verified.length)} failing item${verified.length === 1 ? "" : "s"} verified by the study lead`, `judgement, not a check: ${names.join(", ")}`]);
+  }
   const skipped = ctx.events.filter((e) => e.type === "step_skipped").length;
   if (skipped > 0)
     rows.push([`${String(skipped)} step${skipped === 1 ? "" : "s"} skipped`, "by the study lead's choice or as not needed"]);
@@ -46427,6 +46669,7 @@ function personTestsContent(ctx) {
 var DECISION_WORDS = {
   escalation: "made a choice at a decision point",
   waiver: "waived a failed check",
+  verification: "verified each failing item of a check (judgement, not a check)",
   focus_accept: "accepted the focus",
   focus_change: "changed the focus",
   abandon: "stopped the run",
@@ -46539,6 +46782,35 @@ function personProcessContent(ctx) {
 var INTERNAL_TEXT = /\bsec_|@\d+\.\d+\.\d+|\(\d+ items?\)|(^|[\s("|])\/[a-z_]+\/|step_id|sha256:|\b[a-z]+(_[a-z]+)*_gate\b|\bs\d{1,2}[a-z]?\b|\bC[1-7]\b|\b[a-z][a-z0-9]*(_[a-z0-9]+)*\.[a-z][a-z0-9]*_[a-z0-9_]+\b/;
 var INVARIANT_NAMES = { C1: "Separation", C2: "Blind check", C3: "Gates first", C4: "Input rule", C5: "Tests read-only", C6: "Your decisions", C7: "Labelling" };
 var STATUS_WORDS = { enforced: "enforced", checked_after: "checked afterwards", instructed: "instructed", not_met: "not met", na: "not applicable" };
+function itemsVerified(ctx) {
+  const out = [];
+  for (const d2 of ctx.record.decisions ?? []) {
+    if (typeof d2.text_fingerprint !== "string" || typeof d2.text_ref !== "string" || !ctx.folder)
+      continue;
+    const path = join9(ctx.folder, d2.text_ref);
+    if (!existsSync7(path))
+      continue;
+    const bytes = readFileSync8(path);
+    if (raw(bytes) !== d2.text_fingerprint)
+      continue;
+    try {
+      const t = JSON.parse(bytes.toString("utf8"));
+      const choices = isObj(t) && Array.isArray(t.item_choices) ? t.item_choices : [];
+      for (const c of choices) {
+        if (!isObj(c) || c.verified_by_person !== true || typeof c.item_ref !== "string")
+          continue;
+        const covers = c.item_ref === "rest" && Array.isArray(c.covers) ? c.covers.filter(isObj) : [];
+        if (covers.length)
+          for (const x of covers)
+            out.push({ step_id: str(x.step_id), item_ref: str(x.ref), label: str(c.label), at: str(d2.at) });
+        else
+          out.push({ step_id: str(c.step_id), item_ref: c.item_ref, label: str(c.label), at: str(d2.at) });
+      }
+    } catch {
+    }
+  }
+  return out;
+}
 function verifiedWording(ctx, d2) {
   if (typeof d2.text_fingerprint !== "string" || typeof d2.text_ref !== "string")
     return null;
@@ -47300,17 +47572,17 @@ function buildReport(folder, report, opts2) {
 }
 
 // packages/mcp-server/dist/render.js
-function deliveredText(doc, reg, figures, record, waivedFailures2) {
+function deliveredText(doc, reg, figures, record, waivedFailures2, verifiedFailures) {
   const flat2 = doc.sections.flatMap((s) => s.paragraphs.map((p) => p.text));
-  const r = renderCitations(fillPlaceholdersMarked(fillRecordPlaceholders(flat2, record), figures), reg.items, unverifiedSourceIds(reg.items, waivedFailures2));
+  const r = renderCitations(fillPlaceholdersMarked(fillRecordPlaceholders(flat2, record), figures), reg.items, unverifiedSourceIds(reg.items, waivedFailures2), unverifiedSourceIds(reg.items, verifiedFailures));
   let k = 0;
   const texts = doc.sections.map((s) => s.paragraphs.map(() => r.texts[k++] ?? ""));
   const n = r.missing.length;
-  const said = [...n ? [`Not checked: ${r.missing.join(", ")} ${n === 1 ? "is" : "are"} cited but not in the source register, so ${n === 1 ? "it has" : "they have"} no reference-list entry.`] : [], ...r.unverified.length ? [notVerifiedWords(r.unverified)] : []];
+  const said = [...n ? [`Not checked: ${r.missing.join(", ")} ${n === 1 ? "is" : "are"} cited but not in the source register, so ${n === 1 ? "it has" : "they have"} no reference-list entry.`] : [], ...r.unverified.length ? [notVerifiedWords(r.unverified)] : [], ...r.byHand.length ? [checkedByHandWords(r.byHand)] : []];
   return { texts, references: r.references, notChecked: said.length ? said.join(" ") : null };
 }
-function documentMarkdown(doc, reg, figures = {}, record = {}, waivedFailures2 = []) {
-  const { texts, references, notChecked } = deliveredText(doc, reg, figures, record, waivedFailures2);
+function documentMarkdown(doc, reg, figures = {}, record = {}, waivedFailures2 = [], verifiedFailures = []) {
+  const { texts, references, notChecked } = deliveredText(doc, reg, figures, record, waivedFailures2, verifiedFailures);
   const out = [`# ${doc.title}`, ""];
   doc.sections.forEach((s, si) => {
     out.push(`## ${s.heading}`, "");
@@ -47323,8 +47595,8 @@ function documentMarkdown(doc, reg, figures = {}, record = {}, waivedFailures2 =
     out.push(notChecked, "");
   return out.join("\n").trimEnd() + "\n";
 }
-function documentHtml(doc, reg, figures = {}, record = {}, waivedFailures2 = []) {
-  const { texts, references, notChecked } = deliveredText(doc, reg, figures, record, waivedFailures2);
+function documentHtml(doc, reg, figures = {}, record = {}, waivedFailures2 = [], verifiedFailures = []) {
+  const { texts, references, notChecked } = deliveredText(doc, reg, figures, record, waivedFailures2, verifiedFailures);
   const body = [`<h1>${esc2(doc.title)}</h1>`];
   doc.sections.forEach((s, si) => {
     body.push(`<h2>${esc2(s.heading)}</h2>`);
@@ -47473,7 +47745,7 @@ ${open3.map((f) => `- ${mdText(line(f))}`).join("\n")}
 <ul>${open3.map((f) => `<li>${esc2(line(f))}</li>`).join("")}</ul>
 `;
 }
-function renderFiles(run2, choiceIds, record = {}, waivedFailures2 = [], open3 = []) {
+function renderFiles(run2, choiceIds, record = {}, waivedFailures2 = [], open3 = [], verifiedFailures = []) {
   const menu = run2.template.output_menu;
   const dir2 = join10(run2.folder, "results");
   mkdirSync8(dir2, { recursive: true });
@@ -47510,7 +47782,7 @@ function renderFiles(run2, choiceIds, record = {}, waivedFailures2 = [], open3 =
     if (kitDoc) {
       const doc = json(port);
       const reg = run2.getPort("provenance_register") ? json("provenance_register") : { schema: "fairlead.kit.provenance_register/0.1", items: [] };
-      [name, text3] = choice.format === "md" ? ["review.md", documentMarkdown(doc, reg, figures(), record, waivedFailures2)] : ["review.html", documentHtml(doc, reg, figures(), record, waivedFailures2)];
+      [name, text3] = choice.format === "md" ? ["review.md", documentMarkdown(doc, reg, figures(), record, waivedFailures2, verifiedFailures)] : ["review.html", documentHtml(doc, reg, figures(), record, waivedFailures2, verifiedFailures)];
     } else if (choice.format === "json" && (contract !== null || run2.getPort(port)?.path.endsWith(".json") === true)) {
       for (const extra of choice.from_outputs.filter((p) => p !== port)) {
         const v = run2.getPort(extra);
@@ -47957,7 +48229,7 @@ function snapshotOf(run2, resultFiles2, now) {
     run_id: run2.runId,
     template: { template_id: run2.template.template_id, version: run2.template.version },
     title: deriveTitle(run2.startingPrompt),
-    steps_done: steps.filter((s) => s.status === "done" || s.status === "waived" || s.status === "skipped").length,
+    steps_done: steps.filter((s) => s.status === "done" || s.status === "waived" || s.status === "verified" || s.status === "skipped").length,
     steps_total: steps.length,
     current_step: closed || !current ? null : { step_id: current.step.step_id, kind: current.step.kind },
     state: run2.delivered ? "delivered" : run2.abandoned ? "abandoned" : awaiting ? "awaiting_decision" : "open",
@@ -49322,13 +49594,19 @@ function checkDecisionProse(prose, copied) {
     return { problems };
   return { question, context, summaries, evidence_refs: refs ?? [] };
 }
+function optionDescription(summary, whatChanges) {
+  const norm = (s) => ` ${words(s).join(" ")} `;
+  if (!whatChanges.trim() || norm(summary).includes(norm(whatChanges)))
+    return summary;
+  return `${summary} If chosen: ${whatChanges}`;
+}
 function askInput(card, direction) {
   const questions = [
     {
       question: card.question,
       header: "Decision",
       multiSelect: false,
-      options: card.options.map((o) => ({ label: o.label, description: `${o.summary} If chosen: ${o.what_changes}` }))
+      options: card.options.map((o) => ({ label: o.label, description: optionDescription(o.summary, o.what_changes) }))
     }
   ];
   if (direction) {
@@ -49371,6 +49649,7 @@ function stateOf2(s) {
       return s.step.kind === "decide" || s.step.kind === "refine" ? "waiting_on_you" : "running";
     case "done":
     case "waived":
+    case "verified":
       return "done";
     case "skipped":
       return "skipped";
@@ -49379,6 +49658,16 @@ function stateOf2(s) {
     default:
       return "not_started";
   }
+}
+function runPhases(run2) {
+  const have = new Set(run2.template.steps.map((x) => x.step_id));
+  const phases = (run2.template.phases ?? []).map((p) => ({ ...p, steps: p.steps.filter((id) => have.has(id)) })).filter((p) => p.steps.length > 0);
+  return phases.length >= 2 ? phases : [];
+}
+function minutesWords(tm) {
+  if (!tm || tm.low > tm.high)
+    return null;
+  return `${tm.low === tm.high ? String(tm.low) : `${String(tm.low)}\u2013${String(tm.high)}`} min`;
 }
 function progressCard(run2) {
   const order2 = run2.template.steps.map((x) => x.step_id);
@@ -49396,7 +49685,15 @@ function progressCard(run2) {
   }
   const counts = `Gates so far: ${String(gates.passed)} passed, ${String(gates.warned)} warned, ${String(gates.failed)} failed.`;
   let line;
-  if (current) {
+  const phases = runPhases(run2);
+  const phaseIndex = current ? phases.findIndex((p) => p.steps.includes(current.step.step_id)) : -1;
+  if (current && phaseIndex >= 0) {
+    const head = `Phase ${String(phaseIndex + 1)} of ${String(phases.length)}: `;
+    const tail = `. ${counts}`;
+    const label = phases[phaseIndex]?.label ?? "";
+    const room = 160 - head.length - tail.length;
+    line = head + (label.length > room ? `${label.slice(0, Math.max(0, room - 1))}\u2026` : label) + tail;
+  } else if (current) {
     const k = order2.indexOf(current.step.step_id) + 1;
     const head = `Step ${String(k)} of ${String(order2.length)}: `;
     const tail = `, ${kindWord(current.step.kind)}. ${counts}`;
@@ -49404,7 +49701,7 @@ function progressCard(run2) {
     const id = current.step.step_id.length > room ? `${current.step.step_id.slice(0, Math.max(0, room - 1))}\u2026` : current.step.step_id;
     line = head + id + tail;
   } else {
-    const done = states.filter((s) => ["done", "waived", "skipped"].includes(s.status)).length;
+    const done = states.filter((s) => ["done", "waived", "verified", "skipped"].includes(s.status)).length;
     line = `${String(done)} of ${String(order2.length)} steps finished. ${counts}`;
   }
   return {
@@ -49866,7 +50163,7 @@ var TOOLS = [
   { name: "heddle_next", description: "What to do next in the open run: the ready steps and exactly how to run each.", inputSchema: obj({}) },
   { name: "heddle_ticket", description: "Issue the ticket for a ready step that runs as a subagent. Then start that subagent with the Agent tool in the foreground (run_in_background: false, set explicitly), with the ticket text as its whole prompt.", inputSchema: obj({ step_id: str2 }, ["step_id"]) },
   { name: "heddle_inputs", description: "For a step's subagent only: fetch your task and inputs with your ticket id. Long inputs come in parts: call again with part 2, 3 ... as the reply says.", inputSchema: obj({ ticket: str2, part: { type: "integer", minimum: 1 } }, ["ticket"]) },
-  { name: "heddle_output", description: "For a step's subagent only: hand back one output port under your ticket. content is the JSON value (or text for text ports). After a refusal, patch can put right just the failing fields instead: a list of { path, value }, each path a JSON Pointer as the refusal names it (/findings/0/claim).", inputSchema: obj({ ticket: str2, port: str2, content: {}, patch: { type: "array", items: obj({ path: str2, value: {} }, ["path"]) } }, ["ticket", "port"]) },
+  { name: "heddle_output", description: "For a step's subagent only: hand back one output port under your ticket. content is the JSON value (or text for text ports). After a refusal, patch can put right just the failing fields instead: a list of { path, value }, each path a JSON Pointer as the refusal names it (/findings/0/claim). An output you were served can be handed back as it was (unchanged: true) or as a JSON Patch of the version you were served (patch: RFC 6902 add, remove, replace and test ops).", inputSchema: obj({ ticket: str2, port: str2, content: {}, unchanged: { type: "boolean" }, base: { type: "string", enum: ["served", "refused"] }, patch: { type: "array", items: obj({ op: str2, path: str2, value: {} }, ["path"]) } }, ["ticket", "port"]) },
   { name: "heddle_gate", description: "Run a ready gate step on the user's machine.", inputSchema: obj({ step_id: str2 }, ["step_id"]) },
   { name: "heddle_step", description: "Start a step that runs in this conversation (refine or decide) before asking the person. A decide step's material can come in parts: call again with the same step_id and part 2, 3 ... as the reply says.", inputSchema: obj({ step_id: str2, part: { type: "integer", minimum: 1 } }, ["step_id"]) },
   { name: "heddle_decision", description: "Record the person's decision after they answered (AskUserQuestion or their reply). kind: focus_accept (with focus, the agreed_focus JSON), escalation, waiver, output_choice or abandon. A waiver names the failed step (step_id), or several failed steps (step_ids) when the person waived them all with one answer. text: their decision in a sentence.", inputSchema: obj({ kind: str2, step_id: str2, step_ids: { type: "array", items: str2 }, text: str2, focus: {}, remote: { type: "boolean" } }, ["kind", "text"]) },
@@ -49973,7 +50270,64 @@ function itemWords(detail, refChars) {
   };
   return `${words2[outcome] ?? DETAIL_WORDS[outcome] ?? outcome.replace(/_/g, " ").replace(/\s+/g, " ")}${extra}`;
 }
-var WARNING_OUTCOMES = /* @__PURE__ */ new Set(["possible", "unverified_url", "lookup_error", "unparsed_marker", "unverifiable", "not_in_abstract", "unscoped_none"]);
+function refName(ref, refChars = 200) {
+  return /^[A-Za-z0-9_.:-]+$/.test(ref) ? ref : typographic(ref.replace(/\s+/g, " ").slice(0, refChars));
+}
+function itemName(q) {
+  if (q.item_ref !== "rest")
+    return refName(q.items[0]?.ref ?? q.item_ref);
+  const names = q.items.slice(0, 10).map((x) => refName(x.ref, 80));
+  const more = q.items.length > 10 ? `, and ${String(q.items.length - 10)} more` : "";
+  return `the other ${String(q.items.length)} items (${names.join(", ")}${more})`;
+}
+function itemAskInput(qs, lead, summaries) {
+  const about = qs.map((q) => {
+    const x = q.items[0];
+    return q.item_ref === "rest" ? `${itemName(q).replace(/^t/, "T")}: what should happen to them?` : `${itemName(q)}: ${x ? itemWords(x.detail, 200) : "it failed"}. What should happen to it?`;
+  });
+  const unique = about.map((a, i) => about.filter((b) => b === a).length > 1 ? `${a} (item ${String(i + 1)} of ${String(qs.length)})` : a);
+  return {
+    questions: qs.map((q, i) => {
+      return {
+        question: i === 0 ? `${lead}
+
+${unique[i] ?? ""}` : unique[i] ?? "",
+        header: q.item_ref === "rest" ? "The rest" : `Item ${String(i + 1)}`,
+        multiSelect: false,
+        options: q.options.map((o) => ({ label: o.label, description: optionDescription(summaries.get(o.option_id) ?? "", o.what_changes ?? "") }))
+      };
+    })
+  };
+}
+function strongestChoice(choices, offered, order2) {
+  const rank = (o) => o.route.action === "stop" ? 3 : o.route.action === "loop" ? 2 : o.verifies ? 0 : 1;
+  const at = (o) => o.route.action === "loop" ? order2.indexOf(o.route.to ?? "") : 0;
+  let best;
+  for (const c of choices) {
+    const o = offered.find((x) => x.option_id === c.option_id);
+    if (o && (!best || rank(o) > rank(best) || rank(o) === 2 && rank(best) === 2 && at(o) < at(best)))
+      best = o;
+  }
+  return best;
+}
+function perItem(choices) {
+  const out = choices.flatMap((c) => c.item_ref === "rest" && c.covers?.length ? c.covers.map((x) => ({ step_id: x.step_id, item_ref: x.ref.slice(0, 200), outcome: x.outcome, option_id: c.option_id, name: refName(x.ref) })) : [{ ...c, covers: void 0 }]);
+  if (out.length <= 60)
+    return out;
+  const last = out[59];
+  return [...out.slice(0, 59), { step_id: last?.step_id ?? "", item_ref: "rest", outcome: "mixed", option_id: choices.at(-1)?.option_id ?? "", name: `the other ${String(out.length - 59)} items` }];
+}
+function itemDirection(choices, offered) {
+  const lines3 = choices.map((c) => {
+    const o = offered.find((x) => x.option_id === c.option_id);
+    const label = o?.label ?? c.option_id;
+    const does = c.words !== void 0 ? `${label}: ${typographic(c.words)}` : o?.direction !== void 0 ? o.direction : o?.verifies ? `keep it as it is: verified by the person ("${label}")` : o?.route.action === "continue" || o?.route.action === "skip" ? `keep it as it is, flagged ("${label}")` : `"${label}"`;
+    return `- ${c.name}: ${does}`;
+  });
+  return `The person chose, item by item:
+${lines3.join("\n")}`;
+}
+var WARNING_OUTCOMES2 = /* @__PURE__ */ new Set(["possible", "unverified_url", "lookup_error", "unparsed_marker", "unverifiable", "not_in_abstract", "unscoped_none"]);
 var MAX_FAILING_ITEMS = 10;
 var QUESTION_ITEMS = 5;
 var FairleadServer = class _FairleadServer {
@@ -50024,6 +50378,13 @@ var FairleadServer = class _FairleadServer {
   resultsCards = /* @__PURE__ */ new Map();
   /** Each ticket's last refused hand-back of a port, for a patch of just its failing fields (braids' ask 113 A3). */
   refusedDrafts = /* @__PURE__ */ new Map();
+  /** The phase the person was last told the run is in, and the phases entered so far, by run (braids' B2). */
+  phaseAt = /* @__PURE__ */ new Map();
+  phasesSeen = /* @__PURE__ */ new Map();
+  /** A card asked item by item (braids' ask 109), by run/step: each item question as asked, for reading its answer. */
+  itemAsks = /* @__PURE__ */ new Map();
+  /** Item choices waiting on the person's confirmation of their own words on an item (ask 109), by run/step. */
+  itemPending = /* @__PURE__ */ new Map();
   otherPending = /* @__PURE__ */ new Map();
   /** Cards written so far, by run, step and round (deliver cards by run and "deliver"). */
   cardCounts = /* @__PURE__ */ new Map();
@@ -50104,7 +50465,7 @@ var FairleadServer = class _FairleadServer {
           result = this.inputs(run2, text2(args.ticket), meta, typeof args.part === "number" ? args.part : 1);
           break;
         case "heddle_output":
-          result = this.output(run2, text2(args.ticket), text2(args.port), args.content, meta, args.patch);
+          result = this.output(run2, text2(args.ticket), text2(args.port), args.content, meta, args.patch, args.unchanged === true, args.base === "served" || args.base === "refused" ? args.base : null);
           break;
         case "heddle_gate":
           result = await this.runGateStep(run2, text2(args.step_id));
@@ -50129,6 +50490,12 @@ var FairleadServer = class _FairleadServer {
           break;
         default:
           result = refused(`Unknown tool ${name}.`);
+      }
+      if (result.isError !== true && ["heddle_ticket", "heddle_gate", "heddle_step", "heddle_run"].includes(name)) {
+        const phase = this.phaseWords(run2, text2(args.step_id) || null);
+        if (phase)
+          result = { ...result, text: `${phase}
+${result.text}` };
       }
       run2.publish();
       this.keeper?.update();
@@ -50318,7 +50685,7 @@ ${then}` : done.length ? "" : "Call heddle_next."}`);
     this.keeper = null;
   }
   /** The server's fields a checkpoint saves (braids' ask 112), and those it leaves out on purpose. */
-  static SAVED = ["seenNonces", "stepParts", "runPlans", "choiceSeqs", "choiceCards", "directionFor", "openFindings", "pendingChanges", "raisedStops", "heldAnswerSeq", "offered", "copied", "cardsInForce", "otherPending", "cardCounts", "deliveryCards", "confirmLists", "focusCards", "resultsCards"];
+  static SAVED = ["seenNonces", "stepParts", "runPlans", "choiceSeqs", "choiceCards", "directionFor", "openFindings", "pendingChanges", "raisedStops", "heldAnswerSeq", "offered", "copied", "cardsInForce", "otherPending", "cardCounts", "deliveryCards", "confirmLists", "focusCards", "resultsCards", "itemAsks", "itemPending", "phaseAt", "phasesSeen"];
   /** Rebuilt by a new server (its options, bundle, helpers), or never carried across a restart (a remote answer in flight). */
   static NOT_SAVED = /* @__PURE__ */ new Set(["opts", "bundle", "run", "now", "gate", "cachedRuntimes", "keeper", "dashlab", "online", "pendingRemote", "recorderKnown", "refusedDrafts"]);
   /** Write the open run's checkpoint, sealed, to the plugin's data folder; a finished run's is removed. */
@@ -50405,7 +50772,7 @@ ${then}` : done.length ? "" : "Call heddle_next."}`);
         mine.clear();
         for (const a of saved)
           mine.add(a);
-      } else
+      } else if (saved !== void 0)
         self[k] = saved;
     }
     this.dashlab.restoreState(state.dashlab);
@@ -50573,7 +50940,33 @@ Then ask in one question with these options in this order, none marked as recomm
     const progress = progressCard(run2);
     if (validateKit("progress_card_v0_1", progress).length === 0)
       lines3.unshift(progress.line);
+    const phase = this.phaseWords(run2, progress.current_step_id);
+    if (phase)
+      lines3.unshift(phase);
     return ok(lines3.join("\n"));
+  }
+  /**
+   * What to tell the person as the run moves into a phase (braids' B2): at the first, the header with how many phases
+   * and how long a whole run took in test runs; at each change, the phase's number and label, with how long it took in
+   * test runs the first time through only (the figures are first passes'). A loop back names the phase again, no time.
+   * Figures are from Claude Code test runs and say so. Null when nothing changed or the braid declares no phases.
+   */
+  phaseWords(run2, stepId) {
+    const phases = runPhases(run2);
+    const k = stepId === null ? -1 : phases.findIndex((p) => p.steps.includes(stepId));
+    const phase = phases[k];
+    if (!phase || this.phaseAt.get(run2.runId) === phase.phase_id)
+      return null;
+    const seen = this.phasesSeen.get(run2.runId) ?? [];
+    const first = !seen.includes(phase.phase_id);
+    const took = first ? minutesWords(phase.typical_minutes) : null;
+    const line = `${String.fromCodePoint(9312 + k)} ${phase.label}${took ? ` \xB7 took ${took} in test runs` : ""}`;
+    const whole2 = minutesWords(run2.template.typical_minutes);
+    const header = seen.length === 0 ? `${String(phases.length)} phases${whole2 ? ` \xB7 ${whole2} in test runs (Claude Code, not the web)` : ""}. ` : "";
+    this.phaseAt.set(run2.runId, phase.phase_id);
+    if (first)
+      this.phasesSeen.set(run2.runId, [...seen, phase.phase_id]);
+    return `Tell the person in one line, before anything else this turn: "${header}${line}".`;
   }
   // ---------------------------------------------------------------- tickets, inputs, outputs
   /** A thread's declared tools (thread.json), from the run's bundle. */
@@ -50768,9 +51161,13 @@ ${limits.join("\n")}
 ${JSON.stringify(schema)}`;
       return spec.contract || spec.json === true ? `${p}: JSON${spec.contract ? ` (contract ${spec.contract})` : ""}.` : `${p}: plain text (Markdown).`;
     }).join("\n\n");
+    const carried = produces.filter((p) => (s.step.reads ?? []).includes(p) && run2.portSpec(p, s.step).contract !== null && run2.servedTo(s.step.step_id, p).length > 0);
+    const carry = carried.length ? `
+
+You were served ${carried.join(", ")} as well. One you don't change, hand back as it was: heddle_output({ ticket: "${ticket.ticket_id}", port, unchanged: true }). One you change in a few places, hand back as a JSON Patch of the version you were served: patch: [{ "op": "replace", "path": "/items/0/why_included", "value": "\u2026" }, \u2026] (RFC 6902: add, remove, replace, test). Write out in full only what you change throughout.` : "";
     return `${prompt}
 ---
-When you have finished, hand back each of these outputs with heddle_output (ticket ${ticket.ticket_id}): ${produces.map((p) => `${p} (${run2.portSpec(p, s.step).contract ?? "text"})`).join(", ")}. Then reply "done".
+When you have finished, hand back each of these outputs with heddle_output (ticket ${ticket.ticket_id}): ${produces.map((p) => `${p} (${run2.portSpec(p, s.step).contract ?? "text"})`).join(", ")}. Then reply "done".${carry}
 
 ${shapes}`;
   }
@@ -50793,7 +51190,7 @@ ${shapes}`;
     }
     return { ...doc, from_fingerprint: (versions.at(-2) ?? now).fingerprint, to_fingerprint: now.fingerprint };
   }
-  output(run2, ticketId, port, content2, meta, patch) {
+  output(run2, ticketId, port, content2, meta, patch, unchanged = false, base = null) {
     const { ticket, agentId } = this.caller(run2, ticketId, "heddle_output", meta);
     const s = run2.steps.get(ticket.step_id);
     if (!s)
@@ -50803,21 +51200,38 @@ ${shapes}`;
     const draftKey = `${ticket.ticket_id}/${port}`;
     if (patch === null)
       patch = void 0;
-    if (patch !== void 0) {
+    if (content2 === null && (unchanged || patch !== void 0))
+      content2 = void 0;
+    const served = (how) => {
+      const v = (s.step.reads ?? []).includes(port) ? run2.servedTo(s.step.step_id, port).at(-1) : void 0;
+      if (!v)
+        throw new Refusal(`${port} wasn't served to this step, so it can't be handed back ${how}: hand back the whole output with content.`);
+      if (ticket.outputs.some((o) => o.port === port))
+        throw new Refusal(`${port} was already handed back on this ticket, so the version served is no longer the one to start from: hand back the whole output with content.`);
+      return v;
+    };
+    const spec = run2.portSpec(port, s.step);
+    const servedContent = (v) => spec.contract !== null || spec.json === true ? JSON.parse(run2.readPort(v)) : run2.readPort(v);
+    if (unchanged) {
+      if (content2 !== void 0 || patch !== void 0)
+        throw new Refusal("Give unchanged, content or patch: one of them.");
+      content2 = servedContent(served("unchanged"));
+    } else if (patch !== void 0) {
       if (content2 !== void 0)
         throw new Refusal("Give content or patch, not both.");
       const draft = this.refusedDrafts.get(draftKey);
-      if (draft === void 0)
-        throw new Refusal(`Nothing of ${port} was refused on this ticket to patch: hand back the whole output with content.`);
-      content2 = applyPatch(draft, patch);
+      const from = base ?? (draft === void 0 ? "served" : "refused");
+      if (from === "refused" && draft === void 0)
+        throw new Refusal(`Nothing of ${port} was refused on this ticket to patch: give base "served" to patch the version you were served, or hand back the whole output with content.`);
+      content2 = applyPatch(from === "refused" ? draft : servedContent(served("patched")), patch);
     } else if (content2 === void 0)
-      throw new Refusal("Give content (the whole output), or patch after a refusal.");
+      throw new Refusal("Give content (the whole output), unchanged: true for an output served as it was, or patch.");
     try {
       return this.accept(run2, ticket, agentId, s, port, content2);
     } catch (err) {
       if (err instanceof Refusal && err.patchable && typeof content2 === "object" && content2 !== null) {
         this.refusedDrafts.set(draftKey, content2);
-        throw fieldRefusal(`${err.message.replace(/\.$/, "")}. Put right just these with heddle_output on ticket ${ticket.ticket_id}, port ${port}, and patch: [{ "path": "<as named above>", "value": <its new value> }, \u2026] (a value can be a whole object; a missing field's path is its own, like /verdict); the rest is kept as you handed it back.`);
+        throw fieldRefusal(`${err.message.replace(/\.$/, "")}. Put right just these with heddle_output on ticket ${ticket.ticket_id}, port ${port}, and patch: [{ "path": "<as named above>", "value": <its new value> }, \u2026] (a value can be a whole object; a missing field's path is its own, like /verdict); the rest is kept as you handed it back. That patch changes this refused hand-back; to patch the version you were served instead, give base: "served".`);
       }
       throw err;
     }
@@ -51335,7 +51749,7 @@ ${JSON.stringify(round.input, null, 1)}
       return last.data.status === "fail" ? [] : ["  - the check did not finish, so it named no items"];
     const r = stored?.result;
     const evidence = (r?.evidence ?? []).filter((e) => typeof e.ref === "string" && typeof e.detail === "string" && e.ref !== "summary");
-    const notWarning = evidence.filter((e) => !WARNING_OUTCOMES.has(String(e.detail).split(";")[0]?.trim() ?? ""));
+    const notWarning = evidence.filter((e) => !WARNING_OUTCOMES2.has(String(e.detail).split(";")[0]?.trim() ?? ""));
     const failures = typeof r?.failed === "number" ? notWarning.length >= r.failed ? notWarning.slice(0, r.failed) : evidence.slice(0, r.failed) : evidence;
     const name = (ref) => /^[A-Za-z0-9_.:-]+$/.test(ref) ? ref : typographic(ref.replace(/\s+/g, " ").slice(0, refChars));
     const shown2 = failures.slice(0, max).map((e) => `  - ${name(String(e.ref))}: ${itemWords(String(e.detail), refChars)}`);
@@ -51497,7 +51911,7 @@ ${lines3.join("\n")}`, lines: lines3, adjudicated, recheck, items: items2 };
           tag: `blocking \xB7 ${check2}`,
           // The detail in words, its other parts (a count) kept; the record found and the place have bullets of their own.
           listedIn,
-          bullets: [`- **What failed:** ${caseText(itemWords(e.detail.split(";").map((x) => x.trim()).filter((x) => !/^(found|found_doi|found_venue|where|location)=/.test(x)).join("; ") || outcome, 200), 300)}`, ...closest.length ? [`- **Closest record:** ${closest.join(", ")}`] : [], ...where ? [`- **Where:** ${caseText(where, 200)}`] : []]
+          bullets: [`- **What failed:** ${caseText(itemWords(e.detail.split(";").map((x) => x.trim()).filter((x) => !/^(found|found_doi|found_venue|where|location)=/.test(x)).join("; ") || outcome, 200), 300)}`, ...closest.length ? [`- **Closest record:** ${closest.join(", ")}`] : [], ...closest.length && /^\d{1,3}$/.test(part("sim")) && Number(part("sim")) > 0 ? [`- **How close:** the titles are ${String(Math.min(100, Number(part("sim"))))}% alike`] : [], ...where ? [`- **Where:** ${caseText(where, 200)}`] : []]
         });
       }
       unread += f.total - f.items.length;
@@ -51584,9 +51998,48 @@ ${lines3.join("\n")}`, lines: lines3, adjudicated, recheck, items: items2 };
       return { items: [], total: 0, unfinished: last.data.status !== "fail", path: null };
     const r = stored?.result;
     const evidence = (r?.evidence ?? []).filter((e) => typeof e.ref === "string" && typeof e.detail === "string" && e.ref !== "summary");
-    const notWarning = evidence.filter((e) => !WARNING_OUTCOMES.has(e.detail.split(";")[0]?.trim() ?? ""));
+    const notWarning = evidence.filter((e) => !WARNING_OUTCOMES2.has(e.detail.split(";")[0]?.trim() ?? ""));
     const failures = typeof r?.failed === "number" ? notWarning.length >= r.failed ? notWarning.slice(0, r.failed) : evidence.slice(0, r.failed) : evidence;
     return { items: failures.slice(0, max), total: failures.length, unfinished: false, path: stored?.path ?? null };
+  }
+  /**
+   * A repair decide's item questions (braids' ask 109): when an option there is offered for some outcomes only, each
+   * failing item of the failed checks is its own question with the options that fit its outcome; past four items, the
+   * first three and one question for the rest, with the options that fit them all. Null when the decide has none.
+   */
+  itemQuestions(run2, stepId, offered) {
+    if (!offered.some((o) => o.for_outcomes))
+      return null;
+    const items2 = run2.repairing(stepId).filter((g) => !isCapGate(g.step)).flatMap((g) => this.failedEvidence(run2, g.step.step_id, Infinity).items.map((e) => ({ step_id: g.step.step_id, ref: e.ref, detail: e.detail, outcome: e.detail.split(";")[0]?.trim() ?? "" })));
+    if (items2.length === 0)
+      return null;
+    const fits = (o, outcomes) => !o.for_outcomes || outcomes.every((x) => o.for_outcomes?.includes(x));
+    const four = (os) => {
+      if (os.length <= 4)
+        return os;
+      const stop = os.find((o) => o.route.action === "stop");
+      return stop ? [...os.filter((o) => o !== stop).slice(0, 3), stop] : os.slice(0, 4);
+    };
+    const own = items2.length <= 4 ? items2 : items2.slice(0, 3);
+    const rest = items2.length <= 4 ? [] : items2.slice(3);
+    const questions = own.map((x) => ({ step_id: x.step_id, item_ref: x.ref.slice(0, 200), outcome: x.outcome, items: [x], options: four(offered.filter((o) => fits(o, [x.outcome]))) }));
+    if (rest.length) {
+      const outcomes = [...new Set(rest.map((x) => x.outcome))];
+      questions.push({ step_id: rest[0]?.step_id ?? stepId, item_ref: "rest", outcome: outcomes.length === 1 ? outcomes[0] ?? "mixed" : "mixed", items: rest, options: four(offered.filter((o) => fits(o, outcomes))) });
+    }
+    return questions.every((q) => q.options.length >= 2) ? questions : null;
+  }
+  /**
+   * How many failures a failed check's latest result names, when its items are exactly them: `failed` and as many
+   * failing (non-warning) items; else -1, so no verification can claim to cover them all (blind check of option A).
+   */
+  failureCount(run2, stepId) {
+    const r = run2.gateResultOf(stepId)?.result;
+    const all = (r?.evidence ?? []).filter((e) => typeof e.ref === "string" && typeof e.detail === "string" && e.ref !== "summary");
+    const failing = all.filter((e) => !WARNING_OUTCOMES2.has(String(e.detail).split(";")[0]?.trim() ?? ""));
+    const failed = typeof r?.failed === "number" ? r.failed : failing.length;
+    const exact = failing.length === failed || all.length === failed;
+    return exact && failed > 0 && failed === this.failedEvidence(run2, stepId, Infinity).total ? failed : -1;
   }
   /** "literature searcher": the thread's plain name for the step's subagent, else its role from the thread id. */
   threadName(run2, stepId) {
@@ -52227,6 +52680,120 @@ ${JSON.stringify(copied, null, 1)}
 ${JSON.stringify(input, null, 1)}
 \`\`\`` };
   }
+  /**
+   * The person's answer to a card asked item by item (braids' ask 109): each item's choice, read against its own
+   * question; their own words on an item are put back to them first, naming what Heddle will do with it, and recorded
+   * only once they confirm. A typed stop on an item is a stop.
+   */
+  itemAnswer(run2, s, offered, ia, startedSeq) {
+    const key2 = `${run2.runId}/${s.step.step_id}`;
+    const card = this.cardsInForce.get(key2);
+    const newest = run2.findAnswer(startedSeq);
+    const again = "Ask the person the card again, with exactly the AskUserQuestion input heddle_card gave, then record their answer.";
+    if (!card || !newest)
+      throw new Refusal("No answer from the person is on record for this decision. Ask them first (AskUserQuestion), then call heddle_decision.");
+    const asked = run2.answerAsked.get(newest.seq);
+    const pending = this.itemPending.get(key2);
+    const labelOf = (id) => offered.find((o) => o.option_id === id)?.label ?? id;
+    const confirm = (choices2, cardSeq) => {
+      const lines3 = choices2.filter((c) => c.words !== void 0).map((c) => {
+        const o = offered.find((x) => x.option_id === c.option_id);
+        const does = o?.route.action === "loop" ? `send it back ("${labelOf(c.option_id)}") with your words as what to do` : `carry on with it as "${labelOf(c.option_id)}", with your words recorded beside it`;
+        return `For ${c.name} you said ${typographic(c.words ?? "")}: Heddle will ${does}.`;
+      });
+      const input = {
+        questions: [
+          {
+            question: `${lines3.join(" ")} Do that?`,
+            header: "Your words",
+            multiSelect: false,
+            options: [
+              { label: "Yes, do that", description: "Record your choices on every item, with your words." },
+              { label: "Choose a different option", description: "Nothing is recorded; the card is asked again." }
+            ]
+          }
+        ]
+      };
+      this.itemPending.set(key2, { fp: askFingerprint(input), cardSeq, choices: choices2 });
+      return { result: `The person answered in their own words, so nothing is recorded yet. Ask them with AskUserQuestion using exactly this input, then call heddle_decision again with step_id ${s.step.step_id} and kind escalation.
+\`\`\`json
+${JSON.stringify(input, null, 1)}
+\`\`\`` };
+    };
+    if (pending && asked === pending.fp) {
+      const values = answerValues(run2.answerText.get(newest.seq));
+      if (values.some((v) => sameLabel(v, "Yes, do that")))
+        return { choices: pending.choices, cardSeq: pending.cardSeq };
+      if (values.some((v) => sameLabel(v, "Choose a different option"))) {
+        this.itemPending.delete(key2);
+        return { result: `The person wants to choose again: nothing is recorded. ${again}` };
+      }
+      const words2 = values.join("\n").trim();
+      if (words2 === "") {
+        this.itemPending.delete(key2);
+        return { result: `Nothing is recorded. ${again}` };
+      }
+      if (saysStop(words2))
+        return { result: "The person said to stop: call heddle_decision with kind abandon." };
+      return confirm(pending.choices.map((c) => c.words !== void 0 ? { ...c, words: words2 } : c), pending.cardSeq);
+    }
+    if (!cardAsked(card, asked)) {
+      throw new Refusal(`The person was asked something that is not the card's questions (${card.path}). Ask again with exactly the AskUserQuestion input heddle_card gave${card.fallback_fp ? `, or exactly the one in ${card.path.replace(/\.json$/, ".fallback.json")} if Heddle said to ask with the case inside the question` : ""}, then record their answer.`);
+    }
+    let said = {};
+    try {
+      const v = JSON.parse(run2.answerText.get(newest.seq) ?? "");
+      if (typeof v === "object" && v !== null && !Array.isArray(v))
+        said = v;
+    } catch {
+    }
+    const choices = [];
+    const other = s.step.other;
+    const declared = other && "as_option" in other ? other.as_option : null;
+    let ownWords = false;
+    for (const it of ia.items) {
+      const base = { step_id: it.step_id, item_ref: it.item_ref, outcome: it.outcome, name: it.name, ...it.covers ? { covers: it.covers } : {} };
+      const v = it.questions.map((q) => said[q]).find((x) => typeof x === "string" && x.trim() !== "");
+      if (v === void 0)
+        throw new Refusal(`The person's answer doesn't answer the question about ${it.name}. ${again}`);
+      const mine = offered.filter((o) => it.option_ids.includes(o.option_id));
+      const picked = mine.find((o) => sameLabel(v, o.label));
+      if (picked) {
+        choices.push({ ...base, option_id: picked.option_id });
+        continue;
+      }
+      const named = offered.find((o) => sameLabel(v, o.label));
+      if (named)
+        throw new Refusal(`"${named.label}" isn't one of the options for ${it.name} (${mine.map((o) => `"${o.label}"`).join(", ")}). ${again}`);
+      if (saysStop(v)) {
+        const stop = offered.find((o) => o.route.action === "stop");
+        if (stop) {
+          choices.push({ ...base, option_id: stop.option_id });
+          continue;
+        }
+        return { result: "The person said to stop: call heddle_decision with kind abandon." };
+      }
+      const notStop = (o) => o.route.action !== "stop";
+      const target = (
+        // Never a verification from words: only the person choosing it verifies an item (blind check of option A).
+        mine.find((o) => o.option_id === declared && notStop(o) && !o.verifies) ?? (other && "none" in other ? void 0 : mine.find((o) => o.route.action === "loop") ?? mine.find((o) => (o.route.action === "continue" || o.route.action === "skip") && !o.verifies))
+      );
+      if (!target) {
+        const quoted = typographic(v);
+        if (other && "none" in other)
+          return { result: `Tell the person, in these words: ${other.none} Their words about ${it.name} were: ${quoted}. Nothing is recorded. ${again}` };
+        return {
+          result: `Heddle can't send ${it.name} back or carry on with it flagged here, so their words (${quoted}) can't be recorded as a choice for it. Tell them so, then ask the card again; if they want to stop instead, ask them with AskUserQuestion using exactly this input, then call heddle_decision with kind abandon.
+\`\`\`json
+${JSON.stringify(STOP_ASK, null, 1)}
+\`\`\``
+        };
+      }
+      choices.push({ ...base, option_id: target.option_id, words: v.trim() });
+      ownWords = true;
+    }
+    return ownWords ? confirm(choices, newest.seq) : { choices, cardSeq: newest.seq };
+  }
   decision(run2, args) {
     let kind2 = text2(args.kind);
     const kinds = ["focus_accept", "focus_change", "escalation", "branch_outcome", "output_choice", "waiver", "input_rule_loosen", "abandon"];
@@ -52269,6 +52836,8 @@ ${JSON.stringify(input, null, 1)}
     let option = null;
     let offered = [];
     let otherWords = null;
+    let verifiedIds = [];
+    let itemPick = null;
     const routed = s !== void 0 && s.step.kind === "decide" && (s.step.options?.length ?? 0) > 0 && kind2 !== "abandon";
     if (routed) {
       offered = this.offered.get(`${run2.runId}/${s.step.step_id}`) ?? [];
@@ -52281,7 +52850,18 @@ ${JSON.stringify(input, null, 1)}
         const replayed = this.heldAnswerSeq !== null && typeof args.held_own_words === "string" ? args.held_own_words : null;
         if (replayed !== null)
           otherWords = replayed;
-        const own = this.pendingRemote || this.heldAnswerSeq !== null ? null : this.otherAnswer(run2, s, offered, text2(args.option_id), startedSeq);
+        const ia = this.itemAsks.get(`${run2.runId}/${s.step.step_id}`);
+        if (ia && ia.round === s.round && !this.pendingRemote && this.heldAnswerSeq === null) {
+          const r = this.itemAnswer(run2, s, offered, ia, startedSeq);
+          if ("result" in r)
+            return ok(r.result);
+          itemPick = r;
+          const strongest = strongestChoice(r.choices, offered, run2.template.steps.map((x) => x.step_id));
+          if (strongest && text2(args.option_id) !== strongest.option_id) {
+            throw new Refusal(`The person's choices, item by item, come to "${strongest.label}" (option_id ${strongest.option_id}): ${strongest.route.action === "stop" ? "a stop on any item stops the run" : strongest.route.action === "loop" ? "a send-back on any item sends the work back" : "every item carries on"}. Record option_id ${strongest.option_id}.`);
+          }
+        }
+        const own = itemPick || this.pendingRemote || this.heldAnswerSeq !== null ? null : this.otherAnswer(run2, s, offered, text2(args.option_id), startedSeq);
         if (own && "result" in own)
           return ok(own.result);
         if (own)
@@ -52298,8 +52878,18 @@ ${JSON.stringify(input, null, 1)}
           kind2 = "run_location";
         const failedGates = run2.repairing(s.step.step_id);
         if (failedGates.length > 0 && (option.route.action === "continue" || option.route.action === "skip")) {
-          kind2 = "waiver";
-          waived = failedGates.map((g) => g.step.step_id);
+          const picks = itemPick ? perItem(itemPick.choices) : [];
+          const allVerified = picks.length > 0 && failedGates.every((g) => {
+            const mine = picks.filter((c) => c.step_id === g.step.step_id);
+            return mine.length > 0 && mine.length === this.failureCount(run2, g.step.step_id) && mine.every((c) => offered.find((o) => o.option_id === c.option_id)?.verifies === true);
+          });
+          if (allVerified) {
+            kind2 = "verification";
+            verifiedIds = failedGates.map((g) => g.step.step_id);
+          } else {
+            kind2 = "waiver";
+            waived = failedGates.map((g) => g.step.step_id);
+          }
         }
         for (const port of option.confirms ?? []) {
           if (run2.getPort(port)?.contract !== "result_thresholds_v0_1")
@@ -52355,6 +52945,16 @@ ${JSON.stringify(input, null, 1)}
         if (bad.length)
           throw new Refusal(`The person's direction could not be recorded: ${bad.slice(0, 2).join("; ")}`);
       }
+    } else if (option && itemPick) {
+      const cardSaid = run2.answerText.get(itemPick.cardSeq) ?? null;
+      if (answer.seq !== itemPick.cardSeq)
+        answer.said = JSON.stringify({ item_answers: cardSaid, confirmed: answer.said });
+      if (takesDirection(option)) {
+        direction = { schema: "fairlead.kit.person_direction/0.1", decision_id: decisionId, option_id: option.option_id, text: capChars(itemDirection(itemPick.choices, offered), 2e3) };
+        const bad = validateKit("person_direction_v0_1", direction);
+        if (bad.length)
+          throw new Refusal(`The person's direction could not be recorded: ${bad.slice(0, 2).join("; ")}`);
+      }
     } else if (option && otherWords !== null) {
       if (takesDirection(option)) {
         direction = { schema: "fairlead.kit.person_direction/0.1", decision_id: decisionId, option_id: option.option_id, text: capChars(otherWords, 2e3) };
@@ -52373,7 +52973,7 @@ ${JSON.stringify(input, null, 1)}
           schema: "fairlead.kit.person_direction/0.1",
           decision_id: decisionId,
           option_id: option.option_id,
-          text: capChars(m.direction || `The person chose "${option.label}" and gave no further direction.`, 2e3)
+          text: capChars(m.direction || option.direction || `The person chose "${option.label}" and gave no further direction.`, 2e3)
         };
         const bad = validateKit("person_direction_v0_1", direction);
         if (bad.length)
@@ -52401,7 +53001,8 @@ ${JSON.stringify(input, null, 1)}
           schema: "fairlead.kit.person_direction/0.1",
           decision_id: decisionId,
           option_id: option.option_id,
-          text: capChars(words2 || `The person chose "${option.label}" and gave no further direction.`, 2e3)
+          // A loop's preset direction when the person gave none of their own (braids' ask 109).
+          text: capChars(words2 || option.direction || `The person chose "${option.label}" and gave no further direction.`, 2e3)
         };
         const bad = validateKit("person_direction_v0_1", direction);
         if (bad.length)
@@ -52486,6 +53087,8 @@ ${JSON.stringify(input, null, 1)}
       run2.useAnswer(answer.seq);
     if (asDirection)
       run2.useAnswer(asDirection.seq);
+    if (itemPick && itemPick.cardSeq !== answer.seq)
+      run2.useAnswer(itemPick.cardSeq);
     const listKey = s ? `${run2.runId}/${s.step.step_id}` : "";
     const list = this.confirmLists.get(listKey);
     const confirmed = list && !remote && this.cardsInForce.get(listKey)?.path === list.card ? list.lines : void 0;
@@ -52496,7 +53099,9 @@ ${JSON.stringify(input, null, 1)}
       // The confirm list put to the person with the question (braids' ask 35).
       ...confirmed ? { confirm_list: { lines: confirmed, fingerprint: jcs1(confirmed) } } : {},
       // The person's choice on each adopted finding (braids' ask 57).
-      ...choice?.kind === "findings" && choice.done ? { finding_choices: choice.picks.map((c) => ({ ...c })) } : {}
+      ...choice?.kind === "findings" && choice.done ? { finding_choices: choice.picks.map((c) => ({ ...c })) } : {},
+      // The person's choice on each failing item, by name, with any words of their own (braids' ask 109).
+      ...itemPick ? { item_choices: perItem(itemPick.choices).map((c) => ({ ...c, label: offered.find((o) => o.option_id === c.option_id)?.label ?? c.option_id, verified_by_person: offered.find((o) => o.option_id === c.option_id)?.verifies === true })) } : {}
     });
     if (kind2 === "abandon") {
       for (let i = 0; i < run2.integrity.length; i++) {
@@ -52521,7 +53126,9 @@ ${JSON.stringify(input, null, 1)}
       acts_on: focusVersion ? [focusVersion.fingerprint] : stepId ? shownAt(run2, stepId) : [],
       ...remote ? { remote_answer: { stop_id: remote.stopId, answer_fingerprint: remote.answerFingerprint, summary_fingerprint: remote.summaryFingerprint, signature_verified: true } } : {},
       ...kind2 === "waiver" ? { waived_step_ids: waived } : {},
+      ...kind2 === "verification" ? { verified_step_ids: verifiedIds } : {},
       ...option ? { option_id: option.option_id } : {},
+      ...itemPick ? { item_choices: perItem(itemPick.choices).map(({ step_id, item_ref, outcome: outcome2, option_id }) => ({ step_id, item_ref, outcome: outcome2, option_id })) } : {},
       ...card ? { card_ref: { path: card.path, fingerprint: card.fingerprint } } : {}
     });
     if (frame && s?.step.choose)
@@ -52545,6 +53152,10 @@ ${JSON.stringify(input, null, 1)}
     run2.decisions.push({ decision_id: decisionId, at: answer.at, by_role: "user", kind: kind2, text_ref: run2.ref(textPath), text_fingerprint: raw(readFileSync16(textPath)) });
     if (s && run2.caseAsk?.step_id === s.step.step_id)
       run2.caseAsk = null;
+    if (s) {
+      this.itemAsks.delete(`${run2.runId}/${s.step.step_id}`);
+      this.itemPending.delete(`${run2.runId}/${s.step.step_id}`);
+    }
     if (moved.changes.length && s) {
       const waiverId = newId("dec", this.now().getTime());
       run2.log.append("decision_recorded", {
@@ -52577,6 +53188,13 @@ ${JSON.stringify(input, null, 1)}
         const w = run2.steps.get(id);
         if (w?.status === "failed")
           w.status = "waived";
+      }
+    }
+    if (kind2 === "verification") {
+      for (const id of verifiedIds) {
+        const w = run2.steps.get(id);
+        if (w?.status === "failed")
+          w.status = "verified";
       }
     }
     if (option && s)
@@ -52738,9 +53356,28 @@ If they choose "${FOCUS_ACCEPT}", call heddle_decision({ kind: "focus_accept", s
     const caseLines = block && copied.answer_by === "question_tool" ? [] : this.caseLines(run2, stepId);
     const parts = [card.question, ...lines3 ? [lines3.join("\n")] : [], ...caseLines.length ? [caseLines.join("\n")] : []];
     const asked = parts.length > 1 ? { ...card, question: parts.join("\n\n") } : card;
-    const ask = copied.answer_by === "question_tool" ? askInput(asked, null) : null;
+    const itemQs = copied.answer_by === "question_tool" ? this.itemQuestions(run2, stepId, copied.options) : null;
+    const summaries = new Map(card.options.map((o) => [o.option_id, o.summary]));
+    const ask = itemQs ? itemAskInput(itemQs, asked.question, summaries) : copied.answer_by === "question_tool" ? askInput(asked, null) : null;
     const fallbackLines = block && ask !== null ? this.caseLines(run2, stepId) : [];
-    const fallback = fallbackLines.length ? askInput({ ...asked, question: [asked.question, fallbackLines.join("\n")].join("\n\n") }, null) : null;
+    const withCase = [asked.question, fallbackLines.join("\n")].join("\n\n");
+    const fallback = fallbackLines.length ? itemQs ? itemAskInput(itemQs, withCase, summaries) : askInput({ ...asked, question: withCase }, null) : null;
+    if (itemQs && ask) {
+      const qs = ask.questions;
+      this.itemAsks.set(key2, {
+        round: s.round,
+        items: itemQs.map((q, i) => ({
+          step_id: q.step_id,
+          item_ref: q.item_ref,
+          outcome: q.outcome,
+          name: itemName(q),
+          questions: [qs[i]?.question ?? "", ...i === 0 && fallback ? [fallback.questions[0]?.question ?? ""] : []],
+          option_ids: q.options.map((o) => o.option_id),
+          ...q.item_ref === "rest" ? { covers: q.items.map((x) => ({ step_id: x.step_id, ref: x.ref, outcome: x.outcome })) } : {}
+        }))
+      });
+    } else
+      this.itemAsks.delete(key2);
     const directing = copied.options.filter((o) => o.takes_direction);
     const directionAsk = ask !== null && loops ? askInput({ question: directionQuestion(directing, (s.step.reads ?? []).includes("decisions")), options: [] }, null) : null;
     if (directionAsk) {
@@ -52993,7 +53630,7 @@ ${renderDelivery({ ...last, next: items2 })}`);
    * braids' M5 on 0.3.9: offering a review whose loop is spent leaves a card with only its stop).
    */
   canSendBack(run2, stepId, target) {
-    return (run2.steps.get(stepId)?.step.options ?? []).some((o) => o.route.action === "loop" && !o.hide_when_failed?.some((id) => ["failed", "waived"].includes(run2.steps.get(id)?.status ?? "")) && (this.repairBudget(run2, stepId, o) ?? this.loopRound(run2, target ?? o.route.to ?? "")).allowed);
+    return (run2.steps.get(stepId)?.step.options ?? []).some((o) => o.route.action === "loop" && !o.hide_when_failed?.some((id) => ["failed", "waived", "verified"].includes(run2.steps.get(id)?.status ?? "")) && (this.repairBudget(run2, stepId, o) ?? this.loopRound(run2, target ?? o.route.to ?? "")).allowed);
   }
   /** Where a review answer on this card loops: the decide's review_to, else its supply's help_to. */
   reviewTarget(run2, stepId) {
@@ -53006,7 +53643,8 @@ ${renderDelivery({ ...last, next: items2 })}`);
       return null;
     const round = run2.steps.get(stepId)?.round ?? 1;
     const since = o.budget.kind === "round" ? run2.log.ofType("step_started").find((e) => e.step_id === stepId && e.data.round === round)?.seq ?? Number.POSITIVE_INFINITY : 0;
-    const used = run2.log.events.filter((e) => e.type === "decision_recorded" && e.seq > since && e.data.blocking_step_id === stepId && e.data.option_id === o.option_id).length;
+    const chose = (d2) => d2.option_id === o.option_id || Array.isArray(d2.item_choices) && d2.item_choices.some((c) => c.option_id === o.option_id);
+    const used = run2.log.events.filter((e) => e.type === "decision_recorded" && e.seq > since && e.data.blocking_step_id === stepId && chose(e.data)).length;
     return { next: used + 1, max: o.budget.max, allowed: used < o.budget.max };
   }
   /** R2: the options in template order, each with what happens next; a spent loop is left out. */
@@ -53031,6 +53669,7 @@ ${renderDelivery({ ...last, next: items2 })}`);
     const next = this.nextStepWords(run2, stepId);
     const change = choices.some((o) => o.change_frame !== void 0 || o.unless_stated) ? this.frameChangeFor(run2, stepId) : null;
     const cap2 = this.isCapCard(run2, stepId) && failedIds.length > 0;
+    const failingOutcomes = new Set(run2.repairing(stepId).filter((g) => !isCapGate(g.step)).flatMap((g) => this.failedEvidence(run2, g.step.step_id, Infinity).items.map((e) => e.detail.split(";")[0]?.trim() ?? "")));
     for (const o of choices) {
       const { action } = o.route;
       const to = action === "loop" ? this.loopTo(run2, stepId, o) : o.route.to;
@@ -53040,9 +53679,11 @@ ${renderDelivery({ ...last, next: items2 })}`);
         continue;
       if (o.unless_stated && change?.allStated)
         continue;
-      if (o.hide_when_failed?.some((id) => ["failed", "waived"].includes(run2.steps.get(id)?.status ?? "")))
+      if (o.hide_when_failed?.some((id) => ["failed", "waived", "verified"].includes(run2.steps.get(id)?.status ?? "")))
         continue;
-      if (o.only_when_failed && !o.only_when_failed.some((id) => ["failed", "waived"].includes(run2.steps.get(id)?.status ?? "")))
+      if (o.only_when_failed && !o.only_when_failed.some((id) => ["failed", "waived", "verified"].includes(run2.steps.get(id)?.status ?? "")))
+        continue;
+      if (o.for_outcomes && !o.for_outcomes.some((x) => failingOutcomes.has(x)))
         continue;
       let what;
       if (action === "continue" && fcase && next?.revises && s?.step.choose_findings)
@@ -53069,19 +53710,20 @@ ${renderDelivery({ ...last, next: items2 })}`);
           continue;
         }
         const count3 = b ? `send-back ${String(r.next)} of ${String(r.max)}` : `round ${String(r.next)} of ${String(r.max)}`;
-        const items2 = (change?.questions ?? []).map((q) => q.label).join(", ");
+        const items3 = (change?.questions ?? []).map((q) => q.label).join(", ");
         const context = (change?.context ?? []).join(" ");
-        what = o.change_frame !== void 0 ? `go back to the card at step ${to ?? ""}, where the person changes the study specification (${items2})${context ? `; ${context.replace(/\.$/, "")}` : ""}, ${count3}` : this.capLoop(run2, stepId, to) ? `run the checkers again from step ${to ?? ""}, blind, each told what was already reported and asked only for new problems, ${count3}` : fcase && fcase.text !== "" && run2.repairing(stepId).length === 0 ? `send ${fcase.adjudicated ? "these findings" : "the re-check's findings"} back to ${run2.steps.get(to ?? "")?.step.kind === "revise" ? `the reviser (step ${to ?? ""})` : `step ${to ?? ""}`} to be fixed, ${count3}` : !run2.repairing(stepId).some((g) => !isCapGate(g.step)) ? `go back to step ${to ?? ""} for another revision pass, ${count3}` : `send the work back to ${this.makerWords(run2, to ?? "")} to correct or remove ${this.failedCountWords(run2, failedIds)}, with the failed checks' results, then the checks run again, ${count3}`;
+        what = o.change_frame !== void 0 ? `go back to the card at step ${to ?? ""}, where the person changes the study specification (${items3})${context ? `; ${context.replace(/\.$/, "")}` : ""}, ${count3}` : this.capLoop(run2, stepId, to) ? `run the checkers again from step ${to ?? ""}, blind, each told what was already reported and asked only for new problems, ${count3}` : fcase && fcase.text !== "" && run2.repairing(stepId).length === 0 ? `send ${fcase.adjudicated ? "these findings" : "the re-check's findings"} back to ${run2.steps.get(to ?? "")?.step.kind === "revise" ? `the reviser (step ${to ?? ""})` : `step ${to ?? ""}`} to be fixed, ${count3}` : !run2.repairing(stepId).some((g) => !isCapGate(g.step)) ? `go back to step ${to ?? ""} for another revision pass, ${count3}` : `send the work back to ${this.makerWords(run2, to ?? "")} to correct or remove ${this.failedCountWords(run2, failedIds)}, with the failed checks' results, then the checks run again, ${count3}`;
       }
       offered.push(o);
       whats.push(`${what.charAt(0).toUpperCase()}${what.slice(1)}.`);
       lines3.push(`"${o.label}" (option_id ${o.option_id}): ${what}.`);
     }
     this.offered.set(`${run2.runId}/${stepId}`, offered);
+    const items2 = this.itemQuestions(run2, stepId, offered);
     const notes = [];
     if (dropped)
       notes.push(`No more revision passes are allowed (${String(max)} of ${String(max)} have run), so the option to go back is not offered.`);
-    const directed = (o) => o.route.action === "continue" && o.takes_direction === true || o.route.action === "loop" && o.change_frame === void 0 && !this.capLoop(run2, stepId, this.loopTo(run2, stepId, o)) && !(s?.step.supply && run2.steps.get(o.route.to ?? "")?.step.kind === "gate");
+    const directed = (o) => o.route.action === "continue" && o.takes_direction === true || o.route.action === "loop" && o.direction === void 0 && o.change_frame === void 0 && !this.capLoop(run2, stepId, this.loopTo(run2, stepId, o)) && !(s?.step.supply && run2.steps.get(o.route.to ?? "")?.step.kind === "gate");
     const directionWords = directionQuestion(offered.filter(directed), (s?.step.reads ?? []).includes("decisions"));
     if (offered.some(directed))
       notes.push(`${directionWords} (asked only if you choose ${offered.filter(directed).map((o) => `"${o.label}"`).join(" or ")})`);
@@ -53092,12 +53734,13 @@ ${renderDelivery({ ...last, next: items2 })}`);
       // The person answers a frame change on the card, so it takes no direction (braids' ask 45).
       options: offered.map((o, i) => ({ ...o, what_changes: whats[i] ?? "", takes_direction: directed(o) })),
       notes,
-      answer_by: answerBy(offered.length)
+      // Asked item by item, each question has at most four options (braids' ask 109).
+      answer_by: items2 ? "question_tool" : answerBy(offered.length)
     });
     return (cap2 ? this.capLead(run2, failedIds) : failedGate === null ? "" : `Step${failedIds.length > 1 ? "s" : ""} ${failedGate} (gate) failed.${failedIds.map((id) => this.failedCase(run2, id)).join("")}
 `) + `Show the person what needs their decision for step ${stepId} (in plain words), then ask them with AskUserQuestion, using exactly these options in this order, with these labels:
 ` + lines3.map((l) => `- ${l}`).join("\n") + `
-Tell them what each option does. Use the same wording and order every time, and never mark an option as recommended: any recommendation is information in your summary, not a choice made for them.` + (dropped ? ` No more revision passes are allowed (${String(max)} of ${String(max)} have run), so the option to go back is not offered.` : "") + (spent ? cap2 ? " Checking again has been used, so it is not offered again." : " This decision's send-backs are used up, so the option to send it back is not offered." : "") + (offered.some((o) => directed(o) && !(s?.step.supply && run2.steps.get(o.route.to ?? "")?.step.kind === "gate")) ? ` Only if they choose ${offered.filter(directed).map((o) => `"${o.label}"`).join(" or ")}, ask them a second question on its own, "${directionWords}"; heddle_card gives its exact input. Don't ask it after any other choice.` : "") + ` Then call heddle_decision with kind escalation, step_id ${stepId}, option_id set to the chosen option's id, and text summarising what they decided.`;
+Tell them what each option does. Use the same wording and order every time, and never mark an option as recommended: any recommendation is information in your summary, not a choice made for them.` + (dropped ? ` No more revision passes are allowed (${String(max)} of ${String(max)} have run), so the option to go back is not offered.` : "") + (spent ? cap2 ? " Checking again has been used, so it is not offered again." : " This decision's send-backs are used up, so the option to send it back is not offered." : "") + (offered.some((o) => directed(o) && !(s?.step.supply && run2.steps.get(o.route.to ?? "")?.step.kind === "gate")) ? ` Only if they choose ${offered.filter(directed).map((o) => `"${o.label}"`).join(" or ")}, ask them a second question on its own, "${directionWords}"; heddle_card gives its exact input. Don't ask it after any other choice.` : "") + (items2 ? ` Each failing item is its own question, with the options that fit it${items2.some((q) => q.item_ref === "rest") ? ", and one question covers the items past the first three" : ""}: heddle_card gives the exact input. Then call heddle_decision with kind escalation, step_id ${stepId}, option_id set to the strongest of their choices (a stop, else a send-back, else carrying on), and text summarising what they decided.` : ` Then call heddle_decision with kind escalation, step_id ${stepId}, option_id set to the chosen option's id, and text summarising what they decided.`);
   }
   /**
    * Decide steps with auto_continue whose named steps all passed this round (braids' ask 59b, m8; ruling 80), or whose
@@ -53113,7 +53756,7 @@ Tell them what each option does. Use the same wording and order every time, and 
           continue;
         if (run2.repairing(s.step.step_id).length > 0)
           continue;
-        const failedHere = (ids) => (ids ?? []).some((x) => ["failed", "waived"].includes(run2.steps.get(x)?.status ?? ""));
+        const failedHere = (ids) => (ids ?? []).some((x) => ["failed", "waived", "verified"].includes(run2.steps.get(x)?.status ?? ""));
         const passed = (ids) => ids.every((id2) => {
           const g = run2.steps.get(id2);
           return g?.status === "done" && (g.step.kind !== "gate" || g.gate_status === "pass" || g.gate_status === "warn");
@@ -53530,6 +54173,7 @@ Call heddle_next.`);
       const passed = gatesOn(ports, (id) => last.get(id) === "pass");
       const warned = gatesOn(ports, (id) => last.get(id) === "warn");
       const waived = gatesOn(ports, (id) => run2.steps.get(id)?.status === "waived");
+      const verifiedBy = gatesOn(ports, (id) => run2.steps.get(id)?.status === "verified");
       const blocking = findings.filter((f) => f.severity === "block");
       const bullets = [
         typeof type?.description === "string" && type.description.trim() ? `- What it is: ${caseText(type.description, 300)}` : "",
@@ -53537,6 +54181,7 @@ Call heddle_next.`);
         `- Checks passed: ${passed.length ? passed.join(", ") : "no check reads it directly"}`,
         ...warned.length ? [`- Passed with a warning: ${warned.join(", ")}`] : [],
         ...waived.map((w) => `- Waived: ${w} (you carried on past it)`),
+        ...verifiedBy.map((w) => `- Verified by you: ${w} (you checked each failing item yourself; your judgement, not a check)`),
         ports.some((p) => checked.has(p)) ? `- Open findings: ${findings.length === 0 ? "none" : `${String(findings.length)}, ${blocking.length === 0 ? "none blocking" : `${String(blocking.length)} blocking: ${blocking.slice(0, 3).map((f) => caseText(typeof f.summary === "string" && f.summary.trim() ? f.summary : typeof f.claim === "string" ? f.claim : "", 120)).join("; ")}`}`}` : "",
         register && (ports.includes(main ?? "") || ports.includes(register.port)) ? `- Read in full: ${String(register.full)} of ${String(register.all)} sources${register.part ? `, ${String(register.part)} more in part` : ""} (the rest from abstracts or records)` : ""
       ].filter(Boolean);
@@ -53625,7 +54270,8 @@ Then call heddle_deliver with the choice_ids of what they chose: ${options.map((
     const picked = pickReport(this.reportsDir, run2.template.template_id, run2.template.version);
     const recordValues2 = picked ? recordPlaceholderValues(picked.report, this.recordSoFar(run2), run2.folder) : {};
     const waivedFailures2 = waivedFailedSteps(run2.log.events).map((w) => run2.gateResultOf(w.step_id)?.result).filter((r) => r !== void 0);
-    const delivered = renderFiles(run2, chosen, recordValues2, waivedFailures2, this.openFindings.get(run2.runId) ?? []);
+    const verifiedFailures = verifiedFailedSteps(run2.log.events).map((w) => run2.gateResultOf(w.step_id)?.result).filter((r) => r !== void 0);
+    const delivered = renderFiles(run2, chosen, recordValues2, waivedFailures2, this.openFindings.get(run2.runId) ?? [], verifiedFailures);
     const files = delivered.map((f) => f.path);
     this.keeper?.addResults(files);
     run2.endStep(s.step.step_id, "done");
@@ -53746,38 +54392,70 @@ function splitParts(text3, max = 3e4) {
 var MAIN_ONLY = /* @__PURE__ */ new Set(["heddle_wait", "heddle_ticket", "heddle_gate", "heddle_step", "heddle_decision", "heddle_deliver", "heddle_next", "heddle_card", "heddle_online_ask"]);
 function applyPatch(draft, patch) {
   if (!Array.isArray(patch) || patch.length === 0)
-    throw new Refusal("patch is a list of { path, value }.");
+    throw new Refusal("patch is a list of { op, path, value } (or { path, value }).");
+  if (typeof draft !== "object" || draft === null)
+    throw new Refusal("patch: only a JSON output can be patched.");
   const out = structuredClone(draft);
   for (const op of patch) {
+    const kind2 = op.op === void 0 ? "set" : op.op;
+    if (kind2 !== "set" && kind2 !== "add" && kind2 !== "remove" && kind2 !== "replace" && kind2 !== "test")
+      throw new Refusal(`patch: ${JSON.stringify(op.op)} isn't an op Heddle applies; use add, remove, replace or test.`);
     if (typeof op.path !== "string" || !op.path.startsWith("/") || op.path === "/")
       throw new Refusal(`patch: ${JSON.stringify(op.path)} isn't a path; give it as the refusal names it, like /findings/0/claim.`);
     const keys = op.path.slice(1).split("/").map((k) => k.replace(/~1/g, "/").replace(/~0/g, "~"));
     if (keys.some((k) => k === "__proto__" || k === "constructor" || k === "prototype"))
       throw new Refusal(`patch: ${op.path} names no field of the output.`);
+    if (kind2 !== "remove" && !("value" in op))
+      throw new Refusal(`patch: the ${kind2 === "set" ? "op" : kind2} at ${op.path} gives no value.`);
+    if (keys.some((k) => /^0\d/.test(k)))
+      throw new Refusal(`patch: ${op.path} has an index with a leading zero.`);
     let at = out;
-    for (const [i, k] of keys.entries()) {
-      const last = i === keys.length - 1;
-      const holder = at;
-      if (typeof holder !== "object" || holder === null)
+    for (const k of keys.slice(0, -1)) {
+      const holder2 = at;
+      if (typeof holder2 !== "object" || holder2 === null)
         throw new Refusal(`patch: ${op.path} goes through something that isn't an object or list.`);
-      if (Array.isArray(holder)) {
+      if (Array.isArray(holder2)) {
         const n = /^\d+$/.test(k) ? Number(k) : -1;
-        if (n < 0 || n > holder.length || !last && n === holder.length)
+        if (n < 0 || n >= holder2.length)
           throw new Refusal(`patch: ${op.path} names no item of its list.`);
-        if (last)
-          holder[n] = op.value;
-        else
-          at = holder[n];
-      } else if (last)
-        holder[k] = op.value;
-      else if (Object.hasOwn(holder, k))
-        at = holder[k];
+        at = holder2[n];
+      } else if (Object.hasOwn(holder2, k))
+        at = holder2[k];
       else
         throw new Refusal(`patch: ${op.path} goes through ${k}, which the output doesn't have; set the whole of ${k} instead.`);
+    }
+    const holder = at;
+    const last = keys.at(-1) ?? "";
+    if (typeof holder !== "object" || holder === null)
+      throw new Refusal(`patch: ${op.path} goes through something that isn't an object or list.`);
+    if (Array.isArray(holder)) {
+      const n = last === "-" ? holder.length : /^\d+$/.test(last) ? Number(last) : -1;
+      const has = n >= 0 && n < holder.length;
+      if (n < 0 || n > holder.length || (kind2 === "remove" || kind2 === "replace" || kind2 === "test") && !has)
+        throw new Refusal(`patch: ${op.path} names no item of its list.`);
+      if (kind2 === "test" && !sameJson(holder[n], op.value))
+        throw new Refusal(`patch: the test at ${op.path} failed: it isn't ${JSON.stringify(op.value)}.`);
+      if (kind2 === "remove")
+        holder.splice(n, 1);
+      else if (kind2 === "add")
+        holder.splice(n, 0, op.value);
+      else if (kind2 !== "test")
+        holder[n] = op.value;
+    } else {
+      const has = Object.hasOwn(holder, last);
+      if ((kind2 === "remove" || kind2 === "replace" || kind2 === "test") && !has)
+        throw new Refusal(`patch: ${op.path} names no field of the output.`);
+      if (kind2 === "test" && !sameJson(holder[last], op.value))
+        throw new Refusal(`patch: the test at ${op.path} failed: it isn't ${JSON.stringify(op.value)}.`);
+      if (kind2 === "remove")
+        Reflect.deleteProperty(holder, last);
+      else if (kind2 !== "test")
+        holder[last] = op.value;
     }
   }
   return out;
 }
+var sameJson = (a, b) => jcs1(a ?? null) === jcs1(b ?? null);
 function schemaLimits(schema, max = 60) {
   const out = [];
   const walk2 = (node, path) => {

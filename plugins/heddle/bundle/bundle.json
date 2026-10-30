@@ -1,8 +1,8 @@
 {
   "schema": "fairlead.braid_template/0.1",
   "template_id": "fairlead.lit_scoping_review",
-  "version": "0.4.2",
-  "fingerprint": "jcs1:sha256:c9bf6df1c3b0c92acffb3dda814e7cbcfaed214fbad9846ec614faa124108abf",
+  "version": "0.4.3",
+  "fingerprint": "jcs1:sha256:a2022de6f29c08f084c43a92e1d6f6352414f8f11011452d3663709235d3b243",
   "catalogue": {
     "command": "/fairlead:review",
     "title": "Literature scoping review",
@@ -41,8 +41,8 @@
       }
     },
     {
-      "thread_ref": "extractor@0.1.1",
-      "thread_fingerprint": "jcs1:sha256:aaa39e15e29376b22670c65e0a596ddd185a15462a54eaf061a1ee0605af9778",
+      "thread_ref": "extractor@0.1.2",
+      "thread_fingerprint": "jcs1:sha256:48a7eac4ff45f8d025d1623bf6b36ddab2f4cd0c1bbdfdfab5d74374dea5a720",
       "role": "maker",
       "tools": [
         "fetch",
@@ -128,8 +128,8 @@
       }
     },
     {
-      "thread_ref": "reviser@0.4.1",
-      "thread_fingerprint": "jcs1:sha256:8bbc184a57657916f2971a8008c9f2aa43533b68b170cd335af34522a60563e1",
+      "thread_ref": "reviser@0.4.2",
+      "thread_fingerprint": "jcs1:sha256:ebd3a899a277f122af7e4e77e40bdbb719c7631311dc9f7f420afc65478d6000",
       "role": "reviser",
       "tools": [
         "fetch",
@@ -208,7 +208,7 @@
     {
       "step_id": "s3",
       "kind": "make",
-      "thread_ref": "extractor@0.1.1",
+      "thread_ref": "extractor@0.1.2",
       "needs": [
         "s2"
       ],
@@ -548,7 +548,7 @@
     {
       "step_id": "s7",
       "kind": "revise",
-      "thread_ref": "reviser@0.4.1",
+      "thread_ref": "reviser@0.4.2",
       "needs": [
         "s6d"
       ],
@@ -1135,5 +1135,220 @@
     "braids/"
   ],
   "report": null,
-  "signature": null
+  "signature": null,
+  "phases": [
+    {
+      "phase_id": "focus",
+      "label": "Agree the focus",
+      "steps": [
+        "s0",
+        "s1"
+      ],
+      "typical_minutes": {
+        "low": 1,
+        "high": 3,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M64HTYJQTK298DTREXBHWNFF",
+          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
+          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
+          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
+          "run_01M65Q7QY0P3N2THVXTK43SPDS"
+        ]
+      }
+    },
+    {
+      "phase_id": "search",
+      "label": "Search for sources",
+      "steps": [
+        "s2"
+      ],
+      "typical_minutes": {
+        "low": 1,
+        "high": 4,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M64HTYJQTK298DTREXBHWNFF",
+          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
+          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
+          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
+          "run_01M65Q7QY0P3N2THVXTK43SPDS"
+        ]
+      }
+    },
+    {
+      "phase_id": "draft",
+      "label": "Read the sources and draft",
+      "steps": [
+        "s3",
+        "s4",
+        "s4b",
+        "s4c",
+        "s4d",
+        "s4e"
+      ],
+      "typical_minutes": {
+        "low": 1,
+        "high": 8,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M64HTYJQTK298DTREXBHWNFF",
+          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
+          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
+          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
+          "run_01M65Q7QY0P3N2THVXTK43SPDS"
+        ]
+      }
+    },
+    {
+      "phase_id": "checks",
+      "label": "Blind checks",
+      "steps": [
+        "s5a",
+        "s5b",
+        "s6",
+        "s6d"
+      ],
+      "typical_minutes": {
+        "low": 1,
+        "high": 3,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M64HTYJQTK298DTREXBHWNFF",
+          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
+          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
+          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
+          "run_01M65Q7QY0P3N2THVXTK43SPDS"
+        ]
+      }
+    },
+    {
+      "phase_id": "revise",
+      "label": "Revise the draft",
+      "steps": [
+        "s7",
+        "s8",
+        "s8b",
+        "s8c",
+        "s8d",
+        "s8e",
+        "s8f"
+      ],
+      "typical_minutes": {
+        "low": 1,
+        "high": 8,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M64HTYJQTK298DTREXBHWNFF",
+          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
+          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
+          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
+          "run_01M65Q7QY0P3N2THVXTK43SPDS"
+        ]
+      }
+    },
+    {
+      "phase_id": "final",
+      "label": "Final check and delivery",
+      "steps": [
+        "s9",
+        "s10",
+        "s11"
+      ],
+      "typical_minutes": {
+        "low": 1,
+        "high": 6,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M64HTYJQTK298DTREXBHWNFF",
+          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
+          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
+          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
+          "run_01M65Q7QY0P3N2THVXTK43SPDS"
+        ]
+      }
+    }
+  ],
+  "typical_minutes": {
+    "low": 7,
+    "high": 21,
+    "from_run_ids": [
+      "run_01M623TF0XAC28GN6P3BB67RCT",
+      "run_01M629S94BV7B5VAYE08FWAJ6D",
+      "run_01M62K56JDRAYXD4G85KNZNY1N",
+      "run_01M62K56BFMHNJS12M29KQ4WDC",
+      "run_01M62VN2J06QHJAWQC100WDY21",
+      "run_01M62VN1XZQARSFYNDJW39YR22",
+      "run_01M62ZQBTQC65ABZSJN545KBHE",
+      "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+      "run_01M63HJGFWYP9TP6MWV22BXY6C",
+      "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+      "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+      "run_01M64HTYJQTK298DTREXBHWNFF",
+      "run_01M659XN2KQ9X0QD5KHQ92VVRT",
+      "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
+      "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
+      "run_01M65Q7QY0P3N2THVXTK43SPDS"
+    ]
+  }
 }
