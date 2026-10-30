@@ -1,9 +1,9 @@
 {
-  "plugin": "0.2.7",
+  "plugin": "0.2.9",
   "braid": "fairlead.lit_scoping_review@0.4.3",
-  "built_at": "2026-10-30T13:17:53Z",
+  "built_at": "2026-10-30T18:08:54Z",
   "files": {
-    ".claude-plugin/plugin.json": "raw:sha256:e163714918098c99da153f7f1b272e4df64b70933a3b7358fb57956f2c72f167",
+    ".claude-plugin/plugin.json": "raw:sha256:5dafd03c562b5c9e9df49b1b505fe119d053144f63613ca35884811fe5a1ea0b",
     ".mcp.json": "raw:sha256:1b150d41089a2d5276b6daad345189c5e9bd48020f992b019a88749ca0f108d3",
     "LICENSE.md": "raw:sha256:6e65a24831ace2638f9b1238effd667e3f5578dc5fabc85a3be8ba3ac8c3b0ec",
     "README.md": "raw:sha256:ad13d7797e6273a9ea238645e89205ed1f2201049f5cbbd40c24561928a0188f",
@@ -53,14 +53,14 @@
     "bundle/types/search_record/0.1.0/type.json": "raw:sha256:6c2d34baeeab17f87c37208035f37fd7ae481698a66fde1c3425517e089b1c28",
     "bundle/types/source_register/0.1.0/type.json": "raw:sha256:97679c8a537c79b66e5d903d32e5ad21fe13b3d5ec0d80f77b34bc63bcf3ff55",
     "heddle_build.json": "raw:sha256:191b52056302b1dc81ebaaa567c8670b8c9f2aa6b3ebe8bb09c46679ab715316",
-    "hooks/heddle_hook.mjs": "raw:sha256:91b5f3023626152aecad5290baa54587e30ba4437d61b01319d949e90d210819",
-    "hooks/hooks.json": "raw:sha256:25966ae8e3fc6bd7a73dee40701d9a82f57a06188bbf7e26952b1ad595d61421",
+    "hooks/heddle_hook.mjs": "raw:sha256:6a2bee51340ae416d004f7460b87001b7bb722cb88843cc014884ac265bd2e0b",
+    "hooks/hooks.json": "raw:sha256:4449ed3526eae4e7e0c92243e9d4bd10e3f3aad6d0dc432d42cb177ab93b5a65",
     "reports/fairlead.lit_scoping_review/0.1.0/report.json": "raw:sha256:39e16fdc151287ab07367d38b9e7f0f0361cf961806b2647e16cfca6af7a2817",
     "reports/fairlead.lit_scoping_review/0.1.1/report.json": "raw:sha256:984204f7f51d70b7a817019b50d0d097de073d0d365c29d26856cf4baa020006",
-    "server/heddle_server.mjs": "raw:sha256:ac8a4e7da8728aef0c651b3fed84c71f22ee875dc530a13112757efdbb883ab3",
-    "skills/feedback/SKILL.md": "raw:sha256:1212ac93bfdb93c0c3aa21715298e0d6ec814ff766170cdf4bcee41e4dc048e7",
+    "server/heddle_server.mjs": "raw:sha256:d7633a83350bba2267a7f07a47ef831a8026d68e012e9e62e2143eeefabdff96",
+    "skills/feedback/SKILL.md": "raw:sha256:4bc0eaa291811f1980a94ead38baf71620f6432d35b9756fa5823e98509962b4",
     "skills/library/SKILL.md": "raw:sha256:fab97bc86d43cbe44b6d348d2a2dca3596a952d4a630af274486a89e19786e0b",
-    "skills/review/SKILL.md": "raw:sha256:3101a5772445bed02efb5baae8ada65027a048cf1ab16cd93e62ed60175b96c1",
+    "skills/review/SKILL.md": "raw:sha256:13b869f5411c7642e24631795aef85e5827fa9239078721239f2b4b5eafe216b",
     "vendor/mcp_v1_snapshot.json": "raw:sha256:92db784c93043b3393d8d2c9bc7ce886d62cf2e340198a85d9b5f4c9588ba18a"
   }
 }
