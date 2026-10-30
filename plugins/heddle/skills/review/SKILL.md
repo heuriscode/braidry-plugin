@@ -22,7 +22,7 @@ You are running a Heddle **braid**: a fixed, checked process. The Heddle plugin'
 1. Call `heddle_run_start` with a fresh random `nonce` (for example a new UUID) and `prompt` set to the person's request, verbatim.
 2. Call `heddle_arm` straight away. If it says the hooks did not answer, tell the person the run will continue but its record will show weaker checks.
 3. Loop: `heddle_next`, then do what it says (a gate: `heddle_gate`; a refine or decide step: `heddle_step`, then the person, then `heddle_decision`; a subagent step: `heddle_ticket` then the Agent tool). Between steps, tell the person in one short line what just happened.
-4. **Refine (first step after the web check):** turn the person's request into an agreed focus: a clear research question, its scope, and what counts as in or out. Propose it, ask with AskUserQuestion whether to accept or change it, and when they accept call `heddle_decision` with `kind: "focus_accept"`, `step_id`, a one-sentence `text`, and `focus` set to the agreed focus as JSON with exactly these fields:
+4. **Refine (first step after the web check):** turn the person's request into an agreed focus: a clear research question, its scope, and what counts as in or out. Write it on a focus card, `heddle_card({ card: "focus", step_id, focus })`, post the case block it gives as a message of its own and ask its question exactly as given; if they want a change, redraft and write a new focus card. When they accept, call `heddle_decision` with `kind: "focus_accept"`, `step_id`, a one-sentence `text`, and `focus` set to exactly the focus on the card: the agreed focus as JSON with exactly these fields:
 
    ```json
    {"starting_prompt": "<the person's request, verbatim>",
@@ -40,9 +40,17 @@ You are running a Heddle **braid**: a fixed, checked process. The Heddle plugin'
    ```
 
    Set `personal_info_detected` to true if the request names or describes a private person. If the server says the focus is not valid, fix the fields it names, and ask the person again only if the meaning changed.
-5. **Decide steps:** summarise, in plain words, what the checkers found and what the adjudicator recommended (or what is being decided), ask with AskUserQuestion, then call `heddle_decision` with `kind: "escalation"`.
+5. **Decide steps:** when `heddle_card` gives a case block, post it to the person as a message of its own, exactly as written, then ask with AskUserQuestion; don't list the case again (Heddle holds the question until the block is in the conversation). With no block, say in plain words what is being decided, then ask. Then call `heddle_decision` with `kind: "escalation"`.
 6. **A failed gate or step:** tell the person plainly what failed, ask whether to waive it and continue or to stop, and record their answer (`kind: "waiver"` with the step's `step_id`, or `kind: "abandon"`). If several steps failed, ask once about all of them and record one waiver with `step_ids`: each answer counts for one decision only.
-7. **Deliver:** ask which results they want from the list `heddle_next` gives, call `heddle_deliver`, then tell them where the files are and show the "Practice:" line.
+7. **Deliver:** write the results card, `heddle_card({ card: "results", step_id })`, post its case block as a message of its own and ask its questions exactly as given, call `heddle_deliver` with the choice_ids of what they chose, then tell them where the files are and show the "Practice:" line.
+
+## While a step's agent is working
+
+Claude Code may move a step's agent to the background after a couple of minutes. Don't end your turn in silence: call `heddle_wait`, post the progress line it gives (what the step is doing, its searches so far, how long it has run), and call it again until the step hands back. A step that has had no activity for three minutes reads "stalled": tell the person, and ask whether to wait or stop.
+
+## If a run was interrupted
+
+A session restart can end a run's server before the run finishes. When Heddle says a run in this folder was interrupted, offer the person, in this order: "Continue this run from step N" (call `heddle_resume`), or "Start a new run" (call `heddle_run_start` with `fresh: true`). Never offer only a new run: nothing done so far needs to be redone. After `heddle_resume`, tell the person you are continuing from that step, then carry on with `heddle_next`; a question that was open is asked again.
 
 ## If the person wants to stop
 

@@ -1,8 +1,8 @@
 {
   "schema": "fairlead.braid_template/0.1",
   "template_id": "fairlead.lit_scoping_review",
-  "version": "0.4.1",
-  "fingerprint": "jcs1:sha256:4da87c31d2cf615d4b50d9d813525bc427660d101db3956e5614fca171bfaad8",
+  "version": "0.4.2",
+  "fingerprint": "jcs1:sha256:c9bf6df1c3b0c92acffb3dda814e7cbcfaed214fbad9846ec614faa124108abf",
   "catalogue": {
     "command": "/fairlead:review",
     "title": "Literature scoping review",
@@ -64,8 +64,8 @@
       }
     },
     {
-      "thread_ref": "claims_checker@0.2.0",
-      "thread_fingerprint": "jcs1:sha256:03ae3e25c4780649bdc7d093e4b60f7194c9b1f888538b4fcb90be6c19653691",
+      "thread_ref": "claims_checker@0.2.1",
+      "thread_fingerprint": "jcs1:sha256:7009db16e49aff4624ea1378ff6819b0a3e96c611a7c043c8969fd86c3f14c3d",
       "role": "checker",
       "tools": [
         "fetch"
@@ -85,8 +85,8 @@
       }
     },
     {
-      "thread_ref": "coverage_checker@0.2.0",
-      "thread_fingerprint": "jcs1:sha256:7199a9ebdf89b41956aec5a1de7b5fcb43fa872021480f81c9c1fb9fa9eb1f37",
+      "thread_ref": "coverage_checker@0.2.1",
+      "thread_fingerprint": "jcs1:sha256:55fe0f4d23913b59d436351fef5bc4baef5bae6351c9e7fc4d1221c557122c9d",
       "role": "checker",
       "tools": [
         "search",
@@ -106,8 +106,8 @@
       }
     },
     {
-      "thread_ref": "adjudicator@0.1.0",
-      "thread_fingerprint": "jcs1:sha256:f8a03414982447e0e7ab73339efdae3f9abe2ab0549f78a60af48c75c33f31cb",
+      "thread_ref": "adjudicator@0.1.1",
+      "thread_fingerprint": "jcs1:sha256:6d2f9220e56edb5fdcdaeba67cf7857349f4effac7b8364b99a2989bd096dc32",
       "role": "adjudicator",
       "tools": [
         "fetch",
@@ -167,6 +167,9 @@
       ],
       "produces": [
         "focus"
+      ],
+      "case": [
+        "focus"
       ]
     },
     {
@@ -182,7 +185,25 @@
       "produces": [
         "search_record",
         "sources"
-      ]
+      ],
+      "typical_minutes": {
+        "low": 1,
+        "high": 4,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M63HJDQVKT67GEP83G8MT9YC"
+        ]
+      }
     },
     {
       "step_id": "s3",
@@ -204,12 +225,30 @@
         "evidence",
         "draft",
         "sources"
-      ]
+      ],
+      "typical_minutes": {
+        "low": 1,
+        "high": 3,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M63HJDQVKT67GEP83G8MT9YC"
+        ]
+      }
     },
     {
       "step_id": "s4",
       "kind": "gate",
-      "gate_ref": "cite_gate@0.4.0",
+      "gate_ref": "cite_gate@0.5.0",
       "needs": [
         "s3"
       ],
@@ -328,12 +367,18 @@
       },
       "produces": [
         "person_direction"
-      ]
+      ],
+      "case": [
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "fix"
+      }
     },
     {
       "step_id": "s5a",
       "kind": "check",
-      "thread_ref": "claims_checker@0.2.0",
+      "thread_ref": "claims_checker@0.2.1",
       "needs": [
         "s4",
         "s4b",
@@ -353,12 +398,30 @@
         "findings"
       ],
       "scope": "full",
-      "parallel_group": "p1"
+      "parallel_group": "p1",
+      "typical_minutes": {
+        "low": 1,
+        "high": 2,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M63HJDQVKT67GEP83G8MT9YC"
+        ]
+      }
     },
     {
       "step_id": "s5b",
       "kind": "check",
-      "thread_ref": "coverage_checker@0.2.0",
+      "thread_ref": "coverage_checker@0.2.1",
       "needs": [
         "s4",
         "s4b",
@@ -378,12 +441,30 @@
         "findings"
       ],
       "scope": "full",
-      "parallel_group": "p1"
+      "parallel_group": "p1",
+      "typical_minutes": {
+        "low": 1,
+        "high": 2,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M63HJDQVKT67GEP83G8MT9YC"
+        ]
+      }
     },
     {
       "step_id": "s6",
       "kind": "adjudicate",
-      "thread_ref": "adjudicator@0.1.0",
+      "thread_ref": "adjudicator@0.1.1",
       "needs": [
         "s5a",
         "s5b"
@@ -399,7 +480,25 @@
       ],
       "produces": [
         "decisions"
-      ]
+      ],
+      "typical_minutes": {
+        "low": 1,
+        "high": 2,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M63HJDQVKT67GEP83G8MT9YC"
+        ]
+      }
     },
     {
       "step_id": "s6d",
@@ -437,7 +536,14 @@
       ],
       "produces": [
         "person_direction"
-      ]
+      ],
+      "case": [
+        "findings",
+        "adjudication"
+      ],
+      "other": {
+        "as_option": "change"
+      }
     },
     {
       "step_id": "s7",
@@ -463,12 +569,30 @@
         "sources",
         "search_record",
         "revision_log"
-      ]
+      ],
+      "typical_minutes": {
+        "low": 1,
+        "high": 5,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M63HJDQVKT67GEP83G8MT9YC"
+        ]
+      }
     },
     {
       "step_id": "s8",
       "kind": "gate",
-      "gate_ref": "cite_gate@0.4.0",
+      "gate_ref": "cite_gate@0.5.0",
       "needs": [
         "s7"
       ],
@@ -558,7 +682,7 @@
         "diff"
       ],
       "on_fail": {
-        "decide": "s8g"
+        "decide": "s8f"
       }
     },
     {
@@ -568,7 +692,8 @@
         "s8",
         "s8b",
         "s8c",
-        "s8d"
+        "s8d",
+        "s8e"
       ],
       "reads": [
         "gate_results"
@@ -606,57 +731,31 @@
           "s8",
           "s8b",
           "s8c",
-          "s8d"
+          "s8d",
+          "s8e"
         ]
       },
       "produces": [
         "person_direction"
-      ]
-    },
-    {
-      "step_id": "s8g",
-      "kind": "decide",
-      "needs": [
-        "s8e",
-        "s8f"
       ],
-      "reads": [
+      "case": [
         "gate_results"
       ],
-      "options": [
-        {
-          "option_id": "carry_on",
-          "label": "Carry on: a known limit of this version (the reviser cannot know fingerprints)",
-          "route": {
-            "action": "continue"
-          }
-        },
-        {
-          "option_id": "stop",
-          "label": "Stop the run",
-          "route": {
-            "action": "stop"
-          }
-        }
-      ],
-      "skip_when": {
-        "unless_failed": [
-          "s8e"
-        ]
+      "other": {
+        "as_option": "fix"
       }
     },
     {
       "step_id": "s9",
       "kind": "recheck",
-      "thread_ref": "claims_checker@0.2.0",
+      "thread_ref": "claims_checker@0.2.1",
       "needs": [
         "s8",
         "s8b",
         "s8c",
         "s8d",
         "s8e",
-        "s8f",
-        "s8g"
+        "s8f"
       ],
       "reads": [
         "focus",
@@ -669,7 +768,25 @@
       "produces": [
         "findings"
       ],
-      "scope": "added_text"
+      "scope": "added_text",
+      "typical_minutes": {
+        "low": 1,
+        "high": 2,
+        "from_run_ids": [
+          "run_01M623TF0XAC28GN6P3BB67RCT",
+          "run_01M629S94BV7B5VAYE08FWAJ6D",
+          "run_01M62K56JDRAYXD4G85KNZNY1N",
+          "run_01M62K56BFMHNJS12M29KQ4WDC",
+          "run_01M62VN2J06QHJAWQC100WDY21",
+          "run_01M62VN1XZQARSFYNDJW39YR22",
+          "run_01M62ZQBTQC65ABZSJN545KBHE",
+          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
+          "run_01M63HJGFWYP9TP6MWV22BXY6C",
+          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
+          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
+          "run_01M63HJDQVKT67GEP83G8MT9YC"
+        ]
+      }
     },
     {
       "step_id": "s10",
@@ -712,13 +829,23 @@
       ],
       "produces": [
         "person_direction"
-      ]
+      ],
+      "case": [
+        "findings",
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "send_back"
+      }
     },
     {
       "step_id": "s11",
       "kind": "deliver",
       "needs": [
         "s10"
+      ],
+      "case": [
+        "outputs"
       ]
     }
   ],
@@ -731,8 +858,8 @@
       "on_fail": "block"
     },
     {
-      "gate_ref": "cite_gate@0.4.0",
-      "gate_fingerprint": "jcs1:sha256:3ef16647bb625457d6a062cd60d0bd45e3fde284b8cdd96e9bb73ddd417dbe18",
+      "gate_ref": "cite_gate@0.5.0",
+      "gate_fingerprint": "jcs1:sha256:32def1d043a81032ba4c9d6a49c14c1b1c019569334f8f8fe5250566d5508fbd",
       "applies_to": [
         "draft@0.1.0",
         "source_register@0.1.0"

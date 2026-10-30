@@ -303,6 +303,11 @@
       "free_bundle": "jcs1:sha256:4da87c31d2cf615d4b50d9d813525bc427660d101db3956e5614fca171bfaad8",
       "report": null
     },
+    "fairlead.lit_scoping_review@0.4.2": {
+      "core": "jcs1:sha256:bf68f8a8a4ccef905f59c80a646de350eb3f715567895a69e9bea5aabb4066a9",
+      "free_bundle": "jcs1:sha256:c9bf6df1c3b0c92acffb3dda814e7cbcfaed214fbad9846ec614faa124108abf",
+      "report": null
+    },
     "fairlead.lit_scoping_review@0.5.0": {
       "core": "jcs1:sha256:c7756bfa287a9ced65c7ab3c18b85dd8892f8dbd5cccd72567f84468968e1f6f",
       "free_bundle": null,
@@ -341,6 +346,7 @@
   },
   "threads": {
     "adjudicator@0.1.0": "jcs1:sha256:f8a03414982447e0e7ab73339efdae3f9abe2ab0549f78a60af48c75c33f31cb",
+    "adjudicator@0.1.1": "jcs1:sha256:6d2f9220e56edb5fdcdaeba67cf7857349f4effac7b8364b99a2989bd096dc32",
     "cl_adjudicator@0.1.0": "jcs1:sha256:f8f930b534209dc498035c3218e8ebad4d2d066500308ed4b96fd4624fce2d64",
     "cl_adjudicator@0.2.0": "jcs1:sha256:c55eee7be17911a99d21d9432f373ed9919cb2db212204af0145ea7cbff25a22",
     "cl_adjudicator@0.3.0": "jcs1:sha256:91517a91b7c2afe16ece77742a429adee63a2a4bfa92fbe3dc685db5f51a1d8f",
@@ -447,8 +453,10 @@
     "cl_writeup_fixer@0.2.0": "jcs1:sha256:0bcac27b18549d02d5cfee16c150ffd7c0a4364529cf920c6fb2bc7a689b2d13",
     "claims_checker@0.1.0": "jcs1:sha256:4f35265df5e8d05d22b51755d006c67cb7e02dc319e64bcdc5f7dfb8c777be40",
     "claims_checker@0.2.0": "jcs1:sha256:03ae3e25c4780649bdc7d093e4b60f7194c9b1f888538b4fcb90be6c19653691",
+    "claims_checker@0.2.1": "jcs1:sha256:7009db16e49aff4624ea1378ff6819b0a3e96c611a7c043c8969fd86c3f14c3d",
     "coverage_checker@0.1.0": "jcs1:sha256:4207857f653c09dea07ce627122c2e0b1b8b1806a3feb2b9f9bd845dad47adce",
     "coverage_checker@0.2.0": "jcs1:sha256:7199a9ebdf89b41956aec5a1de7b5fcb43fa872021480f81c9c1fb9fa9eb1f37",
+    "coverage_checker@0.2.1": "jcs1:sha256:55fe0f4d23913b59d436351fef5bc4baef5bae6351c9e7fc4d1221c557122c9d",
     "ed_adjudicator@0.1.0": "jcs1:sha256:cf8f8863d98d2d0f96e9cf889e768352df2f1c543478f68cfe945ad0191f61c7",
     "ed_adjudicator@0.1.1": "jcs1:sha256:1200ce4d9b2bcfe435ba1c3b4d8f4d260e7147c8e771f123be9122085dc768bd",
     "ed_designer@0.1.0": "jcs1:sha256:75866e786d2f5472932134de0ae02f4221614d1cdc7ec4b72e34af2c46e0d8cf",
