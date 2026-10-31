@@ -9167,7 +9167,8 @@ var SCHEMAS = {
                   "read_file",
                   "write_output",
                   "run_readonly",
-                  "none"
+                  "none",
+                  "scholarly_search"
                 ]
               },
               "maxItems": 6,
@@ -15663,6 +15664,177 @@ var SCHEMAS = {
           "data"
         ]
       },
+      "event_search_call": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "at": {
+            "$ref": "primitives.schema.json#/$defs/timestamp"
+          },
+          "type": {
+            "const": "search_call"
+          },
+          "step_id": {
+            "$ref": "primitives.schema.json#/$defs/step_id"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "source": {
+                "enum": [
+                  "mcp_server",
+                  "hook",
+                  "code_execution",
+                  "model"
+                ]
+              },
+              "ticket_id": {
+                "$ref": "primitives.schema.json#/$defs/id_tkt"
+              },
+              "queries": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "query_fingerprint": {
+                      "$ref": "primitives.schema.json#/$defs/fingerprint_raw"
+                    },
+                    "since": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 1500,
+                          "maximum": 2100
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "until": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 1500,
+                          "maximum": 2100
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "sources": {
+                      "type": "array",
+                      "items": {
+                        "enum": [
+                          "crossref",
+                          "openalex",
+                          "pubmed"
+                        ]
+                      },
+                      "maxItems": 3,
+                      "minItems": 1,
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [
+                    "query_fingerprint",
+                    "since",
+                    "until",
+                    "sources"
+                  ]
+                },
+                "maxItems": 4,
+                "minItems": 1
+              },
+              "per_source": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "source": {
+                      "enum": [
+                        "crossref",
+                        "openalex",
+                        "pubmed"
+                      ]
+                    },
+                    "query_index": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 3
+                    },
+                    "hits": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "returned": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "error": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "maxLength": 20,
+                          "pattern": "^(timeout|unreachable|refused|http_[0-9]{3})(?![\\s\\S])"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "source",
+                    "query_index",
+                    "hits",
+                    "returned",
+                    "error"
+                  ]
+                },
+                "maxItems": 12,
+                "minItems": 1
+              },
+              "records_returned": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "unique_records": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "duration_ms": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "source",
+              "ticket_id",
+              "queries",
+              "per_source",
+              "records_returned",
+              "unique_records",
+              "duration_ms"
+            ]
+          }
+        },
+        "required": [
+          "seq",
+          "at",
+          "type",
+          "step_id",
+          "data"
+        ]
+      },
       "event_output_accepted": {
         "type": "object",
         "additionalProperties": false,
@@ -18193,6 +18365,9 @@ var SCHEMAS = {
           },
           {
             "$ref": "primitives.schema.json#/$defs/event_inputs_served"
+          },
+          {
+            "$ref": "primitives.schema.json#/$defs/event_search_call"
           },
           {
             "$ref": "primitives.schema.json#/$defs/event_output_accepted"
@@ -23754,7 +23929,8 @@ var SCHEMAS = {
             "read_file",
             "write_output",
             "run_readonly",
-            "none"
+            "none",
+            "scholarly_search"
           ]
         },
         "maxItems": 6,
@@ -45647,7 +45823,7 @@ function verifiedFailedSteps(log) {
 var QUIET_OUTCOMES = /* @__PURE__ */ new Set(["rule_skipped"]);
 var WARNING_OUTCOMES = /* @__PURE__ */ new Set(["possible", "unverified_url", "lookup_error", "unparsed_marker", "unverifiable", "not_in_abstract", "unscoped_none"]);
 var RULE_NOT_CHECKED = {
-  sample_size: { words: "The sample rule of thumb was not checked: the attributes' levels could not be read.", advice: "Write them as 'name: level, level; \u2026' or check the sample yourself.", yourself: "Check the sample yourself." },
+  sample_size: { words: "The sample rule of thumb was not checked: the attributes' levels could not be read.", advice: "Separate levels with a comma and a space; write numbers without a thousands separator ('1000'); avoid 'and', 'or', '&' or '/' inside a level; or check the sample yourself.", yourself: "Check the sample yourself." },
   items_per_task: { words: "The items-per-task check was not made: the items could not be counted.", advice: "List one item per line or separated by ';'.", yourself: "Check the items per task yourself." }
 };
 function ruleNotChecked(ref) {
@@ -45699,12 +45875,13 @@ function ruleOfThumb(pack2, key2, get2) {
       continue;
     const levels = levelCounts(get2(str(rule.levels)) ?? "");
     if (levels === null) {
-      found ??= "unread";
+      found = "unread";
       continue;
     }
     if (n * sets * alts < Number(rule.factor) * Math.max(...levels) * per)
       return "short";
-    found = "met";
+    if (found !== "unread")
+      found = "met";
   }
   return found;
 }
@@ -45739,7 +45916,7 @@ function readSampleRule(ctx) {
     break;
   }
   if (latest === void 0 || !isObj(latest.data))
-    return { notChecked: [], short: null };
+    return { notChecked: [], short: null, standing: "not checked" };
   const pack2 = ctx.opts?.gatePacks?.[str(latest.step_id)];
   if (pack2 === void 0)
     return sampleRule(evidence, void 0, []);
@@ -45757,6 +45934,8 @@ function sampleRule(evidence, pack2, fields) {
   const said = evidence.filter(isObj);
   const notChecked = new Set(said.filter((e) => (e.detail === "rule_not_checked" || e.detail === "rule_skipped") && typeof e.ref === "string").map((e) => str(e.ref).split("#")[0] ?? ""));
   let short2 = null;
+  let met = false;
+  let unread = false;
   const stated = fields.filter(isObj);
   const get2 = (k) => {
     const f = stated.find((x) => x.key === k && x.status === "stated");
@@ -45770,11 +45949,18 @@ function sampleRule(evidence, pack2, fields) {
       notChecked.delete(key2);
     else if (state === "unread")
       notChecked.add(key2);
+    if (state === "met")
+      met = true;
+    if (state === "unread" || state === null)
+      unread = true;
   }
   const lines3 = [...notChecked].map((ref) => `${ruleNotChecked(ref).words} ${ruleNotChecked(ref).yourself}`);
   if (short2 === "changed")
     lines3.push(`${SAMPLE_SHORTFALL_WORDS.replace(/\.$/, "")}, by the rule of thumb applied to the frame as delivered; the frame changed after its last check. Check the sample size before fielding.`);
-  return { notChecked: lines3, short: short2 };
+  const keys = new Set((isObj(pack2) && Array.isArray(pack2.rule_of_thumb) ? pack2.rule_of_thumb.filter(isObj) : []).map((r) => str(r.key)));
+  const flagged = said.some((e) => e.detail === "doubtful_item" && (keys.size ? keys.has(str(e.ref)) : e.ref === "sample_size"));
+  const standing = short2 !== null || flagged ? "below" : met && !unread ? "at or above" : "not checked";
+  return { notChecked: lines3, short: short2, standing };
 }
 function notCheckedLines(ctx) {
   return [...ruleNotCheckedLines(ctx), ...capWaiverLines(ctx)];
@@ -46797,6 +46983,29 @@ function personProcessContent(ctx) {
   return fitRows(["What", "When"], rows);
 }
 var INTERNAL_TEXT = /\bsec_|@\d+\.\d+\.\d+|\(\d+ items?\)|(^|[\s("|])\/[a-z_]+\/|step_id|sha256:|\b[a-z]+(_[a-z]+)*_gate\b|\bs\d{1,2}[a-z]?\b|\bC[1-7]\b|\b[a-z][a-z0-9]*(_[a-z0-9]+)*\.[a-z][a-z0-9]*_[a-z0-9_]+\b/;
+var INTERNAL_STRICT = /\bsec_|@\d+\.\d+\.\d+|(^|[\s("|])\/[a-z_]+\/|step_id|sha256:|\b[a-z]+(_[a-z]+)*_gate\b|\bs\d{1,2}[a-z]?\b|\b[a-z][a-z0-9]*(_[a-z0-9]+)*\.[a-z][a-z0-9]*_[a-z0-9_]+\b/;
+var builderWords = (v) => v.replace(/(^|: )\((\d+) items?\)$/, (_m, lead, n) => `${lead}(${n} ${n === "1" ? "item" : "items"}, in the run folder)`);
+function cutSentences(text3, screen) {
+  const parts = text3.split(/(?<=\.)\s+(?=[A-Z“"‘'(\[])/);
+  let cut = false;
+  const out = [];
+  for (const p of parts) {
+    if (!screen.test(p))
+      out.push(p);
+    else {
+      cut = true;
+      if (out.at(-1) !== "[\u2026]")
+        out.push("[\u2026]");
+    }
+  }
+  return { text: cut ? out.join(" ") : text3, cut };
+}
+var LEFT_OUT = "Some internal identifiers are left out of this section.";
+function screenFor(ctx, sectionId) {
+  const sec = ctx.report.sections.find((x) => x.section_id === sectionId);
+  const sources = Array.isArray(sec?.sources) ? sec.sources.filter((x) => typeof x === "string") : [];
+  return sources.length > 0 && sources.every((p) => p.startsWith("output:") || p === "/findings" || p === "/adjudications") ? INTERNAL_STRICT : INTERNAL_TEXT;
+}
 var INVARIANT_NAMES = { C1: "Separation", C2: "Blind check", C3: "Gates first", C4: "Input rule", C5: "Tests read-only", C6: "Your decisions", C7: "Labelling" };
 var STATUS_WORDS = { enforced: "enforced", checked_after: "checked afterwards", instructed: "instructed", not_met: "not met", na: "not applicable" };
 function itemsVerified(ctx) {
@@ -47004,13 +47213,21 @@ function recordValues(ctx) {
     if (v !== null && v !== "")
       out[f.placeholder] = v;
   }
+  const checks = ctx.events.some((e) => e.type === "gate_exit" && isObj(e.data) && str(e.data.gate_ref).startsWith("tripwire_gate@"));
+  if (out.sample_rule === void 0 && checks) {
+    try {
+      out.sample_rule = sampleRuleOf(ctx).standing;
+    } catch {
+      out.sample_rule = "not checked";
+    }
+  }
   return out;
 }
 var RECORD_PLACEHOLDER = /\{\{\s*record\.([A-Za-z0-9_]+)\s*\}\}/g;
 function fillRecordPlaceholders(texts, values) {
   return texts.map((t) => t.replace(RECORD_PLACEHOLDER, (_whole, name) => values[name] ?? `(not filled: record.${name})`));
 }
-function recordPlaceholderValues(report, record, folder = "") {
+function recordPlaceholderValues(report, record, folder = "", gatePacks) {
   const fmt = isObj(report.formatting) ? report.formatting : {};
   const labels = (x) => isObj(x) ? Object.fromEntries(Object.entries(x).filter((e) => typeof e[1] === "string")) : {};
   const ctx = {
@@ -47027,7 +47244,9 @@ function recordPlaceholderValues(report, record, folder = "") {
     checkNames: labels(fmt.check_names),
     auditStages: void 0,
     choiceLabels: labels(fmt.choice_names),
-    valueLabels: labels(fmt.value_labels)
+    valueLabels: labels(fmt.value_labels),
+    // The tripwire packs, so {{record.sample_rule}} reads the rule against the frame as the report does (ask 104).
+    ...gatePacks ? { opts: { gatePacks } } : {}
   };
   return recordValues(ctx);
 }
@@ -47045,6 +47264,8 @@ function summaryContent(ctx, abandonedAt, person = false) {
     const text3 = person ? rating.text.replace(/ \([^()]*\)$/, "") : rating.text;
     paras.push(`${String(r.label)}: ${rating.measured ? measured(ctx, String(r.rating_id), text3) : text3}`);
   }
+  if (sampleRuleOf(ctx).standing === "below")
+    paras.push("Sample against the rule of thumb: below");
   for (const f of es.summary_facts ?? []) {
     const v = factValue(ctx, f, person);
     if (v !== null && v !== "")
@@ -47194,7 +47415,8 @@ function renderHtml(title, items2, doc, person = false) {
 }
 var INTERNAL_COLUMN = /(^|_)(id|ids|ref|refs|fingerprint|fingerprints|seq)$/;
 function plainSection(ctx, item) {
-  const bad = (t) => INTERNAL_TEXT.test(typeof t === "string" ? t : JSON.stringify(t));
+  const screen = screenFor(ctx, item.section.section_id);
+  const bad = (t) => screen.test(typeof t === "string" ? t : JSON.stringify(t));
   const s = { ...item.section, content: labelled(ctx, item.section) };
   let content2 = s.content;
   const extra = [];
@@ -47203,15 +47425,40 @@ function plainSection(ctx, item) {
     const keep = t.columns.map((_, i) => i).filter((i) => !INTERNAL_COLUMN.test(t.columns[i] ?? ""));
     if (keep.length === 0 || t.rows.length === 0)
       return null;
-    if (keep.some((i) => bad(t.columns[i]) || t.rows.some((r) => bad(r[i] ?? ""))))
+    if (keep.some((i) => bad(t.columns[i])))
       return null;
     const header = (c) => /^[a-z0-9]+(_[a-z0-9]+)*$/.test(c) ? readable(c) : c;
-    content2 = { columns: keep.map((i) => header(t.columns[i] ?? "")), rows: t.rows.map((r) => keep.map((i) => r[i] ?? "")) };
+    const cut = { any: false };
+    const badCell = (v) => screen.test(v) || /^\s*C[1-7]\s*$/.test(v);
+    const cell = (raw2) => {
+      const v = builderWords(raw2);
+      if (!badCell(v))
+        return v;
+      cut.any = true;
+      return "";
+    };
+    content2 = { columns: keep.map((i) => header(t.columns[i] ?? "")), rows: t.rows.map((r) => keep.map((i) => cell(r[i] ?? ""))) };
+    if (cut.any)
+      extra.push(LEFT_OUT);
     if (keep.length < t.columns.length)
       extra.push("Identifiers are left out of this table.");
   } else if (Array.isArray(s.content)) {
-    if (s.content.some(bad))
+    const items2 = s.content.map((x) => typeof x === "string" ? builderWords(x) : x);
+    const cutAny = { yes: false };
+    const kept = items2.flatMap((x) => {
+      if (!bad(x))
+        return [x];
+      cutAny.yes = true;
+      if (typeof x !== "string")
+        return [];
+      const r = cutSentences(x, screen);
+      return /[^[\]…\s]/.test(r.text) ? [r.text] : [];
+    });
+    if (kept.length === 0)
       return null;
+    if (cutAny.yes)
+      extra.push(LEFT_OUT);
+    content2 = kept;
   }
   const sentences = (t) => t.split(/(?<=\.)\s+/).filter((x) => x.length > 0 && !bad(x));
   const note = item.note === null ? [] : sentences(item.note);
@@ -47288,14 +47535,22 @@ function personShaped(ctx, item, maxWords) {
       return true;
     };
     const finish = textFinisher(ctx, sec);
+    let docCut = false;
     outer: for (const part of kept) {
       const raw2 = [String(part.heading).trim(), ...part.paragraphs.flatMap((p) => isObj(p) && typeof p.text === "string" && p.text.trim() ? [p.text] : [])];
       const [heading = "", ...texts] = finish(raw2).texts;
-      if (!clean5([heading, ...texts]))
-        return "hide";
-      if (heading && !add3(heading, true))
+      const plainTexts = texts.map((t) => {
+        const r = cutSentences(t, INTERNAL_STRICT);
+        if (r.cut)
+          docCut = true;
+        return r.text;
+      });
+      const headingOut = INTERNAL_STRICT.test(heading);
+      if (headingOut)
+        docCut = true;
+      if (heading && !headingOut && !add3(heading, true))
         break;
-      for (const t of texts)
+      for (const t of plainTexts)
         if (!add3(t, false))
           break outer;
     }
@@ -47307,6 +47562,8 @@ function personShaped(ctx, item, maxWords) {
       more.push(`\u2026 and ${String(parts.length - kept.length)} more sections in the run folder.`);
     if (capped2.length < paras.length && !state.cut)
       more.push("Only the first paragraphs are shown; the rest are in the run folder.");
+    if (docCut)
+      more.push(LEFT_OUT);
     return { section: { ...item.section, block: "text", content: capped2 }, note, rules: [...rules, ...more], headings: headings.filter((i) => i < capped2.length) };
   }
   if (item.section.block !== "list" || !sources.some((p) => p === "/delivery" || p === "/outputs"))
@@ -47325,13 +47582,21 @@ function personShaped(ctx, item, maxWords) {
   const links = (Array.isArray(delivery.links) ? delivery.links : []).filter(isObj).filter((l) => typeof l.label === "string" && typeof l.url === "string" && l.url.startsWith("https://"));
   const linked = new Set(links.map((l) => String(l.label).toLowerCase()));
   const ids = (Array.isArray(delivery.choice_ids) ? delivery.choice_ids : []).filter((x) => typeof x === "string");
-  const list = [...ids.map((id) => choiceWords(ctx, id)).filter((w) => !linked.has(w.toLowerCase())), ...links.map((l) => `${String(l.label)}: ${String(l.url)}`)];
-  if (!clean5(list))
-    return "hide";
+  const all = [...ids.map((id) => choiceWords(ctx, id)).filter((w) => !linked.has(w.toLowerCase())), ...links.map((l) => `${String(l.label)}: ${String(l.url)}`)];
+  const list = all.filter((x) => clean5([x]));
+  if (list.length < all.length)
+    rules.push(LEFT_OUT);
+  if (list.length === 0 && all.length > 0)
+    return { section: { ...item.section, block: "text", content: ["What was delivered is listed in the run folder."] }, rules, note: null };
   if (list.length === 0)
     return empty();
   const shownList = list.slice(0, LIMITS.listItems).map((x) => cap(x, LIMITS.itemChars));
   return { section: { ...item.section, content: shownList }, note: null, rules: shownList.length < list.length ? [...rules, `\u2026 and ${String(list.length - shownList.length)} more items`] : rules };
+}
+function emptyContent(s) {
+  if (s.block === "table")
+    return s.content.rows?.length === 0;
+  return Array.isArray(s.content) && s.content.length === 0;
 }
 function personSections(ctx, rendered, abandonedAt, maxWords) {
   const shown2 = [];
@@ -47355,10 +47620,10 @@ function personSections(ctx, rendered, abandonedAt, maxWords) {
       shown2.push({ section: { ...item.section, content: built.content }, note: built.note, rules: item.rules.filter((r) => !INTERNAL_TEXT.test(r)) });
     } else {
       const special = personShaped(ctx, item, maxWords);
-      const plain3 = special === "hide" ? null : special ?? plainSection(ctx, item);
+      const plain3 = special ?? plainSection(ctx, item);
       if (plain3)
         shown2.push(plain3);
-      else
+      else if (!emptyContent(item.section))
         notShown.push(`${item.section.title}: not shown, it cannot be shown without internal identifiers.`);
     }
   }
@@ -50512,7 +50777,7 @@ var FairleadServer = class _FairleadServer {
           result = this.arm(run2);
           break;
         case "heddle_next":
-          result = this.next(run2);
+          result = await this.next(run2);
           break;
         case "heddle_wait":
           result = await this.wait(run2);
@@ -50998,20 +51263,45 @@ ${JSON.stringify(TAKEOVER_ASK, null, 1)}
     run2.rotateKey();
     return ok("Hooks are armed for this run. Call heddle_next.");
   }
-  next(run2) {
+  async next(run2) {
     if (run2.delivered)
       return ok("This run is delivered and its record is frozen.");
     if (run2.integrity.length > 0)
       return ok(integrityMessage(run2));
     const ruled = [];
     const autos = [];
+    const ranGates = [];
+    const gatePhases = [];
+    let gateRefused = null;
     for (let changed = true; changed; ) {
       const r = run2.applySkipRules(this.now().toISOString().replace(/\.\d{3}Z$/, "Z"));
       const a = this.autoContinue(run2);
       ruled.push(...r);
       autos.push(...a);
       changed = r.length + a.length > 0;
+      if (changed || run2.integrity.length > 0 || this.opts.fewerRoundTrips === false)
+        continue;
+      const gate = run2.readySteps().find((x) => x.step.kind === "gate" && x.step.gate_ref);
+      if (!gate)
+        break;
+      const phase2 = this.phaseWords(run2, gate.step.step_id);
+      if (phase2)
+        gatePhases.push(phase2);
+      try {
+        await this.runGateStep(run2, gate.step.step_id);
+      } catch (err) {
+        if (!(err instanceof Refusal))
+          throw err;
+        if (run2.steps.get(gate.step.step_id)?.status === "running")
+          run2.endStep(gate.step.step_id, "failed");
+        gateRefused = `Check ${this.gateName(gate.step.gate_ref)} (step ${gate.step.step_id}) could not be run: ${err.message}`;
+        break;
+      }
+      ranGates.push(gate.step.step_id);
+      changed = true;
     }
+    if (run2.integrity.length > 0)
+      return ok(integrityMessage(run2));
     const ready = run2.readySteps();
     const running = [...run2.steps.values()].filter((s) => s.status === "running");
     const lines3 = [];
@@ -51019,10 +51309,19 @@ ${JSON.stringify(TAKEOVER_ASK, null, 1)}
       lines3.push(`Skipped as not needed (nothing for them to do): ${ruled.join(", ")}.`);
     if (autos.length)
       lines3.push(`Carried on by itself, because every step it waits on passed (recorded as Heddle's, not the person's): ${autos.join(", ")}.`);
-    for (const s of running)
-      lines3.push(`Step ${s.step.step_id} (${s.step.kind}) is running.`);
+    if (ranGates.length)
+      lines3.push(`Ran ${String(ranGates.length)} check${ranGates.length === 1 ? "" : "s"}: ${ranGates.map((id) => this.gateOutcomeWords(run2, id)).join("; ")}.`);
+    if (gateRefused)
+      lines3.push(gateRefused);
+    const [only] = ready;
+    const waiting = [...run2.steps.values()].some((x) => x.status === "failed");
+    const fold = this.opts.fewerRoundTrips !== false && ready.length === 1 && only?.step.thread_ref !== void 0 && running.length === 0 && !waiting;
+    for (const s of running) {
+      const held = s.ticket_id ? run2.tickets.get(s.ticket_id) : void 0;
+      lines3.push(held && held.state === "issued" && held.agent_id === null ? this.ticketReply(run2, s, held) : `Step ${s.step.step_id} (${s.step.kind}) is running.`);
+    }
     for (const s of ready)
-      lines3.push(howTo(run2, s.step.step_id));
+      lines3.push(fold && s === only ? this.ticket(run2, s.step.step_id).text : howTo(run2, s.step.step_id));
     const repairs = [];
     const readyIds = new Set(ready.map((s) => s.step.step_id));
     for (const s of run2.steps.values()) {
@@ -51035,9 +51334,9 @@ ${JSON.stringify(TAKEOVER_ASK, null, 1)}
       (this.failingItems(run2, s.step.step_id).length ? ` At step ${to}, show the person these failing items before the options, every time:${this.failedCase(run2, s.step.step_id)}` : ""));
     }
     const failed = [...run2.steps.values()].filter((s) => s.status === "failed" && !repairs.includes(s));
-    const [only] = failed;
-    if (failed.length === 1 && only) {
-      const s = only;
+    const [lone] = failed;
+    if (failed.length === 1 && lone) {
+      const s = lone;
       lines3.push(`Step ${s.step.step_id} (${s.step.kind}) failed. Show the person what failed, in plain words, before the options, every time, and put these items in the AskUserQuestion question itself.${this.failedCase(run2, s.step.step_id)}
 Then ask with these options in this order, none marked as recommended: "Carry on: the checkers and adjudicator will propose fixes for these", "Stop the run". Then call heddle_decision with kind waiver (step_id ${s.step.step_id}) or abandon.`);
     } else if (failed.length > 1) {
@@ -51053,7 +51352,14 @@ Then ask in one question with these options in this order, none marked as recomm
     const phase = this.phaseWords(run2, progress.current_step_id);
     if (phase)
       lines3.unshift(phase);
+    lines3.unshift(...gatePhases);
     return ok(lines3.join("\n"));
+  }
+  /** A gate run, in the person's words: "citation check passed", "… passed with warnings", "… failed", "… could not run". */
+  gateOutcomeWords(run2, stepId) {
+    const status = run2.log.ofType("gate_exit").filter((e) => e.step_id === stepId).at(-1)?.data.status;
+    const words2 = status === "pass" ? "passed" : status === "warn" ? "passed with warnings" : status === "fail" ? "failed" : "could not run";
+    return `${this.gateName(run2.steps.get(stepId)?.step.gate_ref)} ${words2}`;
   }
   /**
    * What to tell the person as the run moves into a phase (braids' B2): at the first, the header with how many phases
@@ -51089,15 +51395,15 @@ Then ask in one question with these options in this order, none marked as recomm
       throw new Refusal(`Unknown step ${stepId}.`);
     if (!s.step.thread_ref)
       throw new Refusal(`Step ${stepId} does not run as a subagent.`);
+    const held = s.status === "running" && s.ticket_id ? run2.tickets.get(s.ticket_id) : void 0;
+    if (held && held.state === "issued" && held.agent_id === null)
+      return ok(this.ticketReply(run2, s, held));
     if (s.status !== "pending" || !run2.readySteps().includes(s))
       throw new Refusal(`Step ${stepId} is not ready (call heddle_next).`);
     const kind2 = s.step.kind;
     const ticketId = newId("tkt", this.now().getTime());
     const contextId = run2.newContext();
     const agentType = run2.agentType(s.step.thread_ref);
-    const named = this.bundle.threads.get(s.step.thread_ref)?.name;
-    const plain3 = typeof named === "string" && named.trim() ? named.trim() : (s.step.thread_ref.split("@")[0] ?? "").replaceAll("_", " ");
-    const role = /^[A-Z][a-z]/.test(plain3) ? `${plain3.charAt(0).toLowerCase()}${plain3.slice(1)}` : plain3;
     const timeout = run2.template.stop.ticket_timeout[kind2] ?? 1800;
     const expires = this.now().getTime() + timeout * 1e3;
     const runsScripts = this.threadTools(run2, s.step.thread_ref).includes("run_readonly");
@@ -51133,11 +51439,21 @@ Then ask in one question with these options in this order, none marked as recomm
       closed_by: null
     });
     s.ticket_id = ticketId;
+    const t = run2.tickets.get(ticketId);
+    if (!t)
+      throw new Refusal(`Ticket ${ticketId} was not recorded.`);
+    return ok(this.ticketReply(run2, s, t));
+  }
+  /** What Claude is told to do with an issued ticket: say what is starting and for how long, then spawn it. */
+  ticketReply(run2, s, t) {
+    const named = s.step.thread_ref ? this.bundle.threads.get(s.step.thread_ref)?.name : void 0;
+    const plain3 = typeof named === "string" && named.trim() ? named.trim() : ((s.step.thread_ref ?? "").split("@")[0] ?? "").replaceAll("_", " ");
+    const role = /^[A-Z][a-z]/.test(plain3) ? `${plain3.charAt(0).toLowerCase()}${plain3.slice(1)}` : plain3;
     const tm = s.step.typical_minutes && s.round <= 1 && s.step.typical_minutes.low <= s.step.typical_minutes.high ? s.step.typical_minutes : void 0;
     const howLong = tm ? `it usually takes ${tm.low === tm.high ? String(tm.low) : `${String(tm.low)}\u2013${String(tm.high)}`} minute${tm.high === 1 ? "" : "s"}` : "this can take several minutes";
-    return ok(`Ticket issued for step ${stepId}. First tell the person in one line what is starting and for how long: "Starting the ${role}; ${howLong}."; then, in the same turn, spawn it as below. If Claude Code moves the step to the background while it works, call heddle_wait and post its progress line, again and again until the step hands back; never end your turn in silence. Now use the Agent tool in the foreground, with run_in_background: false set explicitly, with subagent_type "${agentType}" and this exact text as the whole prompt, nothing added:
+    return `Ticket issued for step ${s.step.step_id}. First tell the person in one line what is starting and for how long: "Starting the ${role}; ${howLong}."; then, in the same turn, spawn it as below. If Claude Code moves the step to the background while it works, call heddle_wait and post its progress line, again and again until the step hands back; never end your turn in silence. Now use the Agent tool in the foreground, with run_in_background: false set explicitly, with subagent_type "${t.agent_type}" and this exact text as the whole prompt, nothing added:
 
-${text3}`);
+${t.text}`;
   }
   /** The PreToolUse spool entry for this very call (its tool_use_id), if the hooks wrote one. */
   entryFor(run2, tool, meta) {
@@ -54017,6 +54333,12 @@ Tell them what each option does. Use the same wording and order every time, and 
         s.ended_at = null;
         s.output_refs = [];
         s.output_by = [];
+        const stale = s.ticket_id ? run2.tickets.get(s.ticket_id) : void 0;
+        if (stale && stale.state === "issued") {
+          stale.state = "closed";
+          stale.closed_by = "interrupted";
+          run2.log.append("ticket_closed", { source: "mcp_server", ticket_id: stale.ticket_id, context_id: stale.context_id, closed_by: "interrupted", ended_seq: null }, id);
+        }
         s.ticket_id = null;
         delete s.gate_status;
         s.reset_after = run2.portWrites;
@@ -54368,7 +54690,8 @@ ${blockTail(markdown, false)}`);
     const answerSeq = this.checkResultsChosen(run2, s, chosen);
     run2.startStep(s.step.step_id, "ctx_1", "shared_context");
     const picked = pickReport(this.reportsDir, run2.template.template_id, run2.template.version);
-    const recordValues2 = picked ? recordPlaceholderValues(picked.report, this.recordSoFar(run2), run2.folder) : {};
+    const packs = Object.fromEntries(run2.template.steps.flatMap((x) => x.gate_ref?.startsWith("tripwire_gate@") ? [[x.step_id, this.packOf(run2.template.template_id, run2.template.version, x.step_id, x.gate_ref)]] : []));
+    const recordValues2 = picked ? recordPlaceholderValues(picked.report, this.recordSoFar(run2), run2.folder, packs) : {};
     const waivedFailures2 = waivedFailedSteps(run2.log.events).map((w) => run2.gateResultOf(w.step_id)?.result).filter((r) => r !== void 0);
     const verifiedFailures = verifiedFailedSteps(run2.log.events).map((w) => run2.gateResultOf(w.step_id)?.result).filter((r) => r !== void 0);
     const delivered = renderFiles(run2, chosen, recordValues2, waivedFailures2, this.openFindings.get(run2.runId) ?? [], verifiedFailures);
