@@ -1,8 +1,8 @@
 {
   "schema": "fairlead.braid_template/0.1",
   "template_id": "fairlead.lit_scoping_review",
-  "version": "0.4.5",
-  "fingerprint": "jcs1:sha256:297a15b73fe87f298298fdbeafce82f40d1f617ee316be075c8315f4ec8bfa33",
+  "version": "0.4.6",
+  "fingerprint": "jcs1:sha256:17ac59dc6e6cbb47d139920020120fcc9c992ab2376f5033139da2ac84631d28",
   "catalogue": {
     "command": "/fairlead:review",
     "title": "Literature scoping review",
@@ -157,7 +157,7 @@
     {
       "step_id": "s0",
       "kind": "preflight",
-      "gate_ref": "web_access@0.1.0",
+      "gate_ref": "web_access@0.2.0",
       "needs": []
     },
     {
@@ -946,8 +946,8 @@
   ],
   "gates": [
     {
-      "gate_ref": "web_access@0.1.0",
-      "gate_fingerprint": "jcs1:sha256:fb503b7a302c470d4c2bcff5caa1cc85ca8e2dfa9f977d0d1527336d4e1d7179",
+      "gate_ref": "web_access@0.2.0",
+      "gate_fingerprint": "jcs1:sha256:1d69109fa4a10abd069d8602d43a8d663164ff6748696dd65122f2736f62c43d",
       "applies_to": [],
       "before_checks": false,
       "on_fail": "block"

@@ -158,11 +158,12 @@ function run(gateId, gateRef, check) {
 // --- end gatekit ---
 
 const GATE_ID = "web_access";
-const GATE_REF = "web_access@0.1.0";
+const GATE_REF = "web_access@0.2.0";
 
 async function check(gateInput, load) {
   const probes = ((gateInput.config || {}).probes) || [];
   let reachable = 0;
+  let limited = 0;
   const evidence = [];
   for (const probe of probes) {
     const host = probe.host;
@@ -175,11 +176,17 @@ async function check(gateInput, load) {
       continue;
     }
     if (status === 200) reachable += 1;
-    else evidence.push({ ref: host, detail: "unreachable; status=" + status });
+    else if (status === 429) {
+      reachable += 1;
+      limited += 1;
+      evidence.push({ ref: host, detail: "rate limited; status=429: searches there may be refused for a while, and the search goes on with the others" });
+    } else evidence.push({ ref: host, detail: "unreachable; status=" + status });
   }
   const unreachable = probes.length - reachable;
-  const summary = { ref: "summary", detail: "reachable=" + reachable + " unreachable=" + unreachable };
-  return [unreachable ? "fail" : "pass", probes.length, unreachable, [summary].concat(evidence)];
+  const summary = { ref: "summary", detail: "reachable=" + reachable + " unreachable=" + unreachable + " rate_limited=" + limited };
+  // Fail only when nothing can be searched; warn when some host cannot be, or is rate limited.
+  const status = probes.length && !reachable ? "fail" : (unreachable || limited ? "warn" : "pass");
+  return [status, probes.length, status === "fail" ? unreachable : 0, [summary].concat(evidence)];
 }
 
 run(GATE_ID, GATE_REF, check);

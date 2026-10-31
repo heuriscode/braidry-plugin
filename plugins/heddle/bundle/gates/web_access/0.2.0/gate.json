@@ -1,19 +1,19 @@
 {
   "schema": "fairlead.gate/0.1",
   "gate_id": "web_access",
-  "version": "0.1.0",
-  "fingerprint": "jcs1:sha256:fb503b7a302c470d4c2bcff5caa1cc85ca8e2dfa9f977d0d1527336d4e1d7179",
+  "version": "0.2.0",
+  "fingerprint": "jcs1:sha256:1d69109fa4a10abd069d8602d43a8d663164ff6748696dd65122f2736f62c43d",
   "protocol": "gate_io/0.1",
   "scripts": [
     {
       "runtime": "python",
       "entry": "gate.py",
-      "script_fingerprint": "raw:sha256:aed38893e496afb75d659ebcc55c7fa7bd22f85e114db0233c752394c7936da3"
+      "script_fingerprint": "raw:sha256:7219d99b169131a2c9d37a15a51059e15283056b81ed1d7c0aeaab7cd901fc33"
     },
     {
       "runtime": "js",
       "entry": "gate.js",
-      "script_fingerprint": "raw:sha256:e3a5e10d63f89b07cfde65aa065635f971b1fbb3a08085fa4ab5b55d5474cdee"
+      "script_fingerprint": "raw:sha256:e9188298a2274a5828c7a04f90756f25af3ed68a0ab75ed2fafb29ddf5a4b4c4"
     }
   ],
   "applies_to": [],
@@ -28,8 +28,8 @@
         "url": "https://api.openalex.org/works?per-page=1"
       },
       {
-        "host": "export.arxiv.org",
-        "url": "https://export.arxiv.org/api/query?search_query=all%3Aelectron&max_results=1"
+        "host": "eutils.ncbi.nlm.nih.gov",
+        "url": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=antibiotic&retmax=0"
       }
     ]
   },
@@ -37,7 +37,7 @@
     "allow": [
       "api.crossref.org",
       "api.openalex.org",
-      "export.arxiv.org"
+      "eutils.ncbi.nlm.nih.gov"
     ]
   },
   "reads_rows": false,

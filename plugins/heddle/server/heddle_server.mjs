@@ -50351,18 +50351,18 @@ function phoneLines(run2) {
   };
   const n = (k, one2, many) => `${String(k)} ${k === 1 ? one2 : many}`;
   const states = order2.map((id) => run2.steps.get(id)).filter((x) => x !== void 0);
-  const current = states.find((x) => x.status === "running") ?? run2.readySteps()[0] ?? null;
+  const finished = (x) => ["done", "waived", "verified", "skipped"].includes(x.status);
+  const current = states.find((x) => x.status === "running") ?? run2.readySteps()[0] ?? states.find((x) => !finished(x)) ?? null;
+  const phases = runPhases(run2);
   const lines3 = [];
   if (current) {
-    const phases = runPhases(run2);
     const k = phases.findIndex((p) => p.steps.includes(current.step.step_id));
     const word = kindWord(current.step.kind);
     const kind2 = `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
     const label = phases[k]?.label.replace(/\s+/g, " ").trim() ?? "";
     lines3.push(k >= 0 ? fit(`Phase ${String(k + 1)}/${String(phases.length)} \xB7 ${label && !names(label) ? label : kind2}`) : fit(`Step ${String(order2.indexOf(current.step.step_id) + 1)}/${String(order2.length)} \xB7 ${kind2}`));
   } else {
-    const done = states.filter((x) => ["done", "waived", "verified", "skipped"].includes(x.status)).length;
-    lines3.push(`${String(done)}/${String(order2.length)} steps finished`);
+    lines3.push(phases.length ? `All ${String(phases.length)} phases finished` : `${String(states.filter(finished).length)}/${String(order2.length)} steps finished`);
   }
   const searches = run2.log.ofType("search_call").map((e) => e.data);
   if (searches.length > 0) {

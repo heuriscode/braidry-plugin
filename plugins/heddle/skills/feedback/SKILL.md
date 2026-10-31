@@ -8,8 +8,8 @@ description: Send feedback about Heddle to its makers. Use when the person types
 Help the person send feedback on this Heddle tester release. Never include their topic, their prompts, their results or any file contents: only what is listed below.
 
 1. Gather these, and show them to the person as a short block they can copy:
-   - **Plugin version:** 0.3.0
-   - **Braid:** fairlead.lit_scoping_review@0.4.5
+   - **Plugin version:** 0.3.1
+   - **Braid:** fairlead.lit_scoping_review@0.4.6
    - **Claude Code version:** run `claude --version` in a shell if you can; otherwise ask the person.
    - **Operating system:** Windows, macOS or Linux.
    - **Run id and practice headline,** if this conversation ran a Heddle braid: the run id (it starts with `run_`) and the "Practice:" line `heddle_deliver` returned. If the run did not finish, say which step it reached and what went wrong, in one sentence of at most 100 characters, without quoting any content.

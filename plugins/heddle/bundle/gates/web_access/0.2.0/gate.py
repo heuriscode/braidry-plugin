@@ -184,12 +184,13 @@ def run(gate_id, gate_ref, check):
 
 
 GATE_ID = "web_access"
-GATE_REF = "web_access@0.1.0"
+GATE_REF = "web_access@0.2.0"
 
 
 def check(gate_input, load):
     probes = (gate_input.get("config") or {}).get("probes") or []
     reachable = 0
+    limited = 0
     evidence = []
     for probe in probes:
         host = probe["host"]
@@ -201,11 +202,19 @@ def check(gate_input, load):
             continue
         if status == 200:
             reachable += 1
+        elif status == 429:
+            reachable += 1
+            limited += 1
+            evidence.append({"ref": host, "detail": "rate limited; status=429: searches there may be refused "
+                             "for a while, and the search goes on with the others"})
         else:
             evidence.append({"ref": host, "detail": "unreachable; status=" + str(status)})
     unreachable = len(probes) - reachable
-    summary = {"ref": "summary", "detail": "reachable=%d unreachable=%d" % (reachable, unreachable)}
-    return ("fail" if unreachable else "pass"), len(probes), unreachable, [summary] + evidence
+    summary = {"ref": "summary", "detail": "reachable=%d unreachable=%d rate_limited=%d"
+               % (reachable, unreachable, limited)}
+    # Fail only when nothing can be searched; warn when some host cannot be, or is rate limited.
+    status = "fail" if probes and not reachable else ("warn" if unreachable or limited else "pass")
+    return status, len(probes), (unreachable if status == "fail" else 0), [summary] + evidence
 
 
 run(GATE_ID, GATE_REF, check)
