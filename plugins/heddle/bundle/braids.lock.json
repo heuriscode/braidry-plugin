@@ -313,6 +313,16 @@
       "free_bundle": "jcs1:sha256:a2022de6f29c08f084c43a92e1d6f6352414f8f11011452d3663709235d3b243",
       "report": null
     },
+    "fairlead.lit_scoping_review@0.4.4": {
+      "core": "jcs1:sha256:c9c8b1fdca0f1724fc503f75eb8df9bf8f347a044e9fcbb337d770ff39aec59a",
+      "free_bundle": "jcs1:sha256:3e95a98c3bc27ad384f5ec0bd224d61e45a82960f4693818b16c33c63134079e",
+      "report": null
+    },
+    "fairlead.lit_scoping_review@0.4.5": {
+      "core": "jcs1:sha256:ccff8c46e4669e83c7343c3e60f92c3667163d669c20331bb8dc5a0df0f21c07",
+      "free_bundle": "jcs1:sha256:297a15b73fe87f298298fdbeafce82f40d1f617ee316be075c8315f4ec8bfa33",
+      "report": null
+    },
     "fairlead.lit_scoping_review@0.5.0": {
       "core": "jcs1:sha256:c7756bfa287a9ced65c7ab3c18b85dd8892f8dbd5cccd72567f84468968e1f6f",
       "free_bundle": null,
@@ -508,7 +518,10 @@
     "reviser@0.4.0": "jcs1:sha256:ec29e0930602c43ddb97966d8a4c12aaed4d8495aa0f817610e82aaa1f7354df",
     "reviser@0.4.1": "jcs1:sha256:8bbc184a57657916f2971a8008c9f2aa43533b68b170cd335af34522a60563e1",
     "reviser@0.4.2": "jcs1:sha256:ebd3a899a277f122af7e4e77e40bdbb719c7631311dc9f7f420afc65478d6000",
-    "searcher@0.1.0": "jcs1:sha256:63c54fed60d669b3bf344248d7e21f80783f891781ffbf231fb7da816a64fa81"
+    "reviser@0.4.3": "jcs1:sha256:43762163324d67dbe7882e9c096d073d8b68425cd605930937d501234597bc75",
+    "searcher@0.1.0": "jcs1:sha256:63c54fed60d669b3bf344248d7e21f80783f891781ffbf231fb7da816a64fa81",
+    "searcher@0.2.0": "jcs1:sha256:24d9a0ad97d7f0850376f619135e408939e137860eca92dc3ec2f439e1cb18b9",
+    "searcher@0.2.1": "jcs1:sha256:a194e6d24ff046a3476aa9f5dad85dc52a794a1b705dd9b9a737002e5cbf4dfc"
   },
   "types": {
     "agreed_focus@0.1.0": "jcs1:sha256:262f5b94ce8c54f2a2e2a4a7a897667ca70d21c5362db61948e08539c3ae9f36",

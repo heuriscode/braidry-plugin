@@ -9,10 +9,10 @@ import { existsSync as existsSync2, mkdirSync as mkdirSync2, readFileSync as rea
 import { homedir, hostname } from "node:os";
 import { dirname, isAbsolute, join as join2, resolve, sep } from "node:path";
 
-// ../../../../../../home/user/fairlead-server/packages/canon/dist/index.js
+// packages/canon/dist/index.js
 import { createHash } from "node:crypto";
 
-// ../../../../../../home/user/fairlead-server/node_modules/canonicalize/lib/canonicalize.js
+// node_modules/canonicalize/lib/canonicalize.js
 function serializeString(value) {
   if (!value.isWellFormed()) {
     throw new Error("Lone surrogate is not allowed");
@@ -158,7 +158,7 @@ function canonicalize(object) {
   return result;
 }
 
-// ../../../../../../home/user/fairlead-server/packages/canon/dist/index.js
+// packages/canon/dist/index.js
 var MAX_DEPTH = 100;
 var CanonError = class extends Error {
   name = "CanonError";
@@ -368,7 +368,7 @@ var MCP = "mcp__plugin_heddle_heddle__";
 var START = `${MCP}heddle_run_start`;
 var RESUME = `${MCP}heddle_resume`;
 var starts = (tool) => tool === START || tool === RESUME;
-var CALLER_TOOLS = /* @__PURE__ */ new Set([`${MCP}heddle_inputs`, `${MCP}heddle_output`]);
+var CALLER_TOOLS = /* @__PURE__ */ new Set([`${MCP}heddle_inputs`, `${MCP}heddle_output`, `${MCP}heddle_search`, `${MCP}heddle_search_record`]);
 var SPAWN_TOOLS = /* @__PURE__ */ new Set(["Agent", "Task"]);
 var ROUTE_TOOLS = /* @__PURE__ */ new Set(["SendMessage", "Workflow"]);
 var ANSWER_CAP = 32e3;

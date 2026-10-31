@@ -1,8 +1,8 @@
 {
   "schema": "fairlead.braid_template/0.1",
   "template_id": "fairlead.lit_scoping_review",
-  "version": "0.4.3",
-  "fingerprint": "jcs1:sha256:a2022de6f29c08f084c43a92e1d6f6352414f8f11011452d3663709235d3b243",
+  "version": "0.4.5",
+  "fingerprint": "jcs1:sha256:297a15b73fe87f298298fdbeafce82f40d1f617ee316be075c8315f4ec8bfa33",
   "catalogue": {
     "command": "/fairlead:review",
     "title": "Literature scoping review",
@@ -24,10 +24,11 @@
   "inputs": [],
   "threads": [
     {
-      "thread_ref": "searcher@0.1.0",
-      "thread_fingerprint": "jcs1:sha256:63c54fed60d669b3bf344248d7e21f80783f891781ffbf231fb7da816a64fa81",
+      "thread_ref": "searcher@0.2.1",
+      "thread_fingerprint": "jcs1:sha256:a194e6d24ff046a3476aa9f5dad85dc52a794a1b705dd9b9a737002e5cbf4dfc",
       "role": "finder",
       "tools": [
+        "scholarly_search",
         "search",
         "fetch",
         "write_output"
@@ -128,8 +129,8 @@
       }
     },
     {
-      "thread_ref": "reviser@0.4.2",
-      "thread_fingerprint": "jcs1:sha256:ebd3a899a277f122af7e4e77e40bdbb719c7631311dc9f7f420afc65478d6000",
+      "thread_ref": "reviser@0.4.3",
+      "thread_fingerprint": "jcs1:sha256:43762163324d67dbe7882e9c096d073d8b68425cd605930937d501234597bc75",
       "role": "reviser",
       "tools": [
         "fetch",
@@ -175,7 +176,7 @@
     {
       "step_id": "s2",
       "kind": "make",
-      "thread_ref": "searcher@0.1.0",
+      "thread_ref": "searcher@0.2.1",
       "needs": [
         "s1"
       ],
@@ -330,6 +331,53 @@
         "gate_results"
       ],
       "options": [
+        {
+          "option_id": "remove",
+          "label": "Remove this source and the claims that rest only on it",
+          "route": {
+            "action": "loop",
+            "to": "s3"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          },
+          "direction": "Remove this source, its reference entry and evidence row, and every claim that rests only on it.",
+          "for_outcomes": [
+            "not_found",
+            "doi_not_found",
+            "doi_title_mismatch"
+          ]
+        },
+        {
+          "option_id": "correct",
+          "label": "Correct the reference to the record the check found",
+          "route": {
+            "action": "loop",
+            "to": "s3"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          },
+          "direction": "If the record the check found is the work you read, correct the reference to it; if it is a different work, remove this source and the claims that rest only on it.",
+          "for_outcomes": [
+            "doi_title_mismatch"
+          ]
+        },
+        {
+          "option_id": "verified",
+          "label": "It is right: I have checked this reference myself",
+          "route": {
+            "action": "continue"
+          },
+          "verifies": true,
+          "for_outcomes": [
+            "not_found",
+            "doi_not_found",
+            "doi_title_mismatch"
+          ]
+        },
         {
           "option_id": "fix",
           "label": "Send these back to fix",
@@ -548,7 +596,7 @@
     {
       "step_id": "s7",
       "kind": "revise",
-      "thread_ref": "reviser@0.4.2",
+      "thread_ref": "reviser@0.4.3",
       "needs": [
         "s6d"
       ],
@@ -699,6 +747,53 @@
         "gate_results"
       ],
       "options": [
+        {
+          "option_id": "remove",
+          "label": "Remove this source and the claims that rest only on it",
+          "route": {
+            "action": "loop",
+            "to": "s7"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          },
+          "direction": "Remove this source, its reference entry and evidence row, and every claim that rests only on it.",
+          "for_outcomes": [
+            "not_found",
+            "doi_not_found",
+            "doi_title_mismatch"
+          ]
+        },
+        {
+          "option_id": "correct",
+          "label": "Correct the reference to the record the check found",
+          "route": {
+            "action": "loop",
+            "to": "s7"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          },
+          "direction": "If the record the check found is the work you read, correct the reference to it; if it is a different work, remove this source and the claims that rest only on it.",
+          "for_outcomes": [
+            "doi_title_mismatch"
+          ]
+        },
+        {
+          "option_id": "verified",
+          "label": "It is right: I have checked this reference myself",
+          "route": {
+            "action": "continue"
+          },
+          "verifies": true,
+          "for_outcomes": [
+            "not_found",
+            "doi_not_found",
+            "doi_title_mismatch"
+          ]
+        },
         {
           "option_id": "fix",
           "label": "Send these back to fix",

@@ -1,7 +1,7 @@
 ---
 name: searcher
 description: Heddle Literature searcher for one step of a Heddle braid. Started only by the Heddle plugin, with a ticket as its whole prompt.
-tools: mcp__plugin_heddle_heddle__heddle_inputs, mcp__plugin_heddle_heddle__heddle_output, WebSearch, WebFetch
+tools: mcp__plugin_heddle_heddle__heddle_inputs, mcp__plugin_heddle_heddle__heddle_output, mcp__plugin_heddle_heddle__heddle_search, mcp__plugin_heddle_heddle__heddle_search_record, WebSearch, WebFetch
 ---
 
 You are one thread in a Fairlead braid: AI threads and deterministic gates working for a person who is accountable for the result.
