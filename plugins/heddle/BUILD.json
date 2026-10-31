@@ -1,9 +1,9 @@
 {
-  "plugin": "0.3.2",
+  "plugin": "0.3.3",
   "braid": "fairlead.lit_scoping_review@0.4.8",
-  "built_at": "2026-10-31T17:15:57Z",
+  "built_at": "2026-10-31T18:57:33Z",
   "files": {
-    ".claude-plugin/plugin.json": "raw:sha256:d7f368011202b4fa5861670c4bbeedb5bef7aec8a6d2b6fc241d78c807f1b3f7",
+    ".claude-plugin/plugin.json": "raw:sha256:f129fcdf68ed3501839b4d59c9ea1eb9af535365bcb851cee77e314295f48696",
     ".mcp.json": "raw:sha256:1b150d41089a2d5276b6daad345189c5e9bd48020f992b019a88749ca0f108d3",
     "LICENSE.md": "raw:sha256:6e65a24831ace2638f9b1238effd667e3f5578dc5fabc85a3be8ba3ac8c3b0ec",
     "README.md": "raw:sha256:ad13d7797e6273a9ea238645e89205ed1f2201049f5cbbd40c24561928a0188f",
@@ -57,8 +57,8 @@
     "hooks/hooks.json": "raw:sha256:4449ed3526eae4e7e0c92243e9d4bd10e3f3aad6d0dc432d42cb177ab93b5a65",
     "reports/fairlead.lit_scoping_review/0.1.0/report.json": "raw:sha256:39e16fdc151287ab07367d38b9e7f0f0361cf961806b2647e16cfca6af7a2817",
     "reports/fairlead.lit_scoping_review/0.1.1/report.json": "raw:sha256:984204f7f51d70b7a817019b50d0d097de073d0d365c29d26856cf4baa020006",
-    "server/heddle_server.mjs": "raw:sha256:d6c28fe9e7064f673c758c35c1d843a415ceaca3050649592a4b7ff99f4add60",
-    "skills/feedback/SKILL.md": "raw:sha256:2e2c8c5ad86a8e7123369e1df6b09bf7bc9c2b574008359ee48a617c599958be",
+    "server/heddle_server.mjs": "raw:sha256:faa98d7737ccebb6808b79a22c25ed8b09325b3cb5bab9e8439ee29d2fc317c9",
+    "skills/feedback/SKILL.md": "raw:sha256:416e321137e304e7e9dbd369f3ff1a56b852cfa062eb224354e7eb951f81e3d3",
     "skills/library/SKILL.md": "raw:sha256:fab97bc86d43cbe44b6d348d2a2dca3596a952d4a630af274486a89e19786e0b",
     "skills/review/SKILL.md": "raw:sha256:9e09c5c66b06b64f057624e6904c6fe1104aa1009936975587411d45c9b8173f",
     "vendor/mcp_v1_snapshot.json": "raw:sha256:92db784c93043b3393d8d2c9bc7ce886d62cf2e340198a85d9b5f4c9588ba18a"

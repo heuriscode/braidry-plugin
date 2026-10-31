@@ -44222,7 +44222,8 @@ var Run = class _Run {
   caseAsk = null;
   /**
    * An early look handed to the conversation and not yet seen posted (braids' speed study B4, r60): its reply, the line
-   * the hooks look for in the conversation, and what its event records.
+   * the hooks look for in the conversation, what its event records, and the tool use that handed it out (whose
+   * PostToolUse notice shows it to the person).
    */
   earlyLookAsk = null;
   /** Early looks settled, posted or not ("step|port"), so none is handed twice over (braids' r60). */
@@ -51945,13 +51946,15 @@ Then ask in one question with these options in this order, none marked as recomm
     if (pending) {
       const seen = this.entryFor(run2, tool, meta)?.facts?.early_look;
       const outcome = seen === "posted" || seen === "missing" ? seen : "not_checked";
-      run2.log.append("early_look_shown", { source: "mcp_server", port: pending.port, round: 1, fingerprint: pending.fingerprint, rows_shown: pending.rows_shown, rows_total: pending.rows_total, seen: outcome }, pending.step_id);
+      const notice = run2.spoolEntries().some((e) => e.event === "PostToolUse" && e.tool_use_id === pending.handed_by && e.facts.early_look_notice === "shown");
+      const via = outcome === "posted" ? "message" : notice ? "hook" : null;
+      run2.log.append("early_look_shown", { source: "mcp_server", port: pending.port, round: 1, fingerprint: pending.fingerprint, rows_shown: pending.rows_shown, rows_total: pending.rows_total, seen: outcome, ...via ? { via } : {} }, pending.step_id);
       run2.earlyLooksDone.push(`${pending.step_id}|${pending.port}`);
       run2.earlyLookAsk = null;
     }
     const look = this.opts.earlyLooks === false ? null : this.earlyLook(run2);
     if (look) {
-      run2.earlyLookAsk = look;
+      run2.earlyLookAsk = { ...look, handed_by: meta.toolUseId ?? null };
       return ok(lookReply(look.lines, look.notice));
     }
     return call();
@@ -52004,11 +52007,11 @@ Then ask in one question with these options in this order, none marked as recomm
       const header = look.fields.map((f) => f === "source_id" ? "source" : f.replace(/_/g, " "));
       const body = rows.map((r) => look.fields.map((f) => cell(f, field(r, f))));
       const head = `Early look, not yet checked: ${label} (${String(rows.length)} of ${String(list.length)})`;
-      const plain4 = (c) => c.replace(/\\(.)/g, "$1").trim();
+      const plain4 = (c, n) => caseText(c.replace(/\\(.)/g, "$1").trim(), n).replace(/\\(.)/g, "$1");
       const items2 = body.map((r, i) => {
-        const [first = "", ...rest] = r.map(plain4).filter((c) => c !== "");
-        const item = `${String(i + 1)}. ${first}${rest.length ? ` (${rest.join(", ")})` : ""}`;
-        return caseText(item, 90).replace(/\\(.)/g, "$1");
+        const [first = "", ...rest] = r.map((c) => c.replace(/\\(.)/g, "$1").trim()).filter((c) => c !== "");
+        const others = rest.map((c) => plain4(c, 40));
+        return `${String(i + 1)}. ${plain4(first, 60)}${others.length ? ` (${others.join(", ")})` : ""}`;
       });
       let notice = `${head}: ${items2.join("; ")}`;
       if (notice.length > 700)
