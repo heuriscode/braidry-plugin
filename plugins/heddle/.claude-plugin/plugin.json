@@ -1,6 +1,6 @@
 {
   "name": "heddle",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Heddle braids: structured, checked AI processes that run on your own Claude. Every claim checked by a blind checker, every gate run on your machine, and a run record that says honestly what was enforced.",
   "author": { "name": "Heuris Pty Ltd" },
   "homepage": "https://fairlead.heuris.com.au"

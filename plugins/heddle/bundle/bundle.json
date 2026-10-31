@@ -1,8 +1,8 @@
 {
   "schema": "fairlead.braid_template/0.1",
   "template_id": "fairlead.lit_scoping_review",
-  "version": "0.4.6",
-  "fingerprint": "jcs1:sha256:17ac59dc6e6cbb47d139920020120fcc9c992ab2376f5033139da2ac84631d28",
+  "version": "0.4.8",
+  "fingerprint": "jcs1:sha256:ec2d85291cdd07ad201c92375946a1df4ff255d5f6b1bd05d4d62cbf29421837",
   "catalogue": {
     "command": "/fairlead:review",
     "title": "Literature scoping review",
@@ -204,6 +204,17 @@
           "run_01M63HJDQ7HGF03QQAQVMRTP9B",
           "run_01M63HJDQVKT67GEP83G8MT9YC"
         ]
+      },
+      "early_look": {
+        "port": "sources",
+        "list": "items",
+        "fields": [
+          "title",
+          "year",
+          "venue"
+        ],
+        "rows": 5,
+        "label": "Sources found so far"
       }
     },
     {
@@ -244,6 +255,17 @@
           "run_01M63HJDQ7HGF03QQAQVMRTP9B",
           "run_01M63HJDQVKT67GEP83G8MT9YC"
         ]
+      },
+      "early_look": {
+        "port": "evidence",
+        "list": "rows",
+        "fields": [
+          "source_id",
+          "approach",
+          "evidence_strength"
+        ],
+        "rows": 5,
+        "label": "First evidence rows"
       }
     },
     {

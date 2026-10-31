@@ -839,6 +839,58 @@ function casePosted(input, state) {
     return { case_block: "not_checked" };
   return missing.length === 0 ? { case_block: "posted" } : { case_block: "missing", case_missing: missing.length };
 }
+var NOTICE_MARK = "Shown to the person: ";
+function lookNotice(response) {
+  const texts = [];
+  const walk = (v, depth) => {
+    if (depth > 6)
+      return;
+    if (typeof v === "string")
+      texts.push(v);
+    else if (Array.isArray(v))
+      for (const x of v)
+        walk(x, depth + 1);
+    else if (v !== null && typeof v === "object")
+      for (const x of Object.values(v))
+        walk(x, depth + 1);
+  };
+  walk(response, 0);
+  for (const t of texts) {
+    const line = t.split("\n").find((l) => l.startsWith(NOTICE_MARK));
+    if (line)
+      return line.slice(NOTICE_MARK.length).trim() || null;
+  }
+  return null;
+}
+function lookPosted(input, anchor) {
+  const transcript = input.transcript_path;
+  if (!transcript || !existsSync2(transcript))
+    return "not_checked";
+  let lines;
+  try {
+    lines = readFileSync2(transcript, "utf8").split("\n");
+  } catch {
+    return "not_checked";
+  }
+  const texts = [];
+  for (const line of lines) {
+    let e;
+    try {
+      e = JSON.parse(line);
+    } catch {
+      continue;
+    }
+    if (e.type !== "assistant" || !Array.isArray(e.message?.content))
+      continue;
+    for (const b of e.message.content) {
+      if (b.type === "tool_use" && typeof b.name === "string" && b.name.startsWith(MCP) && b.id !== input.tool_use_id)
+        texts.length = 0;
+      else if (b.type === "text" && typeof b.text === "string")
+        texts.push(b.text);
+    }
+  }
+  return anchorForm(texts.join("\n")).includes(anchorForm(anchor)) ? "posted" : "missing";
+}
 function postedSinceCard(transcript) {
   if (!transcript || !existsSync2(transcript))
     return null;
@@ -900,6 +952,13 @@ function handleHook(input, ctx) {
       d = observer(input, run);
       if (tool === "AskUserQuestion" && !input.agent_id && run.kind === "open")
         d.facts = { ...d.facts, ...casePosted(input, run.state) };
+      if (tool.startsWith(MCP) && !input.agent_id && run.kind === "open") {
+        const look = lookNotice(input.tool_response);
+        if (look) {
+          d.stdout = JSON.stringify({ systemMessage: look });
+          d.facts = { ...d.facts, early_look_notice: "shown" };
+        }
+      }
       break;
     case "UserPromptSubmit":
       d = observer(input, run);
@@ -915,6 +974,9 @@ function handleHook(input, ctx) {
       break;
     default:
       d = { hook_id: "BH-3", checks: [], facts: {}, refusal: null };
+  }
+  if (input.hook_event_name === "PreToolUse" && tool.startsWith(MCP) && !input.agent_id && run.kind === "open" && run.state.early_look) {
+    d.facts = { ...d.facts, early_look: lookPosted(input, run.state.early_look.anchor) };
   }
   const entry = {
     v: 1,

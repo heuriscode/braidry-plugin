@@ -15664,6 +15664,86 @@ var SCHEMAS = {
           "data"
         ]
       },
+      "event_early_look_shown": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "at": {
+            "$ref": "primitives.schema.json#/$defs/timestamp"
+          },
+          "type": {
+            "const": "early_look_shown"
+          },
+          "step_id": {
+            "$ref": "primitives.schema.json#/$defs/step_id"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "source": {
+                "enum": [
+                  "mcp_server",
+                  "hook",
+                  "code_execution",
+                  "model"
+                ]
+              },
+              "port": {
+                "$ref": "primitives.schema.json#/$defs/name"
+              },
+              "round": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "fingerprint": {
+                "$ref": "primitives.schema.json#/$defs/fingerprint_raw"
+              },
+              "rows_shown": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "rows_total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "seen": {
+                "enum": [
+                  "posted",
+                  "missing",
+                  "not_checked"
+                ]
+              },
+              "via": {
+                "enum": [
+                  "hook",
+                  "message"
+                ]
+              }
+            },
+            "required": [
+              "source",
+              "port",
+              "round",
+              "fingerprint",
+              "rows_shown",
+              "rows_total"
+            ]
+          }
+        },
+        "required": [
+          "seq",
+          "at",
+          "type",
+          "step_id",
+          "data"
+        ]
+      },
       "event_search_call": {
         "type": "object",
         "additionalProperties": false,
@@ -18368,6 +18448,9 @@ var SCHEMAS = {
             "$ref": "primitives.schema.json#/$defs/event_inputs_served"
           },
           {
+            "$ref": "primitives.schema.json#/$defs/event_early_look_shown"
+          },
+          {
             "$ref": "primitives.schema.json#/$defs/event_search_call"
           },
           {
@@ -20053,6 +20136,45 @@ var SCHEMAS = {
               "from_run_ids"
             ]
           },
+          "early_look": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "port": {
+                "$ref": "primitives.schema.json#/$defs/name"
+              },
+              "list": {
+                "$ref": "primitives.schema.json#/$defs/name"
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "$ref": "primitives.schema.json#/$defs/name"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "rows": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 60,
+                "minLength": 1,
+                "pattern": "^[^\\n]*\\S[^\\n]*(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "port",
+              "list",
+              "fields",
+              "rows",
+              "label"
+            ]
+          },
           "limits": {
             "type": "object",
             "additionalProperties": false,
@@ -20235,6 +20357,34 @@ var SCHEMAS = {
                   {
                     "required": [
                       "limits"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "not": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "make",
+                      "revise"
+                    ]
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "early_look"
                     ]
                   }
                 ]
@@ -41646,6 +41796,7 @@ var EVENT_TYPES = [
   "port_withheld",
   "run_resumed",
   "search_call",
+  "early_look_shown",
   "refine",
   "branch_state",
   "headline_generated",
@@ -44069,6 +44220,13 @@ var Run = class _Run {
   deliveryLinks = [];
   /** The decision card being asked and its case block's anchors, for the hook that checks the block was posted (ask 111). */
   caseAsk = null;
+  /**
+   * An early look handed to the conversation and not yet seen posted (braids' speed study B4, r60): its reply, the line
+   * the hooks look for in the conversation, and what its event records.
+   */
+  earlyLookAsk = null;
+  /** Early looks settled, posted or not ("step|port"), so none is handed twice over (braids' r60). */
+  earlyLooksDone = [];
   lastState = null;
   agentStarts = /* @__PURE__ */ new Map();
   /** Tokens the AI tool recorded for each subagent context, from its transcript (dev ask 58). */
@@ -44814,6 +44972,10 @@ var Run = class _Run {
     const v = (this.ports.get(name) ?? []).filter((x) => x.step_id === own).at(-1) ?? null;
     return v && this.withheld.has(`${v.port}|${v.fingerprint}`) ? null : v;
   }
+  /** Whether this version of a port was withheld as superseded. */
+  versionWithheld(v) {
+    return this.withheld.has(`${v.port}|${v.fingerprint}`);
+  }
   /** Whether the port's current version was withheld as superseded. */
   isWithheld(port) {
     const v = (this.ports.get(port) ?? []).at(-1);
@@ -45032,7 +45194,8 @@ var Run = class _Run {
           decision_ok: step ? ready.has(t.step_id) || step.status === "running" : false
         };
       }),
-      case_ask: this.caseAsk
+      case_ask: this.caseAsk,
+      early_look: this.earlyLookAsk ? { step_id: this.earlyLookAsk.step_id, anchor: this.earlyLookAsk.anchor } : null
     };
     const path = join8(this.opts.dataDir, "sessions", this.sessionId, "state.json");
     if (this.lastState !== null && (!existsSync6(path) || readFileSync7(path, "utf8") !== this.lastState)) {
@@ -51175,13 +51338,13 @@ var FairleadServer = class _FairleadServer {
           result = this.arm(run2);
           break;
         case "heddle_next":
-          result = await this.next(run2);
+          result = await this.withEarlyLooks(run2, "heddle_next", meta, () => this.next(run2));
           break;
         case "heddle_wait":
           result = await this.wait(run2);
           break;
         case "heddle_ticket":
-          result = this.ticket(run2, text2(args.step_id));
+          result = await this.withEarlyLooks(run2, "heddle_ticket", meta, () => this.ticket(run2, text2(args.step_id)));
           break;
         case "heddle_inputs":
           result = this.inputs(run2, text2(args.ticket), meta, typeof args.part === "number" ? args.part : 1);
@@ -51190,7 +51353,7 @@ var FairleadServer = class _FairleadServer {
           result = this.output(run2, text2(args.ticket), text2(args.port), args.content, meta, args.patch, args.unchanged === true, args.base === "served" || args.base === "refused" ? args.base : null);
           break;
         case "heddle_gate":
-          result = await this.runGateStep(run2, text2(args.step_id));
+          result = await this.withEarlyLooks(run2, "heddle_gate", meta, () => this.runGateStep(run2, text2(args.step_id)));
           break;
         case "heddle_search":
           result = args.part === void 0 ? await this.search(run2, text2(args.ticket), args.queries, meta) : this.searchPart(run2, text2(args.ticket), args.part, meta);
@@ -51199,7 +51362,7 @@ var FairleadServer = class _FairleadServer {
           result = this.searchRecord(run2, text2(args.ticket), text2(args.ref), meta);
           break;
         case "heddle_step":
-          result = run2.steps.get(text2(args.step_id))?.step.client ? ok(await this.dashlab.step(run2, text2(args.step_id))) : await this.stepWithSupply(run2, text2(args.step_id), typeof args.part === "number" ? args.part : 1);
+          result = await this.withEarlyLooks(run2, "heddle_step", meta, async () => run2.steps.get(text2(args.step_id))?.step.client ? ok(await this.dashlab.step(run2, text2(args.step_id))) : await this.stepWithSupply(run2, text2(args.step_id), typeof args.part === "number" ? args.part : 1));
           break;
         case "heddle_decision":
           result = args.remote === true ? await this.remoteDecision(run2, args) : this.decision(run2, args);
@@ -51219,7 +51382,7 @@ var FairleadServer = class _FairleadServer {
         default:
           result = refused(`Unknown tool ${name}.`);
       }
-      if (result.isError !== true && ["heddle_ticket", "heddle_gate", "heddle_step", "heddle_run"].includes(name)) {
+      if (result.isError !== true && !result.text.includes(LOOK_LEAD) && ["heddle_ticket", "heddle_gate", "heddle_step", "heddle_run"].includes(name)) {
         const phase = this.phaseWords(run2, text2(args.step_id) || null);
         if (phase)
           result = { ...result, text: `${phase}
@@ -51400,6 +51563,13 @@ ${result.text}` };
     const done = before.filter((id) => !now.includes(id));
     const progress = run2.progress();
     const lines3 = progress.map((p) => `- ${progressLine(p)}`);
+    for (const p of progress) {
+      const ticket = run2.steps.get(p.step_id)?.ticket_id;
+      const held = ticket ? this.searchHeld.get(ticket) : void 0;
+      const latest = held ? [...held.records.values()].at(-1) : void 0;
+      if (latest)
+        lines3.push(`- Latest found${p.role ? ` by the ${p.role}` : ""}: ${caseText(latest.title, 120)} (unscreened)`);
+    }
     const handed = done.length ? `Step${done.length > 1 ? "s" : ""} ${done.join(", ")} handed back: call heddle_next. ` : "";
     const allStalled = progress.length > 0 && progress.every((p) => p.stalled);
     const then = allStalled ? "Every working step is stalled. Tell the person, and ask them with AskUserQuestion whether to keep waiting or stop the run; call heddle_wait again only if they choose to keep waiting." : "Post this to the person in a line or two, then call heddle_wait again. Don't end your turn while a step is working.";
@@ -51762,6 +51932,124 @@ Then ask in one question with these options in this order, none marked as recomm
       lines3.unshift(phase);
     lines3.unshift(...gatePhases);
     return ok(lines3.join("\n"));
+  }
+  /**
+   * A call that can move the run on (heddle_next, heddle_gate, heddle_ticket, heddle_step), when an early look is due
+   * (braids' speed study B4): the look is the whole reply, its instruction first, with nothing else to do but post it
+   * (braids' r57 and r60). The hook shows the table to the person as a notice (r65); at the next such call the hooks
+   * say whether a line of it is also in the conversation.
+   * Its early_look_shown event records how it ended (seen posted, missing or not checked), before that call runs any check.
+   */
+  async withEarlyLooks(run2, tool, meta, call) {
+    const pending = run2.earlyLookAsk;
+    if (pending) {
+      const seen = this.entryFor(run2, tool, meta)?.facts?.early_look;
+      const outcome = seen === "posted" || seen === "missing" ? seen : "not_checked";
+      run2.log.append("early_look_shown", { source: "mcp_server", port: pending.port, round: 1, fingerprint: pending.fingerprint, rows_shown: pending.rows_shown, rows_total: pending.rows_total, seen: outcome }, pending.step_id);
+      run2.earlyLooksDone.push(`${pending.step_id}|${pending.port}`);
+      run2.earlyLookAsk = null;
+    }
+    const look = this.opts.earlyLooks === false ? null : this.earlyLook(run2);
+    if (look) {
+      run2.earlyLookAsk = look;
+      return ok(lookReply(look.lines, look.notice));
+    }
+    return call();
+  }
+  /**
+   * The next early look due (braids' speed study B4, ask 108): for a step whose template names one, once the output it
+   * names is accepted on the step's first pass, a small table of that output's list for the person, labelled as not yet
+   * checked. Rows with every field shown filled are preferred, the rest shown only when none is. A register key is shown
+   * as the source's title, headers in plain words, and each cell and the label screened as a maker's text is
+   * (INTERNAL_STRICT). Each is handed out once; never in a subagent's inputs.
+   */
+  earlyLook(run2) {
+    const settled = /* @__PURE__ */ new Set([...run2.earlyLooksDone, ...run2.log.ofType("early_look_shown").map((e) => `${String(e.step_id)}|${String(e.data.port)}`)]);
+    for (const step of run2.template.steps) {
+      const look = step.early_look;
+      const st = run2.steps.get(step.step_id);
+      if (!look || !st || !["done", "verified", "waived"].includes(st.status) || settled.has(`${step.step_id}|${look.port}`))
+        continue;
+      const own = (run2.ports.get(look.port) ?? []).filter((v) => v.step_id === step.step_id);
+      const version = own.length === 1 ? own[0] : void 0;
+      if (!version)
+        continue;
+      let list = [];
+      try {
+        const doc = JSON.parse(readFileSync17(version.path, "utf8"));
+        list = Array.isArray(doc[look.list]) ? doc[look.list] : [];
+      } catch {
+        continue;
+      }
+      const titles = this.sourceTitles(run2);
+      const field = (r, f) => r !== null && typeof r === "object" ? r[f] : void 0;
+      const full = (r) => look.fields.every((f) => f === "source_id" ? typeof field(r, f) === "string" && String(field(r, f)).trim() !== "" : plainValue2(field(r, f)).trim() !== "");
+      const filled = list.filter(full);
+      const rows = (filled.length > 0 ? filled : list).slice(0, look.rows);
+      if (rows.length === 0) {
+        run2.earlyLooksDone.push(`${step.step_id}|${look.port}`);
+        continue;
+      }
+      const cutAny = { yes: false };
+      const screen = (raw2, n) => {
+        const screened = cutSentences(raw2, INTERNAL_STRICT);
+        let text3 = screened.text;
+        if (INTERNAL_STRICT.test(text3))
+          text3 = "[\u2026]";
+        cutAny.yes ||= screened.cut || text3 !== screened.text;
+        return caseText(text3, n);
+      };
+      const cell = (f, v) => screen(f === "source_id" ? typeof v === "string" ? titles.get(v) ?? "A source not in the register" : "" : plainValue2(v), 80) || " ";
+      const label = screen(look.label, 60);
+      const header = look.fields.map((f) => f === "source_id" ? "source" : f.replace(/_/g, " "));
+      const body = rows.map((r) => look.fields.map((f) => cell(f, field(r, f))));
+      const head = `Early look, not yet checked: ${label} (${String(rows.length)} of ${String(list.length)})`;
+      const plain4 = (c) => c.replace(/\\(.)/g, "$1").trim();
+      const items2 = body.map((r, i) => {
+        const [first = "", ...rest] = r.map(plain4).filter((c) => c !== "");
+        const item = `${String(i + 1)}. ${first}${rest.length ? ` (${rest.join(", ")})` : ""}`;
+        return caseText(item, 90).replace(/\\(.)/g, "$1");
+      });
+      let notice = `${head}: ${items2.join("; ")}`;
+      if (notice.length > 700)
+        notice = `${notice.slice(0, 699).replace(/[;,]?\s*\S*$/, "")}\u2026`;
+      const firstCell = body[0]?.find((c) => c.trim() !== "") ?? "";
+      return {
+        step_id: step.step_id,
+        port: look.port,
+        // A line the person must see: the first row's first filled cell, else the label line.
+        anchor: firstCell.trim() ? firstCell : head,
+        notice,
+        lines: [
+          head,
+          `| ${header.join(" | ")} |`,
+          `| ${header.map(() => "---").join(" | ")} |`,
+          ...body.map((r) => `| ${r.join(" | ")} |`),
+          ...cutAny.yes ? ["Some internal identifiers are left out of this table."] : []
+        ],
+        fingerprint: version.fingerprint,
+        rows_shown: rows.length,
+        rows_total: list.length
+      };
+    }
+    return null;
+  }
+  /** Each source's title by its register key, from the run's latest sources output; empty when there is none. */
+  sourceTitles(run2) {
+    const v = (run2.ports.get("sources") ?? []).filter((x) => !run2.versionWithheld(x)).at(-1);
+    const out = /* @__PURE__ */ new Map();
+    if (!v)
+      return out;
+    try {
+      const doc = JSON.parse(readFileSync17(v.path, "utf8"));
+      for (const it of Array.isArray(doc.items) ? doc.items : []) {
+        const o = it;
+        if (typeof o.source_id === "string" && typeof o.title === "string")
+          out.set(o.source_id, o.title);
+      }
+    } catch {
+    }
+    return out;
   }
   /** A gate run, in the person's words: "citation check passed", "… passed with warnings", "… failed", "… could not run". */
   gateOutcomeWords(run2, stepId) {
@@ -55407,6 +55695,38 @@ function schemaLimits(schema, max = 60) {
 var CASE_ITEMS = 10;
 var ORDINALS = { 2: "second", 3: "third", 4: "fourth", 5: "fifth" };
 var GATE_NAMES = { cite_gate: "citation check", quote_gate: "quote check", claim_rules_gate: "claim-rules check", revision_gate: "revision check", web_access: "web access check", option_map_gate: "option map check" };
+var NOTICE_MARK = "Shown to the person: ";
+var LOOK_LEAD = "Heddle has shown the person this early look as a notice";
+function lookReply(lines3, notice) {
+  return [
+    `${LOOK_LEAD} (a table they can read now; it has not been checked yet):`,
+    "",
+    ...lines3,
+    "",
+    `${NOTICE_MARK}${notice}`,
+    "",
+    "Tell the person in one line that these are early results, not yet checked, and that the checks run next. Then call heddle_next."
+  ].join("\n");
+}
+function plainValue2(v) {
+  if (v === null || v === void 0)
+    return "";
+  if (typeof v === "string")
+    return v;
+  if (typeof v === "number" || typeof v === "boolean")
+    return String(v);
+  if (Array.isArray(v))
+    return v.map(plainValue2).filter(Boolean).join("; ");
+  if (typeof v === "object") {
+    const o = v;
+    if (typeof o.text === "string")
+      return o.text;
+    if (typeof o.title === "string")
+      return o.title;
+    return Object.values(o).map((x) => x !== null && typeof x === "object" ? "" : plainValue2(x)).filter(Boolean).join(", ");
+  }
+  return "";
+}
 var listWords = (xs) => xs.length <= 1 ? xs[0] ?? "" : `${xs.slice(0, -1).join(", ")} and ${xs.at(-1) ?? ""}`;
 var capitalise = (t) => `${t.charAt(0).toUpperCase()}${t.slice(1)}`;
 var GRAPHEMES2 = new Intl.Segmenter(void 0, { granularity: "grapheme" });

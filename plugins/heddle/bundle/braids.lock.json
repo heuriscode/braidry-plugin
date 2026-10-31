@@ -329,6 +329,16 @@
       "free_bundle": "jcs1:sha256:17ac59dc6e6cbb47d139920020120fcc9c992ab2376f5033139da2ac84631d28",
       "report": null
     },
+    "fairlead.lit_scoping_review@0.4.7": {
+      "core": "jcs1:sha256:6d35b24fe04f8e91932839886e0a71f0adf40e730914f498e476f67b91dad516",
+      "free_bundle": "jcs1:sha256:1f817c09fb5de6e4dd47a2005d5f8c253cf048bffe130dd741ec1e67fd9a3f99",
+      "report": null
+    },
+    "fairlead.lit_scoping_review@0.4.8": {
+      "core": "jcs1:sha256:5c072551b116589dcab8404a0a677d3e1d3f3fc83cd2a482de8664d1c883e745",
+      "free_bundle": "jcs1:sha256:ec2d85291cdd07ad201c92375946a1df4ff255d5f6b1bd05d4d62cbf29421837",
+      "report": null
+    },
     "fairlead.lit_scoping_review@0.5.0": {
       "core": "jcs1:sha256:c7756bfa287a9ced65c7ab3c18b85dd8892f8dbd5cccd72567f84468968e1f6f",
       "free_bundle": null,
