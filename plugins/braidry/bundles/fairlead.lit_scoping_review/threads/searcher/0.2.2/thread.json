@@ -1,0 +1,40 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "thread_id": "searcher",
+  "version": "0.2.2",
+  "fingerprint": "jcs1:sha256:b69ed1fae61cb399bcc2cb0ea0a6d7b29aa600d5ef511396ab027b001f36c430",
+  "name": "Literature searcher",
+  "purpose": "Writes the search protocol from the agreed focus, then searches, snowballs and screens, returning the included sources with locators and read levels.",
+  "archetype": "finder",
+  "default_role": "finder",
+  "reads": [
+    "focus"
+  ],
+  "never_sees": [
+    "maker_reasoning"
+  ],
+  "tools": [
+    "scholarly_search",
+    "search",
+    "fetch",
+    "write_output"
+  ],
+  "returns": "source_register",
+  "caps": {
+    "max_items": 60
+  },
+  "default_model_class": "balanced",
+  "targets": [
+    "missed_key_evidence",
+    "fabricated_citation"
+  ],
+  "preambles": [
+    "common@0.1.0",
+    "finder@0.1.0"
+  ],
+  "prompt": "Agreed focus:\n{{focus}}\n\n1. Before any search, write the search protocol: the review question, the sub-questions from the agreed focus (use them as given; do not invent new ones), inclusion and exclusion criteria, the sources you will search, and the search strings, one per sub-question at least.\n2. Search the scholarly databases first with braidry_search: one call per sub-question, with up to four search strings for it (the main terms and their synonyms) and the years from the agreed period. It searches Crossref, OpenAlex and PubMed at once and returns each record's exact title, authors, year, venue, DOI, type, open abstract and open full-text link. Copy each call's counts per database, and any database that failed and why, into the search log, and its not searched list (subscription databases) into the limits. Then use web search and fetch only for what those databases miss: grey literature such as government, agency and organisation reports and working papers, searching the sites of the bodies the focus names. Then snowball backward (reference lists of the strongest works) and forward (later works citing them).\n3. Screen every candidate against the criteria and log it with its decision and reason. Keep the published version of a work over a preprint or working paper, and log the other as a duplicate.\n4. Return the included sources, at most {{caps}}: title, authors, year, venue, locator (DOI, arXiv id or URL), the sub-questions each serves, one line on why it is included, how it was found, and the read level you reached. Locate every work before including it: nothing goes in that you did not see a record of.\n5. Save the protocol, the search log (strings, sources, counts of records inspected) and the screening log as the search record. State its limits: single screener, which databases you could not reach, how far forward snowballing went.\n\nUse a record's DOI and title exactly as braidry_search returns them. Where a record has an open full-text link, read from it, and set the read level to what you actually read: record, abstract, part or full.\n\nRead levels from braidry_search: a record whose abstract it returned and you read is read at abstract level; one with no abstract, whose title and details are all you saw, is read at record level. Ask for max 8 records or fewer per search string, so each call's reply fits; run another call for more.",
+  "placeholders": [
+    "focus",
+    "caps"
+  ]
+}

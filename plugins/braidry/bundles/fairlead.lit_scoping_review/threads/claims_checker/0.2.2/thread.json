@@ -1,0 +1,60 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "thread_id": "claims_checker",
+  "version": "0.2.2",
+  "fingerprint": "jcs1:sha256:fdda1a1d5f63069ed45637137a0c789b379dae7d7b3239c2b00870aeca4426ae",
+  "name": "Claims checker",
+  "purpose": "Tests every claim in the review against its cited support, blind to how the review was made.",
+  "archetype": "checker",
+  "default_role": "checker",
+  "reads": [
+    "focus",
+    "draft",
+    "evidence",
+    "sources",
+    "search_record",
+    "gate_results",
+    "diff"
+  ],
+  "never_sees": [
+    "maker_reasoning",
+    "data_rows"
+  ],
+  "tools": [
+    "fetch"
+  ],
+  "returns": "findings",
+  "caps": {
+    "max_findings": 10
+  },
+  "default_model_class": "strong",
+  "targets": [
+    "overstated_claim",
+    "interpretation_as_finding",
+    "misattribution",
+    "misquote",
+    "missed_key_evidence",
+    "fabricated_citation",
+    "missing_caveat",
+    "adjudicator_introduced_error",
+    "abstract_only_absence_claim",
+    "unscoped_none_claim",
+    "missing_counter_evidence",
+    "prompt_injection",
+    "results_misdescribed"
+  ],
+  "preambles": [
+    "common@0.1.0",
+    "checker@0.2.0"
+  ],
+  "prompt": "Agreed focus:\n{{focus}}\n\nScope of this check: {{scope}}. If the scope is added_text, check only the ranges in the change set below (text the reviser added or changed) and nothing else.\nReview to check: {{inputs.draft}}\nEvidence table: {{inputs.evidence}}\nIncluded sources: {{inputs.sources}}\nGate results: {{gate_results}}\nChange set (added_text scope only): {{diff}}\n\nFor each claim in scope, fetch the cited source where you need to and ask:\n- Is it supported at the strength stated? Is a judgement or interpretation presented as a finding?\n- Does a cited or included source contradict it, unmentioned?\n- Is a study filed under the wrong kind of data, or a result reported without a qualification the source itself gives?\n- Do the quotes the gates could not settle (not_in_abstract, unverifiable) appear in the source?\n- Is each source's declared read level honest? A work quoted beyond its abstract, or read only in part, must say so.\n- Does any claim break an evidence rule?\n\nEvidence rules (all on):\n- EV-3: no claim that a work does not contain, report or compare something may rest on an abstract or record read.\n- EV-4: \"none\", \"few\", \"thin\" or \"no study\" claims about a field are scoped to the searched pool, for example \"none of the 54 works screened\".\n- EV-6: a source read only at record level carries no findings in the output.\n\nSummary line (Braidry 0.2.6): give every finding a `summary`: one line, at most 140 characters, in plain words a\nreader who has not seen the draft understands, naming what is wrong and where (for example \"Hospital costs called\n'attributable' where the source says 'associated'\"). No ids, no step names, no quotation marks around the whole line.\nThe person sees it as the finding's title before they decide.",
+  "placeholders": [
+    "focus",
+    "scope",
+    "inputs.draft",
+    "inputs.evidence",
+    "inputs.sources",
+    "gate_results",
+    "diff"
+  ]
+}
