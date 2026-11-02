@@ -22,7 +22,7 @@ Braidry does not need a Braidry account, and it sends nothing to Braidry. Everyt
 2. Inside Claude Code, type these two commands, one at a time:
 
    ```
-   /plugin marketplace add heuriscode/heddle-plugin
+   /plugin marketplace add heuriscode/braidry-plugin
    /plugin install braidry@braidry
    ```
 
