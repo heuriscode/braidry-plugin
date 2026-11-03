@@ -1,0 +1,24 @@
+{
+  "schema": "fairlead.type/0.1",
+  "type_id": "draft",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:abc1f287d1f39fb753e50f837e044f70651a8f8da0909ef610c50d7b141c855b",
+  "title": "Scoping review",
+  "description": "The review text with tagged, anchored claims and its reference list.",
+  "contract": "draft",
+  "media_types": [
+    "application/json"
+  ],
+  "datafile_capable": false,
+  "required_gates": [
+    "cite_gate",
+    "quote_gate",
+    "claim_rules_gate"
+  ],
+  "menu_formats": [
+    "md",
+    "docx",
+    "html",
+    "json"
+  ]
+}

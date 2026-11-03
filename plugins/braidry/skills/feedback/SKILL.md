@@ -8,8 +8,8 @@ description: Send feedback about Braidry to its makers. Use when the person type
 Help the person send feedback on this Braidry tester release. Never include their topic, their prompts, their results or any file contents: only what is listed below.
 
 1. Gather these, and show them to the person as a short block they can copy:
-   - **Plugin version:** 0.4.0
-   - **Braid:** fairlead.lit_scoping_review@0.4.9
+   - **Plugin version:** 0.4.1
+   - **Braid:** fairlead.lit_scoping_review@0.6.2, fairlead.check_draft@0.1.3, fairlead.check_client_report@0.1.3, fairlead.sample_size@0.1.4
    - **Claude Code version:** run `claude --version` in a shell if you can; otherwise ask the person.
    - **Operating system:** Windows, macOS or Linux.
    - **Run id and practice headline,** if this conversation ran a Braidry braid: the run id (it starts with `run_`) and the "Practice:" line `braidry_deliver` returned. If the run did not finish, say which step it reached and what went wrong, in one sentence of at most 100 characters, without quoting any content.

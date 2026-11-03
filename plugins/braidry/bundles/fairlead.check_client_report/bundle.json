@@ -1,0 +1,1477 @@
+{
+  "schema": "fairlead.braid_template/0.1",
+  "template_id": "fairlead.check_client_report",
+  "version": "0.1.3",
+  "fingerprint": "jcs1:sha256:2d63259966ce1cdc94144b981e3f38665319512cabf10b2c27f59c5db05a4271",
+  "catalogue": {
+    "command": "/fairlead:check-client-report",
+    "title": "Check a client report",
+    "for_when": "Check my draft held to a client standard: every number must trace to a source it cites, and your glossary's banned terms are found. A card per finding; fixes the ones you accept.",
+    "group": "write",
+    "status": "in_design",
+    "free": false,
+    "hosts": {
+      "claude_code": "in_design"
+    }
+  },
+  "parent": null,
+  "risk_tier_default": "T2",
+  "work_unit": {
+    "name": "draft_items_checked",
+    "definition": "A reference, quote or number in the person's draft that code checked against its source, with no open blocking finding."
+  },
+  "inputs": [
+    {
+      "port": "glossary",
+      "type_ref": "cmd_glossary@0.1.0",
+      "required": false,
+      "datafile": false,
+      "handling": null
+    }
+  ],
+  "threads": [
+    {
+      "thread_ref": "cmd_claims_checker@0.1.2",
+      "thread_fingerprint": "jcs1:sha256:a99541a0c1686163d5e33e4f8de30e72822e8331d1e30d358230e3ccc622fb09",
+      "role": "checker",
+      "tools": [
+        "fetch"
+      ],
+      "reads": [
+        "focus",
+        "document",
+        "inventory",
+        "sources",
+        "source_texts",
+        "glossary",
+        "gate_results",
+        "decisions",
+        "findings",
+        "change_set"
+      ],
+      "returns": "kit_findings",
+      "caps": {
+        "max_findings": 15
+      }
+    },
+    {
+      "thread_ref": "cmd_attribution_checker@0.1.2",
+      "thread_fingerprint": "jcs1:sha256:6e675b2e87741485bd6f21989d2776f4386b934394a77ff88e9d41bd7b6ad1fa",
+      "role": "checker",
+      "tools": [
+        "fetch"
+      ],
+      "reads": [
+        "focus",
+        "document",
+        "inventory",
+        "sources",
+        "source_texts",
+        "glossary",
+        "gate_results",
+        "decisions",
+        "findings",
+        "change_set"
+      ],
+      "returns": "kit_findings",
+      "caps": {
+        "max_findings": 15
+      }
+    },
+    {
+      "thread_ref": "cmd_adjudicator@0.1.2",
+      "thread_fingerprint": "jcs1:sha256:2cd2cbecc79059d5d717e0ede782d84b74cb42a0b2c00784676428a018008e29",
+      "role": "adjudicator",
+      "tools": [
+        "fetch",
+        "write_output"
+      ],
+      "reads": [
+        "focus",
+        "document",
+        "inventory",
+        "sources",
+        "source_texts",
+        "glossary",
+        "gate_results",
+        "findings"
+      ],
+      "returns": "decisions",
+      "caps": {
+        "max_items": 40
+      }
+    },
+    {
+      "thread_ref": "cmd_reviser@0.1.1",
+      "thread_fingerprint": "jcs1:sha256:243e795f40f6231cebed09a057e2215d4297a29f2f0e43e485dcb51afcbab9d8",
+      "role": "reviser",
+      "tools": [
+        "write_output"
+      ],
+      "reads": [
+        "focus",
+        "document",
+        "inventory",
+        "sources",
+        "source_texts",
+        "glossary",
+        "decisions",
+        "findings",
+        "finding_choices",
+        "person_direction",
+        "gate_results"
+      ],
+      "returns": "cmd_draft",
+      "caps": {
+        "max_items": 40
+      }
+    },
+    {
+      "thread_ref": "cmd_extractor@0.1.1",
+      "thread_fingerprint": "jcs1:sha256:9deee81619a4ae6f529cb34e3db4755692669e2bebb70f8df1e49acfc4c75650",
+      "role": "maker",
+      "tools": [
+        "write_output"
+      ],
+      "reads": [
+        "document",
+        "inventory",
+        "sources",
+        "gate_results",
+        "person_direction"
+      ],
+      "returns": "cmd_inventory",
+      "caps": {
+        "max_items": 600
+      }
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s0",
+      "kind": "preflight",
+      "gate_ref": "web_access@0.2.0",
+      "needs": []
+    },
+    {
+      "step_id": "s1",
+      "kind": "refine",
+      "needs": [
+        "s0"
+      ],
+      "produces": [
+        "focus"
+      ],
+      "case": [
+        "focus"
+      ]
+    },
+    {
+      "step_id": "s1d",
+      "kind": "fetch",
+      "builtin": "docx_draft",
+      "needs": [
+        "s1"
+      ],
+      "reads": [
+        "draft_file"
+      ],
+      "produces": [
+        "document"
+      ]
+    },
+    {
+      "step_id": "s2",
+      "kind": "make",
+      "thread_ref": "cmd_extractor@0.1.1",
+      "needs": [
+        "s1d"
+      ],
+      "reads": [
+        "document",
+        "inventory",
+        "sources",
+        "gate_results",
+        "person_direction"
+      ],
+      "produces": [
+        "inventory",
+        "sources"
+      ]
+    },
+    {
+      "step_id": "s2g",
+      "kind": "gate",
+      "gate_ref": "cmd_inventory_gate@0.3.0",
+      "needs": [
+        "s2"
+      ],
+      "reads": [
+        "inventory",
+        "document",
+        "sources",
+        "glossary"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s2e"
+      }
+    },
+    {
+      "step_id": "s2e",
+      "kind": "decide",
+      "needs": [
+        "s2g"
+      ],
+      "reads": [
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "fix",
+          "label": "Read my draft again and fix these",
+          "route": {
+            "action": "loop",
+            "to": "s2"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          },
+          "for_outcomes": [
+            "duplicate_item",
+            "unknown_source",
+            "unknown_paragraph",
+            "not_in_paragraph",
+            "no_number",
+            "number_missed",
+            "quote_missed"
+          ]
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on: each of these goes on a finding card for you",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "case": [
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "fix"
+      },
+      "skip_when": {
+        "unless_failed": [
+          "s2g"
+        ]
+      },
+      "produces": [
+        "person_direction"
+      ]
+    },
+    {
+      "step_id": "s3",
+      "kind": "gate",
+      "gate_ref": "cite_gate@0.7.0",
+      "needs": [
+        "s2g",
+        "s2e"
+      ],
+      "reads": [
+        "sources"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s3e"
+      }
+    },
+    {
+      "step_id": "s3e",
+      "kind": "decide",
+      "needs": [
+        "s3"
+      ],
+      "reads": [
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "reread",
+          "label": "Read this reference again from my draft",
+          "route": {
+            "action": "loop",
+            "to": "s2"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          },
+          "for_outcomes": [
+            "not_found",
+            "doi_not_found",
+            "doi_title_mismatch",
+            "url_unreachable"
+          ],
+          "direction": "Read this reference again exactly as the draft's reference list gives it, and correct the register entry only where you copied it wrongly."
+        },
+        {
+          "option_id": "verified",
+          "label": "It is right: I have checked this reference myself",
+          "route": {
+            "action": "continue"
+          },
+          "verifies": true,
+          "for_outcomes": [
+            "not_found",
+            "doi_not_found",
+            "doi_title_mismatch",
+            "url_unreachable"
+          ]
+        },
+        {
+          "option_id": "fix",
+          "label": "Send these back to fix",
+          "route": {
+            "action": "loop",
+            "to": "s2"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on: each of these goes on a finding card for you",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "case": [
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "fix"
+      },
+      "skip_when": {
+        "unless_failed": [
+          "s3"
+        ]
+      },
+      "produces": [
+        "person_direction"
+      ]
+    },
+    {
+      "step_id": "s4",
+      "kind": "fetch",
+      "builtin": "full_texts",
+      "needs": [
+        "s3",
+        "s3e"
+      ],
+      "reads": [
+        "sources",
+        "pdf_folder"
+      ],
+      "produces": [
+        "source_texts"
+      ],
+      "skip_when": {
+        "unchanged": [
+          "sources"
+        ]
+      }
+    },
+    {
+      "step_id": "s5",
+      "kind": "gate",
+      "gate_ref": "cmd_trace_gate@0.3.0",
+      "needs": [
+        "s4"
+      ],
+      "reads": [
+        "inventory",
+        "sources",
+        "source_texts"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s5e"
+      }
+    },
+    {
+      "step_id": "s5e",
+      "kind": "decide",
+      "needs": [
+        "s5"
+      ],
+      "reads": [
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "fix",
+          "label": "Check what each quote and number is tied to, and fix these",
+          "route": {
+            "action": "loop",
+            "to": "s2"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "verified",
+          "label": "It is right: I have checked this against the source myself",
+          "route": {
+            "action": "continue"
+          },
+          "verifies": true,
+          "for_outcomes": [
+            "quote_not_in_text",
+            "number_not_in_text"
+          ]
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on: each of these goes on a finding card for you",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "case": [
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "fix"
+      },
+      "skip_when": {
+        "unless_failed": [
+          "s5"
+        ]
+      },
+      "produces": [
+        "person_direction"
+      ]
+    },
+    {
+      "step_id": "s6a",
+      "kind": "check",
+      "thread_ref": "cmd_claims_checker@0.1.2",
+      "needs": [
+        "s2g",
+        "s2e",
+        "s3",
+        "s3e",
+        "s5",
+        "s5e"
+      ],
+      "reads": [
+        "focus",
+        "document",
+        "inventory",
+        "sources",
+        "source_texts",
+        "glossary",
+        "gate_results",
+        "findings"
+      ],
+      "produces": [
+        "findings"
+      ],
+      "scope": "full",
+      "parallel_group": "p1"
+    },
+    {
+      "step_id": "s6b",
+      "kind": "check",
+      "thread_ref": "cmd_attribution_checker@0.1.2",
+      "needs": [
+        "s2g",
+        "s2e",
+        "s3",
+        "s3e",
+        "s5",
+        "s5e"
+      ],
+      "reads": [
+        "focus",
+        "document",
+        "inventory",
+        "sources",
+        "source_texts",
+        "glossary",
+        "gate_results",
+        "findings"
+      ],
+      "produces": [
+        "findings"
+      ],
+      "scope": "full",
+      "parallel_group": "p1"
+    },
+    {
+      "step_id": "s6c",
+      "kind": "gate",
+      "gate_ref": "finding_cap_gate@0.2.1",
+      "needs": [
+        "s6a"
+      ],
+      "reads": [
+        "findings"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s6e"
+      }
+    },
+    {
+      "step_id": "s6d",
+      "kind": "gate",
+      "gate_ref": "finding_cap_gate@0.2.1",
+      "needs": [
+        "s6b"
+      ],
+      "reads": [
+        "findings"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s6f"
+      }
+    },
+    {
+      "step_id": "s6e",
+      "kind": "decide",
+      "needs": [
+        "s6c"
+      ],
+      "reads": [
+        "findings",
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "check_again",
+          "label": "Check again for more",
+          "route": {
+            "action": "loop",
+            "to": "s6a"
+          },
+          "budget": {
+            "kind": "round",
+            "max": 1
+          }
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on with these (recorded as a waiver)",
+          "route": {
+            "action": "continue"
+          },
+          "only_when_failed": [
+            "s6c"
+          ]
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "case": [
+        "findings",
+        "gate_results"
+      ],
+      "other": {
+        "none": "A blind check cannot take your words without losing its blindness: check again, carry on or stop."
+      },
+      "skip_when": {
+        "unless_failed": [
+          "s6c"
+        ]
+      }
+    },
+    {
+      "step_id": "s6f",
+      "kind": "decide",
+      "needs": [
+        "s6d"
+      ],
+      "reads": [
+        "findings",
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "check_again",
+          "label": "Check again for more",
+          "route": {
+            "action": "loop",
+            "to": "s6b"
+          },
+          "budget": {
+            "kind": "round",
+            "max": 1
+          }
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on with these (recorded as a waiver)",
+          "route": {
+            "action": "continue"
+          },
+          "only_when_failed": [
+            "s6d"
+          ]
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "case": [
+        "findings",
+        "gate_results"
+      ],
+      "other": {
+        "none": "A blind check cannot take your words without losing its blindness: check again, carry on or stop."
+      },
+      "skip_when": {
+        "unless_failed": [
+          "s6d"
+        ]
+      }
+    },
+    {
+      "step_id": "s7",
+      "kind": "adjudicate",
+      "thread_ref": "cmd_adjudicator@0.1.2",
+      "needs": [
+        "s6e",
+        "s6f"
+      ],
+      "reads": [
+        "focus",
+        "document",
+        "inventory",
+        "sources",
+        "source_texts",
+        "glossary",
+        "gate_results",
+        "findings"
+      ],
+      "produces": [
+        "decisions"
+      ]
+    },
+    {
+      "step_id": "s7d",
+      "kind": "decide",
+      "needs": [
+        "s7"
+      ],
+      "reads": [
+        "decisions",
+        "findings"
+      ],
+      "options": [
+        {
+          "option_id": "fix_for_me",
+          "label": "Fix the ones I accepted for me, in a corrected copy",
+          "route": {
+            "action": "continue"
+          },
+          "takes_direction": true
+        },
+        {
+          "option_id": "findings_only",
+          "label": "Just the findings: leave my draft as it is",
+          "route": {
+            "action": "skip",
+            "to": "s9d"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "case": [
+        "findings",
+        "adjudication"
+      ],
+      "other": {
+        "as_option": "fix_for_me"
+      },
+      "choose_findings": {
+        "from": "decisions",
+        "produces": "finding_choices"
+      },
+      "produces": [
+        "finding_choices",
+        "person_direction"
+      ]
+    },
+    {
+      "step_id": "s8",
+      "kind": "revise",
+      "thread_ref": "cmd_reviser@0.1.1",
+      "needs": [
+        "s7d"
+      ],
+      "reads": [
+        "focus",
+        "document",
+        "inventory",
+        "sources",
+        "source_texts",
+        "glossary",
+        "decisions",
+        "findings",
+        "finding_choices",
+        "person_direction",
+        "gate_results"
+      ],
+      "produces": [
+        "document",
+        "inventory",
+        "sources",
+        "revision_log"
+      ]
+    },
+    {
+      "step_id": "s8a",
+      "kind": "gate",
+      "gate_ref": "revision_gate@0.8.0",
+      "needs": [
+        "s8"
+      ],
+      "reads": [
+        "revision_log",
+        "document_before",
+        "document",
+        "decisions",
+        "finding_choices",
+        "findings"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s8e"
+      }
+    },
+    {
+      "step_id": "s8b",
+      "kind": "gate",
+      "gate_ref": "cmd_inventory_gate@0.3.0",
+      "needs": [
+        "s8"
+      ],
+      "reads": [
+        "inventory",
+        "document",
+        "sources",
+        "glossary"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s8e"
+      }
+    },
+    {
+      "step_id": "s8c",
+      "kind": "gate",
+      "gate_ref": "cite_gate@0.7.0",
+      "needs": [
+        "s8"
+      ],
+      "reads": [
+        "sources"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s8e"
+      }
+    },
+    {
+      "step_id": "s8d",
+      "kind": "gate",
+      "gate_ref": "cmd_trace_gate@0.3.0",
+      "needs": [
+        "s8"
+      ],
+      "reads": [
+        "inventory",
+        "sources",
+        "source_texts"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s8e"
+      }
+    },
+    {
+      "step_id": "s8e",
+      "kind": "decide",
+      "needs": [
+        "s8a",
+        "s8b",
+        "s8c",
+        "s8d"
+      ],
+      "reads": [
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "fix",
+          "label": "Send the corrected copy back to fix these",
+          "route": {
+            "action": "loop",
+            "to": "s8"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "verified",
+          "label": "It is right: I have checked this against the source myself",
+          "route": {
+            "action": "continue"
+          },
+          "verifies": true,
+          "for_outcomes": [
+            "not_found",
+            "doi_not_found",
+            "doi_title_mismatch",
+            "url_unreachable",
+            "quote_not_in_text",
+            "number_not_in_text"
+          ]
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on: some of these may be findings you chose to keep",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "case": [
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "fix"
+      },
+      "skip_when": {
+        "unless_failed": [
+          "s8a",
+          "s8b",
+          "s8c",
+          "s8d"
+        ]
+      },
+      "produces": [
+        "person_direction"
+      ]
+    },
+    {
+      "step_id": "s9",
+      "kind": "recheck",
+      "thread_ref": "cmd_claims_checker@0.1.2",
+      "needs": [
+        "s8a",
+        "s8b",
+        "s8c",
+        "s8d",
+        "s8e"
+      ],
+      "reads": [
+        "focus",
+        "document",
+        "inventory",
+        "sources",
+        "source_texts",
+        "glossary",
+        "gate_results",
+        "decisions",
+        "findings",
+        "change_set"
+      ],
+      "produces": [
+        "findings"
+      ],
+      "scope": "added_text"
+    },
+    {
+      "step_id": "s9c",
+      "kind": "gate",
+      "gate_ref": "finding_cap_gate@0.2.1",
+      "needs": [
+        "s9"
+      ],
+      "reads": [
+        "findings"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s9e"
+      }
+    },
+    {
+      "step_id": "s9e",
+      "kind": "decide",
+      "needs": [
+        "s9c"
+      ],
+      "reads": [
+        "findings",
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "check_again",
+          "label": "Check again for more",
+          "route": {
+            "action": "loop",
+            "to": "s9"
+          },
+          "budget": {
+            "kind": "round",
+            "max": 1
+          }
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on with these (recorded as a waiver)",
+          "route": {
+            "action": "continue"
+          },
+          "only_when_failed": [
+            "s9c"
+          ]
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "case": [
+        "findings",
+        "gate_results"
+      ],
+      "other": {
+        "none": "A blind check cannot take your words without losing its blindness: check again, carry on or stop."
+      },
+      "skip_when": {
+        "unless_failed": [
+          "s9c"
+        ]
+      }
+    },
+    {
+      "step_id": "s9d",
+      "kind": "decide",
+      "needs": [
+        "s9e"
+      ],
+      "reads": [
+        "findings",
+        "decisions",
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "deliver",
+          "label": "Deliver, with anything still open recorded as open",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "send_back",
+          "label": "Send these back to the corrected copy to fix",
+          "route": {
+            "action": "loop",
+            "to": "s8"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "case": [
+        "findings",
+        "adjudication",
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "send_back"
+      },
+      "produces": [
+        "person_direction"
+      ]
+    },
+    {
+      "step_id": "s10",
+      "kind": "deliver",
+      "needs": [
+        "s9d"
+      ],
+      "case": [
+        "outputs"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "gate_ref": "web_access@0.2.0",
+      "gate_fingerprint": "jcs1:sha256:1d69109fa4a10abd069d8602d43a8d663164ff6748696dd65122f2736f62c43d",
+      "applies_to": [],
+      "before_checks": false,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "option_map_gate@0.1.0",
+      "gate_fingerprint": "jcs1:sha256:916f6e4c12d59836f64eac1a3712e3f1f7284139f6da5148b1906d131338ec4c",
+      "applies_to": [
+        "option_map@0.1.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "cite_gate@0.7.0",
+      "gate_fingerprint": "jcs1:sha256:ca8781199d66633557f7dfc59ba14a2a02c3a07701f643aa18e07fdeef3d175a",
+      "applies_to": [
+        "source_register@0.1.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "cmd_inventory_gate@0.3.0",
+      "gate_fingerprint": "jcs1:sha256:5ea1141d8d92747a49b5f2062c5fdaadfc3473087a29b1e13e1fd0ed944bad96",
+      "applies_to": [
+        "cmd_inventory@0.1.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "cmd_trace_gate@0.3.0",
+      "gate_fingerprint": "jcs1:sha256:aa9c26d654f552ee7ff266c8ab7f380d5211c4f5ebb6dc19c1f4d928e0639f7c",
+      "applies_to": [
+        "cmd_inventory@0.1.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "finding_cap_gate@0.2.1",
+      "gate_fingerprint": "jcs1:sha256:03845b63f9e1f25431498c1392d85183eb7f57d8e54a2848a74b737ea6330a4f",
+      "applies_to": [
+        "kit_findings@0.1.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "revision_gate@0.8.0",
+      "gate_fingerprint": "jcs1:sha256:992d74876ff75272324a2ff62979f4f2ca25aa2e5c8628c5e08c32b16ea48e91",
+      "applies_to": [
+        "revision_log@0.2.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    }
+  ],
+  "checkers": [
+    {
+      "step_id": "s6a",
+      "concerns": [
+        "claims"
+      ],
+      "fetch": "cited_only",
+      "evidence_rules": [
+        "EV-1",
+        "EV-3",
+        "EV-6"
+      ]
+    },
+    {
+      "step_id": "s6b",
+      "concerns": [
+        "attribution"
+      ],
+      "fetch": "cited_only",
+      "evidence_rules": [
+        "EV-1",
+        "EV-3",
+        "EV-6"
+      ]
+    },
+    {
+      "step_id": "s9",
+      "concerns": [
+        "claims"
+      ],
+      "fetch": "cited_only",
+      "evidence_rules": [
+        "EV-1",
+        "EV-3",
+        "EV-6"
+      ]
+    }
+  ],
+  "adjudication": {
+    "policy": "test_every_finding",
+    "outcomes": [
+      "adopted",
+      "partly_adopted",
+      "declined"
+    ],
+    "may_propose_text": false,
+    "merge_with_revise": false
+  },
+  "explore": {
+    "option_map_gate": "option_map_gate@0.1.0",
+    "suggested_after": [
+      "s7"
+    ]
+  },
+  "outputs": [
+    {
+      "port": "document",
+      "type_ref": "cmd_draft@0.1.0",
+      "datafile": false,
+      "handling": null
+    },
+    {
+      "port": "decisions",
+      "type_ref": "decisions@0.1.0",
+      "datafile": false,
+      "handling": null
+    },
+    {
+      "port": "finding_choices",
+      "type_ref": "finding_choices@0.1.0",
+      "datafile": false,
+      "handling": null
+    },
+    {
+      "port": "inventory",
+      "type_ref": "cmd_inventory@0.1.0",
+      "datafile": false,
+      "handling": null
+    },
+    {
+      "port": "sources",
+      "type_ref": "source_register@0.1.0",
+      "datafile": false,
+      "handling": null
+    }
+  ],
+  "output_menu": [
+    {
+      "choice_id": "findings_md",
+      "label": "Findings and what you decided on each (Markdown)",
+      "from_outputs": [
+        "decisions",
+        "finding_choices"
+      ],
+      "format": "md",
+      "file_name": "findings"
+    },
+    {
+      "choice_id": "findings_docx",
+      "label": "Findings and what you decided on each (Word)",
+      "from_outputs": [
+        "decisions",
+        "finding_choices"
+      ],
+      "format": "docx",
+      "file_name": "findings"
+    },
+    {
+      "choice_id": "findings_table",
+      "label": "Findings (table)",
+      "from_outputs": [
+        "decisions"
+      ],
+      "format": "table"
+    },
+    {
+      "choice_id": "draft_docx",
+      "label": "Corrected draft (Word)",
+      "from_outputs": [
+        "document"
+      ],
+      "format": "docx",
+      "file_name": "corrected_draft"
+    },
+    {
+      "choice_id": "draft_md",
+      "label": "Corrected draft (Markdown)",
+      "from_outputs": [
+        "document"
+      ],
+      "format": "md",
+      "file_name": "corrected_draft"
+    },
+    {
+      "choice_id": "references_csv",
+      "label": "The references in your draft (CSV)",
+      "from_outputs": [
+        "sources"
+      ],
+      "format": "csv"
+    }
+  ],
+  "variants": {},
+  "host_requirements": {
+    "isolated_contexts": "preferred",
+    "code_execution": "required",
+    "web_fetch": "required",
+    "file_io": "required",
+    "hooks": "preferred",
+    "fallbacks": [
+      {
+        "capability": "isolated_contexts",
+        "action": "instruct_only",
+        "steps": [
+          "s2",
+          "s6a",
+          "s6b"
+        ],
+        "record_status": [
+          {
+            "invariant": "C1",
+            "status": "instructed"
+          },
+          {
+            "invariant": "C2",
+            "status": "not_met"
+          }
+        ],
+        "sidecar_status": null
+      },
+      {
+        "capability": "hooks",
+        "action": "instruct_only",
+        "steps": [
+          "s1",
+          "s2e",
+          "s3e",
+          "s5e",
+          "s6e",
+          "s6f",
+          "s7d",
+          "s8e",
+          "s9e",
+          "s9d"
+        ],
+        "record_status": [
+          {
+            "invariant": "C1",
+            "status": "instructed"
+          },
+          {
+            "invariant": "C2",
+            "status": "instructed"
+          },
+          {
+            "invariant": "C3",
+            "status": "checked_after"
+          },
+          {
+            "invariant": "C6",
+            "status": "instructed"
+          }
+        ],
+        "sidecar_status": null
+      }
+    ]
+  },
+  "escalate_on": [
+    "checker_disagreement",
+    "conclusion_change",
+    "unresolvable_gate",
+    "budget_exceeded"
+  ],
+  "stop": {
+    "max_rounds": 2,
+    "stop_when": "no_new_blocking",
+    "ticket_timeout": {
+      "make": 3600,
+      "check": 1800,
+      "recheck": 1200,
+      "adjudicate": 1800,
+      "revise": 2400
+    }
+  },
+  "budget": {
+    "unit": "tokens",
+    "on_exceed": "pause_and_ask"
+  },
+  "protected_paths": [
+    "braids/"
+  ],
+  "report": null,
+  "signature": null,
+  "phases": [
+    {
+      "phase_id": "read",
+      "label": "Read your draft",
+      "steps": [
+        "s0",
+        "s1",
+        "s1d",
+        "s2",
+        "s2g",
+        "s2e"
+      ]
+    },
+    {
+      "phase_id": "references",
+      "label": "Check the references",
+      "steps": [
+        "s3",
+        "s3e"
+      ]
+    },
+    {
+      "phase_id": "texts",
+      "label": "Get the cited sources",
+      "steps": [
+        "s4"
+      ]
+    },
+    {
+      "phase_id": "trace",
+      "label": "Check quotes and numbers",
+      "steps": [
+        "s5",
+        "s5e"
+      ]
+    },
+    {
+      "phase_id": "blind",
+      "label": "Blind checks",
+      "steps": [
+        "s6a",
+        "s6b",
+        "s6c",
+        "s6d",
+        "s6e",
+        "s6f",
+        "s7"
+      ]
+    },
+    {
+      "phase_id": "cards",
+      "label": "Your finding cards",
+      "steps": [
+        "s7d"
+      ]
+    },
+    {
+      "phase_id": "fix",
+      "label": "Fix it for you",
+      "steps": [
+        "s8",
+        "s8a",
+        "s8b",
+        "s8c",
+        "s8d",
+        "s8e",
+        "s9",
+        "s9c",
+        "s9e"
+      ]
+    },
+    {
+      "phase_id": "deliver",
+      "label": "Deliver",
+      "steps": [
+        "s9d",
+        "s10"
+      ]
+    }
+  ]
+}

@@ -26,6 +26,13 @@ Braidry does not need a Braidry account, and it sends nothing to Braidry. Everyt
 
 3. If Claude Code says `Run /reload-plugins to apply`, type `/reload-plugins`.
 
+**Had Heddle installed?** The plugin and its marketplace have new names, so remove the old ones first, then install as above:
+
+```
+/plugin uninstall heddle@heddle
+/plugin marketplace remove heddle
+```
+
 Claude Code will show a warning that plugins run with your permissions. That is true of every plugin. Braidry's hooks only watch and, during a run, refuse actions that would break a check; its local server only answers Claude's calls on your computer.
 
 ## Run a review

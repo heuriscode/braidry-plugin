@@ -1,5 +1,5 @@
 {
   "dashlab_issuer": null,
-  "online_origin": null,
-  "online_build_id": null
+  "online_origin": "https://app.braidry.com",
+  "online_build_id": "braidry-plugin@0.4.1"
 }

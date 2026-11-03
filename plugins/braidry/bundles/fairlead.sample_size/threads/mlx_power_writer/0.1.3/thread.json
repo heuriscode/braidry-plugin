@@ -1,0 +1,46 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "default_model_class": "strong",
+  "preambles": [
+    "common@0.1.0",
+    "maker@0.1.0"
+  ],
+  "thread_id": "mlx_power_writer",
+  "version": "0.1.3",
+  "fingerprint": "jcs1:sha256:d43e3228968bb7d8bd92f5b1d96703e0b2fe6c07e0b2abd1c03080654804bb44",
+  "name": "Sample size writer",
+  "purpose": "Writes the sample size section from the scenarios and the sizes computed in code.",
+  "archetype": "maker",
+  "default_role": "maker",
+  "reads": [
+    "focus",
+    "mlx_power_plan",
+    "draft",
+    "gate_results",
+    "findings",
+    "person_direction"
+  ],
+  "never_sees": [
+    "data_rows"
+  ],
+  "tools": [
+    "write_output"
+  ],
+  "returns": "draft",
+  "caps": {
+    "max_words": 1500
+  },
+  "targets": [
+    "unbacked_number",
+    "overstated_claim"
+  ],
+  "prompt": "Agreed focus:\n{{focus}}\n\nScenarios: {{inputs.mlx_power_plan}}\nGate results (the sizes, recruitment figures and any SD limit computed in code are in the sample size check's\nitems named sizes#<scenario id>, one for each scenario): {{gate_results}}\n\nWrite the sample size section. Every sample size, recruitment figure, d and SD limit was computed in code; take\neach from that scenario's sizes item exactly (n1, n2 and total are completers; recruit1, recruit2 and\nrecruit_total are the people to recruit after dropout; sd_used is the SD the d was computed from), and never\ncompute, round or adjust one yourself. The only numbers you may write are a scenario's stated inputs (alpha,\npower and dropout may be written as percentages), the person's own numbers as their request states them, the\nfigures in those items, the number of scenarios, and years. State no other statistic (a confidence limit, a\nvariance, an inflation factor) unless an item gives it. Every scenario's total and, where it has dropout, its\nrecruitment total must appear.\n1. For each scenario: the outcome and comparison, the effect size and its basis (a source's citation, where in it\n   and its quote), alpha, power, sides and dropout, the completers needed and the people to recruit.\n2. The method, named with its source (put each source in the references, cited in square brackets):\n   two_means, the normal-approximation formula for two independent means (Chow, Shao and Wang 2008, Sample Size\n   Calculations in Clinical Research, 2nd edition, chapter 3); two_proportions, the formula for two independent\n   proportions without continuity correction (Fleiss, Levin and Paik 2003, Statistical Methods for Rates and\n   Proportions, 3rd edition, chapter 4); logistic_continuous, Hsieh, Bloch and Larsen (1998, Statistics in\n   Medicine 17(14), 1623-1634) for one normally distributed predictor, inflated by 1/(1 - r2_other) for the\n   other predictors. Recruitment is each arm's completers divided by one minus the dropout rate, rounded up; an\n   SD's upper confidence limit is the SD times the square root of (pilot size - 1) over the chi-square quantile.\n3. Limits: the normal approximation runs slightly below a t-based calculation for small samples; nothing here\n   allows for clustering or repeated measures, so say what the person should add for each that applies.\n4. The scenarios as one table, in the first section after its opening sentence, written as a paragraph of its own:\n   a Markdown pipe table (every line starts and ends with |; a header row, then a | --- | row, then one row a\n   scenario), with the columns Scenario, Effect, SD, Completers per arm, Recruitment per arm and Total to recruit.\n   Scenario is its label; Effect its stated effect (d = 0.492, or p1 = 0.30 and p2 = 0.40, or the odds ratio);\n   SD the item's sd_used where it gives one, else the scenario's stated SD, else \"not used\"; per-arm figures as\n   \"82 and 82\" (or \"one group\"); Total to recruit is recruit_total. Every figure exactly as the scenario or its\n   sizes item gives it. Word shows this as a table.\n\nPrevious pass (a repair pass only; null on a first pass):\nWrite-up: {{inputs.draft}}\nFailed checks sent back to you: {{gate_results}}\nFindings sent back to you: {{findings}}\nThe person's direction with them: {{inputs.person_direction}}\n\nOn a repair pass, fix only what is named, and change nothing else.\nNever cite a check's item names or evidence refs in your text (such as sizes#d30_p80, [sizes_d30_p80] or a finding's id): give the figures and facts plainly, in words a reader understands.",
+  "placeholders": [
+    "findings",
+    "focus",
+    "gate_results",
+    "inputs.draft",
+    "inputs.mlx_power_plan",
+    "inputs.person_direction"
+  ]
+}

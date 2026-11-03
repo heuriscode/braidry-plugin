@@ -1,0 +1,51 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "thread_id": "text_coverage_checker",
+  "version": "0.1.1",
+  "fingerprint": "jcs1:sha256:d166f8d1867e99c060eeda37b232a6311c0dcedc6b6d7099c6186a2b11b1b910",
+  "name": "Full-text coverage checker",
+  "purpose": "Checks the deep review's coverage against the focus, reading the saved texts: balance across sub-questions, missing key works, screening errors, and studies the review misplaces.",
+  "archetype": "checker",
+  "default_role": "checker",
+  "reads": [
+    "focus",
+    "draft",
+    "evidence",
+    "sources",
+    "search_record",
+    "gate_results",
+    "source_texts"
+  ],
+  "never_sees": [
+    "maker_reasoning",
+    "data_rows"
+  ],
+  "tools": [
+    "search",
+    "fetch"
+  ],
+  "returns": "findings",
+  "caps": {
+    "max_findings": 10
+  },
+  "default_model_class": "balanced",
+  "targets": [
+    "missed_key_evidence",
+    "unscoped_none_claim",
+    "missing_counter_evidence"
+  ],
+  "preambles": [
+    "common@0.1.0",
+    "checker@0.2.0"
+  ],
+  "prompt": "Agreed focus:\n{{focus}}\n\nReview: {{inputs.draft}}\nIncluded sources: {{inputs.sources}}\nSearch record: {{inputs.search_record}}\nGate results: {{gate_results}}\nEvidence table (from the readers): {{inputs.evidence}}\nSaved texts: {{inputs.source_texts}}\n\nThe included set is capped at 150 works and should be balanced across the sub-questions. Read the saved text of each source you check (source_texts, below); it is\nwhat the review's makers read. Fetch a source only where no text was saved for it, and say so in the finding.\n1. Is each sub-question covered in proportion to the evidence that exists? Name any that is thin and say whether the thinness is in the field or in the search.\n2. Search for key works the review should include and does not. Propose only works you located yourself, with a locator and the read level you reached.\n3. Re-screen a random sample of 20 excluded or capped records from the screening log against the protocol's criteria. Report wrong exclusions.\n4. Check every \"none\", \"few\" or \"thin\" claim against the searched pool (EV-4).\n\nEvidence rules (all on):\n- EV-3: no claim that a work does not contain, report or compare something may rest on an abstract or record read.\n- EV-4: \"none\", \"few\", \"thin\" or \"no study\" claims about a field are scoped to the searched pool, for example \"none of the 54 works screened\".\n- EV-6: a source read only at record level carries no findings in the output.\n\nSummary line (Braidry 0.2.6): give every finding a `summary`: one line, at most 140 characters, in plain words a\nreader who has not seen the draft understands, naming what is wrong and where (for example \"Hospital costs called\n'attributable' where the source says 'associated'\"). No ids, no step names, no quotation marks around the whole line.\nThe person sees it as the finding's title before they decide.",
+  "placeholders": [
+    "focus",
+    "gate_results",
+    "inputs.draft",
+    "inputs.evidence",
+    "inputs.search_record",
+    "inputs.source_texts",
+    "inputs.sources"
+  ]
+}

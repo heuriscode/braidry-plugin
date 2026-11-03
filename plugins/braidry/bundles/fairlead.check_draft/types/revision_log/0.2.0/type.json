@@ -1,0 +1,19 @@
+{
+  "schema": "fairlead.type/0.1",
+  "type_id": "revision_log",
+  "version": "0.2.0",
+  "fingerprint": "jcs1:sha256:bae8b5688fa1cc5a5825e533c4c74923cedaf0e5467ac5e25adfb92978ba32c0",
+  "title": "Revision log",
+  "description": "Each adjudicated decision mapped to the ids it changed.",
+  "contract": "revision_log_v0_2",
+  "media_types": [
+    "application/json"
+  ],
+  "datafile_capable": false,
+  "required_gates": [
+    "revision_gate"
+  ],
+  "menu_formats": [
+    "json"
+  ]
+}

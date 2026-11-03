@@ -1,0 +1,27 @@
+{
+  "schema": "fairlead.gate/0.1",
+  "gate_id": "mlx_effect_basis_gate",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:3f448ebbe0c35f57a21f47729f2105bc7bb22981213ea32245c468167fc0fff8",
+  "protocol": "gate_io/0.1",
+  "scripts": [
+    {
+      "runtime": "python",
+      "entry": "gate.py",
+      "script_fingerprint": "raw:sha256:64b2fcc6d36d507dd8c90bf21acf3cca4e7bcde9733181b2e25d4d6dfa5637e0"
+    },
+    {
+      "runtime": "js",
+      "entry": "gate.js",
+      "script_fingerprint": "raw:sha256:348be5efdbea668f89168b0f0e72be957c4794f3a1fcb12ac02c480a40b77475"
+    }
+  ],
+  "applies_to": [
+    "mlx_power_plan@0.2.0"
+  ],
+  "config": null,
+  "network": "none",
+  "reads_rows": false,
+  "timeout_s": 60,
+  "vectors": "vectors/"
+}

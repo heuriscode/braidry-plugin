@@ -1,0 +1,27 @@
+{
+  "schema": "fairlead.gate/0.1",
+  "gate_id": "cmd_inventory_gate",
+  "version": "0.3.0",
+  "fingerprint": "jcs1:sha256:5ea1141d8d92747a49b5f2062c5fdaadfc3473087a29b1e13e1fd0ed944bad96",
+  "protocol": "gate_io/0.1",
+  "scripts": [
+    {
+      "runtime": "python",
+      "entry": "gate.py",
+      "script_fingerprint": "raw:sha256:ce659b32660d74b98760aa8292dbfeab73f596259a09b90203e0a114536b719e"
+    },
+    {
+      "runtime": "js",
+      "entry": "gate.js",
+      "script_fingerprint": "raw:sha256:b3ffcd2c2666af78b895fdab77a027c32ab9d1a90c311b3bd286a934a9518797"
+    }
+  ],
+  "applies_to": [
+    "cmd_inventory@0.1.0"
+  ],
+  "config": null,
+  "network": "none",
+  "reads_rows": false,
+  "timeout_s": 60,
+  "vectors": "vectors/"
+}

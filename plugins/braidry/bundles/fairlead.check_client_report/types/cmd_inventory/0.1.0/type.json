@@ -1,0 +1,20 @@
+{
+  "schema": "fairlead.type/0.1",
+  "type_id": "cmd_inventory",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:3981c4a336044af56a3eff719916b11e855011521ee2a3a590c6934d068eb5c0",
+  "title": "Draft inventory",
+  "description": "Every reference, quote, number and claim in the person's draft, in the draft's own words and tied to its paragraph id, with the register sources each cites.",
+  "contract": "cmd_inventory_v0_1",
+  "media_types": [
+    "application/json"
+  ],
+  "datafile_capable": false,
+  "required_gates": [
+    "cmd_inventory_gate",
+    "cmd_trace_gate"
+  ],
+  "menu_formats": [
+    "json"
+  ]
+}

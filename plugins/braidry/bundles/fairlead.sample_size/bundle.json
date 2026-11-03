@@ -1,0 +1,850 @@
+{
+  "schema": "fairlead.braid_template/0.1",
+  "template_id": "fairlead.sample_size",
+  "version": "0.1.4",
+  "fingerprint": "jcs1:sha256:38b56167be5c56a2ad4dad68d0be839eaed70b274d80f7a3316122bab1b14772",
+  "catalogue": {
+    "command": "/fairlead:sample-size",
+    "title": "Sample size and power",
+    "for_when": "How many people to recruit for a planned comparison or model: completers and recruitment after dropout computed in code from the inputs you state, every number rechecked.",
+    "group": "plan",
+    "status": "in_design",
+    "free": false,
+    "hosts": {
+      "claude_code": "in_design"
+    }
+  },
+  "parent": null,
+  "risk_tier_default": "T2",
+  "work_unit": {
+    "name": "size_plans",
+    "definition": "A set of sample size scenarios computed in code and approved by the person."
+  },
+  "inputs": [],
+  "threads": [
+    {
+      "thread_ref": "mlx_power_planner@0.1.2",
+      "thread_fingerprint": "jcs1:sha256:886088d6a181c834d684a0e8e19f59ed213baf9fcf86e13078e71af87b0cf5d0",
+      "role": "maker",
+      "tools": [
+        "write_output"
+      ],
+      "reads": [
+        "focus",
+        "mlx_power_plan",
+        "gate_results",
+        "findings",
+        "person_direction"
+      ],
+      "returns": "mlx_power_plan",
+      "caps": {
+        "max_items": 6
+      }
+    },
+    {
+      "thread_ref": "mlx_power_checker@0.1.3",
+      "thread_fingerprint": "jcs1:sha256:90ee9c6bffc1bfedc827da7e8a0670ee3f52485a8e29922b4d68a8e9287faa7c",
+      "role": "checker",
+      "tools": [
+        "write_output"
+      ],
+      "reads": [
+        "focus",
+        "mlx_power_plan",
+        "gate_results",
+        "person_direction"
+      ],
+      "returns": "findings",
+      "caps": {
+        "max_findings": 10
+      }
+    },
+    {
+      "thread_ref": "mlx_power_writer@0.1.3",
+      "thread_fingerprint": "jcs1:sha256:d43e3228968bb7d8bd92f5b1d96703e0b2fe6c07e0b2abd1c03080654804bb44",
+      "role": "maker",
+      "tools": [
+        "write_output"
+      ],
+      "reads": [
+        "focus",
+        "mlx_power_plan",
+        "draft",
+        "gate_results",
+        "findings",
+        "person_direction"
+      ],
+      "returns": "draft",
+      "caps": {
+        "max_words": 1500
+      }
+    },
+    {
+      "thread_ref": "mlx_power_writeup_checker@0.1.3",
+      "thread_fingerprint": "jcs1:sha256:8b2d57dbbab9714fab3b57236249fdaf7712f2d98056b486f35c3d0289543dc5",
+      "role": "checker",
+      "tools": [
+        "write_output"
+      ],
+      "reads": [
+        "focus",
+        "mlx_power_plan",
+        "draft",
+        "gate_results",
+        "person_direction"
+      ],
+      "returns": "findings",
+      "caps": {
+        "max_findings": 10
+      }
+    },
+    {
+      "thread_ref": "mlx_sizes_table_maker@0.1.0",
+      "thread_fingerprint": "jcs1:sha256:13953c701b525b31f1262ad315ab1143bfef6e33c33e5417c8dc33caa983285d",
+      "role": "maker",
+      "tools": [
+        "write_output"
+      ],
+      "reads": [
+        "mlx_power_plan",
+        "gate_results",
+        "mlx_sizes_table",
+        "person_direction"
+      ],
+      "returns": "case_table",
+      "caps": {
+        "max_rows": 6
+      }
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s1",
+      "kind": "refine",
+      "needs": [],
+      "produces": [
+        "focus"
+      ],
+      "case": [
+        "focus"
+      ]
+    },
+    {
+      "step_id": "s2",
+      "kind": "make",
+      "thread_ref": "mlx_power_planner@0.1.2",
+      "needs": [
+        "s1"
+      ],
+      "reads": [
+        "focus",
+        "mlx_power_plan",
+        "gate_results",
+        "findings",
+        "person_direction"
+      ],
+      "produces": [
+        "mlx_power_plan"
+      ]
+    },
+    {
+      "step_id": "s2g",
+      "kind": "gate",
+      "gate_ref": "mlx_power_gate@0.2.1",
+      "needs": [
+        "s2"
+      ],
+      "reads": [
+        "mlx_power_plan"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s2e"
+      }
+    },
+    {
+      "step_id": "s2h",
+      "kind": "gate",
+      "gate_ref": "mlx_effect_basis_gate@0.1.0",
+      "needs": [
+        "s2g"
+      ],
+      "reads": [
+        "mlx_power_plan"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s2e"
+      }
+    },
+    {
+      "step_id": "s2e",
+      "kind": "decide",
+      "needs": [
+        "s2h"
+      ],
+      "reads": [
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "fix",
+          "label": "Send the scenarios back to fix",
+          "route": {
+            "action": "loop",
+            "to": "s2"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on: the blind checker reads them next",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "produces": [
+        "person_direction"
+      ],
+      "case": [
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "fix"
+      },
+      "skip_when": {
+        "unless_failed": [
+          "s2g",
+          "s2h"
+        ]
+      }
+    },
+    {
+      "step_id": "s3",
+      "kind": "check",
+      "thread_ref": "mlx_power_checker@0.1.3",
+      "needs": [
+        "s2g",
+        "s2h",
+        "s2e"
+      ],
+      "reads": [
+        "focus",
+        "mlx_power_plan",
+        "gate_results",
+        "person_direction"
+      ],
+      "produces": [
+        "findings"
+      ],
+      "scope": "full"
+    },
+    {
+      "step_id": "s2t",
+      "kind": "make",
+      "thread_ref": "mlx_sizes_table_maker@0.1.0",
+      "needs": [
+        "s3",
+        "s2g"
+      ],
+      "reads": [
+        "mlx_power_plan",
+        "gate_results",
+        "mlx_sizes_table",
+        "person_direction"
+      ],
+      "produces": [
+        "mlx_sizes_table"
+      ]
+    },
+    {
+      "step_id": "s2u",
+      "kind": "gate",
+      "gate_ref": "mlx_sizes_table_gate@0.1.0",
+      "needs": [
+        "s2t"
+      ],
+      "reads": [
+        "mlx_sizes_table",
+        "mlx_power_plan"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s2v"
+      }
+    },
+    {
+      "step_id": "s2v",
+      "kind": "decide",
+      "needs": [
+        "s2u"
+      ],
+      "reads": [
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "fix",
+          "label": "Send the sizes table back to copy code's figures",
+          "route": {
+            "action": "loop",
+            "to": "s2t"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on: show the scenarios with the table as it is",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "produces": [
+        "person_direction"
+      ],
+      "case": [
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "fix"
+      },
+      "skip_when": {
+        "unless_failed": [
+          "s2u"
+        ]
+      }
+    },
+    {
+      "step_id": "s3d",
+      "kind": "decide",
+      "needs": [
+        "s3",
+        "s2g",
+        "s2u",
+        "s2v"
+      ],
+      "reads": [
+        "mlx_sizes_table",
+        "mlx_power_plan",
+        "findings",
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "approve",
+          "label": "I confirm each effect and its basis: write them up",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "send_back",
+          "label": "Send them back with my changes",
+          "route": {
+            "action": "loop",
+            "to": "s2"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "produces": [
+        "person_direction"
+      ],
+      "case": [
+        "mlx_sizes_table",
+        "gate_results",
+        "mlx_power_plan",
+        "findings"
+      ],
+      "other": {
+        "as_option": "send_back"
+      }
+    },
+    {
+      "step_id": "s4",
+      "kind": "make",
+      "thread_ref": "mlx_power_writer@0.1.3",
+      "needs": [
+        "s3d",
+        "s2g"
+      ],
+      "reads": [
+        "focus",
+        "mlx_power_plan",
+        "draft",
+        "gate_results",
+        "findings",
+        "person_direction"
+      ],
+      "produces": [
+        "draft"
+      ]
+    },
+    {
+      "step_id": "s4g",
+      "kind": "gate",
+      "gate_ref": "mlx_power_claim_gate@0.2.2",
+      "needs": [
+        "s4"
+      ],
+      "reads": [
+        "draft",
+        "mlx_power_plan",
+        "focus",
+        "person_direction"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s4e"
+      }
+    },
+    {
+      "step_id": "s4e",
+      "kind": "decide",
+      "needs": [
+        "s4g"
+      ],
+      "reads": [
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "fix",
+          "label": "Send the write-up back to fix",
+          "route": {
+            "action": "loop",
+            "to": "s4"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on: the blind checker reads it next",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "produces": [
+        "person_direction"
+      ],
+      "case": [
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "fix"
+      },
+      "skip_when": {
+        "unless_failed": [
+          "s4g"
+        ]
+      }
+    },
+    {
+      "step_id": "s5",
+      "kind": "check",
+      "thread_ref": "mlx_power_writeup_checker@0.1.3",
+      "needs": [
+        "s4g",
+        "s4e",
+        "s2g"
+      ],
+      "reads": [
+        "focus",
+        "mlx_power_plan",
+        "draft",
+        "gate_results",
+        "person_direction"
+      ],
+      "produces": [
+        "findings"
+      ],
+      "scope": "full"
+    },
+    {
+      "step_id": "s5d",
+      "kind": "decide",
+      "needs": [
+        "s5"
+      ],
+      "reads": [
+        "draft",
+        "findings",
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "deliver",
+          "label": "Deliver with these recorded as open",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "send_back",
+          "label": "Send these back to fix",
+          "route": {
+            "action": "loop",
+            "to": "s4"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "produces": [
+        "person_direction"
+      ],
+      "case": [
+        "draft",
+        "findings",
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "send_back"
+      }
+    },
+    {
+      "step_id": "s6",
+      "kind": "deliver",
+      "needs": [
+        "s5d"
+      ],
+      "case": [
+        "outputs"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "gate_ref": "mlx_power_gate@0.2.1",
+      "gate_fingerprint": "jcs1:sha256:de7ed12ebbaee2e71811fe9b9a6135bf3fcc1a6a4bed0c3ac91511d0fa1a813f",
+      "applies_to": [
+        "mlx_power_plan@0.2.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "mlx_effect_basis_gate@0.1.0",
+      "gate_fingerprint": "jcs1:sha256:3f448ebbe0c35f57a21f47729f2105bc7bb22981213ea32245c468167fc0fff8",
+      "applies_to": [
+        "mlx_power_plan@0.2.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "mlx_power_claim_gate@0.2.2",
+      "gate_fingerprint": "jcs1:sha256:65a9c53684fff4418c509a7cee1e7640885c649472aa8b40fb74d9fe7801e33c",
+      "applies_to": [
+        "draft@0.1.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "option_map_gate@0.1.0",
+      "gate_fingerprint": "jcs1:sha256:916f6e4c12d59836f64eac1a3712e3f1f7284139f6da5148b1906d131338ec4c",
+      "applies_to": [
+        "option_map@0.1.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "mlx_sizes_table_gate@0.1.0",
+      "gate_fingerprint": "jcs1:sha256:e6acf1273958d77412fb8df88a9b5db06e69fa6a25332885020ef63b35f29e97",
+      "applies_to": [
+        "case_table@0.1.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    }
+  ],
+  "checkers": [
+    {
+      "step_id": "s3",
+      "concerns": [
+        "scenarios"
+      ],
+      "fetch": "none",
+      "evidence_rules": []
+    },
+    {
+      "step_id": "s5",
+      "concerns": [
+        "sample_size_writeup"
+      ],
+      "fetch": "none",
+      "evidence_rules": []
+    }
+  ],
+  "adjudication": {
+    "policy": "test_every_finding",
+    "outcomes": [
+      "adopted",
+      "partly_adopted",
+      "declined"
+    ],
+    "may_propose_text": false,
+    "merge_with_revise": false
+  },
+  "explore": {
+    "option_map_gate": "option_map_gate@0.1.0",
+    "suggested_after": [
+      "s1"
+    ]
+  },
+  "outputs": [
+    {
+      "port": "draft",
+      "type_ref": "draft@0.1.0",
+      "datafile": false,
+      "handling": null
+    },
+    {
+      "port": "mlx_power_plan",
+      "type_ref": "mlx_power_plan@0.2.0",
+      "datafile": false,
+      "handling": null
+    },
+    {
+      "port": "mlx_sizes_table",
+      "type_ref": "case_table@0.1.0",
+      "datafile": false,
+      "handling": null
+    }
+  ],
+  "output_menu": [
+    {
+      "choice_id": "writeup_md",
+      "label": "Sample size (Markdown)",
+      "from_outputs": [
+        "draft"
+      ],
+      "format": "md"
+    },
+    {
+      "choice_id": "writeup_docx",
+      "label": "Sample size (Word)",
+      "from_outputs": [
+        "draft"
+      ],
+      "format": "docx"
+    },
+    {
+      "choice_id": "writeup_html",
+      "label": "Sample size (web page)",
+      "from_outputs": [
+        "draft"
+      ],
+      "format": "html"
+    },
+    {
+      "choice_id": "scenarios_json",
+      "label": "Scenarios (JSON)",
+      "from_outputs": [
+        "mlx_power_plan"
+      ],
+      "format": "json"
+    },
+    {
+      "choice_id": "sizes_json",
+      "label": "Sizes by scenario, as code computed them (JSON)",
+      "from_outputs": [
+        "mlx_sizes_table"
+      ],
+      "format": "json"
+    }
+  ],
+  "variants": {},
+  "host_requirements": {
+    "isolated_contexts": "preferred",
+    "code_execution": "required",
+    "web_fetch": "none",
+    "file_io": "required",
+    "hooks": "preferred",
+    "fallbacks": [
+      {
+        "capability": "isolated_contexts",
+        "action": "instruct_only",
+        "steps": [
+          "s2",
+          "s3",
+          "s2t",
+          "s4",
+          "s5"
+        ],
+        "record_status": [
+          {
+            "invariant": "C1",
+            "status": "instructed"
+          },
+          {
+            "invariant": "C2",
+            "status": "not_met"
+          }
+        ],
+        "sidecar_status": null
+      },
+      {
+        "capability": "hooks",
+        "action": "instruct_only",
+        "steps": [
+          "s1",
+          "s2e",
+          "s2v",
+          "s3d",
+          "s4e",
+          "s5d"
+        ],
+        "record_status": [
+          {
+            "invariant": "C1",
+            "status": "instructed"
+          },
+          {
+            "invariant": "C2",
+            "status": "instructed"
+          },
+          {
+            "invariant": "C3",
+            "status": "checked_after"
+          },
+          {
+            "invariant": "C6",
+            "status": "instructed"
+          }
+        ],
+        "sidecar_status": null
+      }
+    ]
+  },
+  "escalate_on": [
+    "checker_disagreement",
+    "conclusion_change",
+    "unresolvable_gate",
+    "budget_exceeded"
+  ],
+  "stop": {
+    "max_rounds": 2,
+    "stop_when": "no_new_blocking",
+    "ticket_timeout": {
+      "make": 3600,
+      "check": 1800,
+      "recheck": 1200,
+      "adjudicate": 1800,
+      "revise": 2400
+    }
+  },
+  "budget": {
+    "unit": "tokens",
+    "on_exceed": "pause_and_ask"
+  },
+  "protected_paths": [
+    "braids/"
+  ],
+  "report": null,
+  "signature": null,
+  "phases": [
+    {
+      "phase_id": "focus",
+      "label": "Agree the question",
+      "steps": [
+        "s1"
+      ]
+    },
+    {
+      "phase_id": "scenarios",
+      "label": "State the scenarios",
+      "steps": [
+        "s2",
+        "s2g",
+        "s2h",
+        "s2e",
+        "s3",
+        "s2t",
+        "s2u",
+        "s2v",
+        "s3d"
+      ]
+    },
+    {
+      "phase_id": "write",
+      "label": "Write it up",
+      "steps": [
+        "s4",
+        "s4g",
+        "s4e",
+        "s5",
+        "s5d"
+      ]
+    },
+    {
+      "phase_id": "deliver",
+      "label": "Deliver",
+      "steps": [
+        "s6"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "fairlead.gate/0.1",
+  "gate_id": "web_access",
+  "version": "0.2.0",
+  "fingerprint": "jcs1:sha256:1d69109fa4a10abd069d8602d43a8d663164ff6748696dd65122f2736f62c43d",
+  "protocol": "gate_io/0.1",
+  "scripts": [
+    {
+      "runtime": "python",
+      "entry": "gate.py",
+      "script_fingerprint": "raw:sha256:7219d99b169131a2c9d37a15a51059e15283056b81ed1d7c0aeaab7cd901fc33"
+    },
+    {
+      "runtime": "js",
+      "entry": "gate.js",
+      "script_fingerprint": "raw:sha256:e9188298a2274a5828c7a04f90756f25af3ed68a0ab75ed2fafb29ddf5a4b4c4"
+    }
+  ],
+  "applies_to": [],
+  "config": {
+    "probes": [
+      {
+        "host": "api.crossref.org",
+        "url": "https://api.crossref.org/works?rows=0"
+      },
+      {
+        "host": "api.openalex.org",
+        "url": "https://api.openalex.org/works?per-page=1"
+      },
+      {
+        "host": "eutils.ncbi.nlm.nih.gov",
+        "url": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=antibiotic&retmax=0"
+      }
+    ]
+  },
+  "network": {
+    "allow": [
+      "api.crossref.org",
+      "api.openalex.org",
+      "eutils.ncbi.nlm.nih.gov"
+    ]
+  },
+  "reads_rows": false,
+  "timeout_s": 300,
+  "vectors": "vectors/"
+}

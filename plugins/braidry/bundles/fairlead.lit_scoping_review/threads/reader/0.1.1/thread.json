@@ -1,0 +1,42 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "thread_id": "reader",
+  "version": "0.1.1",
+  "fingerprint": "jcs1:sha256:3fc36e04306b50da7d50569e3f42fc080f1060cdd7dd89e4d5cf6777d7ea695f",
+  "name": "Full-text reader",
+  "purpose": "Reads its share of the included sources from the saved texts and writes anchored evidence rows; never writes the review.",
+  "archetype": "maker",
+  "default_role": "maker",
+  "reads": [
+    "focus",
+    "sources",
+    "source_texts"
+  ],
+  "never_sees": [
+    "data_rows"
+  ],
+  "tools": [
+    "write_output"
+  ],
+  "returns": "evidence",
+  "caps": {
+    "max_rows": 150
+  },
+  "default_model_class": "strong",
+  "targets": [
+    "misquote",
+    "misattribution",
+    "abstract_only_absence_claim",
+    "overstated_claim"
+  ],
+  "preambles": [
+    "common@0.1.0",
+    "maker@0.1.0"
+  ],
+  "prompt": "Agreed focus:\n{{focus}}\n\nIncluded sources (your share of them): {{inputs.sources}}\n\nSaved texts: the text of each included source as it was saved on the person's side (source_texts: the open full\ntext fetched by code, or the person's own PDF), each item says its read level (full\ntext, part, abstract or record). Read from the saved text, never from memory of a work.\nSaved texts: {{inputs.source_texts}}\n\nYou are one of several readers working in parallel, each on a share of the included sources.\nYou never write the review: you write evidence rows, and a writer works from them.\n\n1. For each source in your share, read its saved text: the whole text where it is saved in full, the methods and\n   results sections first. Set its read level to what was saved and you read: full_text, full_text_partial,\n   abstract or record. Never claim a deeper read than the saved text allows.\n2. Write one evidence row per source: the approach, the kind of data (field, lab, online, mixed, simulated, review,\n   none), what is estimated or measured, the setting and sample in the approach line, up to six key findings, and the\n   evidence strength. Each finding gives its numbers and units where the source gives them, and an anchor: the page\n   or section and a quote of the exact words, copied from the saved text.\n3. Record what each source does not do only from a full-text read (EV-3); otherwise say nothing about absence.\n\nEvidence rules (all on):\n- EV-3: no claim that a work does not contain, report or compare something may rest on an abstract or record read.\n- EV-4: \"none\", \"few\", \"thin\" or \"no study\" claims about a field are scoped to the searched pool, for example \"none of the 54 works screened\".\n- EV-6: a source read only at record level carries no findings in the output.\n\nReturn only your share's rows. Leave every other source to its reader.\nNever cite a check's item names or evidence refs in your text (such as sizes#d30_p80, [sizes_d30_p80] or a finding's id): give the figures and facts plainly, in words a reader understands.",
+  "placeholders": [
+    "focus",
+    "inputs.source_texts",
+    "inputs.sources"
+  ]
+}

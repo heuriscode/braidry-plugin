@@ -1,0 +1,17 @@
+{
+  "schema": "fairlead.type/0.1",
+  "type_id": "cmd_glossary",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:9cadeb1476f0231de29302c419117eedb4df6ed44893bbdc48393415e96178b8",
+  "title": "Glossary of banned terms",
+  "description": "An organisation's banned or discouraged terms, each with what to use instead.",
+  "contract": "cmd_glossary_v0_1",
+  "media_types": [
+    "application/json"
+  ],
+  "datafile_capable": false,
+  "required_gates": [],
+  "menu_formats": [
+    "json"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "fairlead.type/0.1",
+  "type_id": "finding_choices",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:48531bb0a8041cb125dbdf762ca33ad985650b86d502fe302b3d5208c9d3e4a7",
+  "title": "Choices on adopted findings",
+  "description": "The person's accept or reject on each adopted finding, written by the server from the per-finding card (ChoiceLab design review 6, m7).",
+  "contract": "finding_choices_v0_1",
+  "media_types": [
+    "application/json"
+  ],
+  "datafile_capable": false,
+  "required_gates": [
+    "revision_gate"
+  ],
+  "menu_formats": [
+    "json"
+  ]
+}

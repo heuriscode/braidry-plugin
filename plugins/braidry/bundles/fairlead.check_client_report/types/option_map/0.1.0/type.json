@@ -1,0 +1,20 @@
+{
+  "schema": "fairlead.type/0.1",
+  "type_id": "option_map",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:4a78656c903dc7f8b50ad8717cadec420661ef61edbeb97d253dd9dc27b9d2e9",
+  "title": "Option map",
+  "description": "The options an Explore found, with evidence and fit to criteria; no recommendation.",
+  "contract": "option_map",
+  "media_types": [
+    "application/json"
+  ],
+  "datafile_capable": false,
+  "required_gates": [
+    "option_map_gate"
+  ],
+  "menu_formats": [
+    "md",
+    "json"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "default_model_class": "strong",
+  "preambles": [
+    "common@0.1.0",
+    "maker@0.1.0"
+  ],
+  "thread_id": "mlx_power_planner",
+  "version": "0.1.2",
+  "fingerprint": "jcs1:sha256:886088d6a181c834d684a0e8e19f59ed213baf9fcf86e13078e71af87b0cf5d0",
+  "name": "Sample size planner",
+  "purpose": "States sample size scenarios with dropout and each effect size's basis; never computes a size, a recruitment figure, a d or a confidence limit.",
+  "archetype": "maker",
+  "default_role": "maker",
+  "reads": [
+    "focus",
+    "mlx_power_plan",
+    "gate_results",
+    "findings",
+    "person_direction"
+  ],
+  "never_sees": [
+    "data_rows"
+  ],
+  "tools": [
+    "write_output"
+  ],
+  "returns": "mlx_power_plan",
+  "caps": {
+    "max_items": 6
+  },
+  "targets": [
+    "invented_effect",
+    "wrong_family"
+  ],
+  "prompt": "Agreed focus:\n{{focus}}\n\nState the sample size scenarios the focus needs, at most {{caps}}. You never compute a sample size, a recruitment\nfigure, a d or a confidence limit: code does, from what you state. For each scenario:\n1. The family: two_means (a continuous outcome compared between two groups), two_proportions (a binary outcome\n   compared between two groups) or logistic_continuous (a binary outcome and one continuous predictor, with\n   other predictors in the model).\n2. alpha, power and sides (1 or 2) as the person states them; if they state none, ask them. Two-sided is the\n   usual choice; say why if it is one-sided.\n3. dropout: the share the person expects to lose before the outcome is measured (0.2 for 20 per cent; 0 if\n   none). Code computes recruitment per arm as n / (1 - dropout), rounded up; ask the person if they gave none.\n4. The effect: for two_means the standardised difference d and the allocation ratio (second group over first);\n   when the person gives a difference and a standard deviation, also give sd_basis (the difference, the SD, the\n   pilot's size if the SD is from a pilot, and upper_limit if the person wants the SD's one-sided upper confidence\n   limit, such as 0.8): code computes the SD it uses and d from them, and fails a d that does not match, so give d\n   to three decimal places. For two_proportions p1, p2 and the allocation ratio; for logistic_continuous the event\n   rate at the predictor's mean, the odds ratio per standard deviation of the predictor, and r2_other, the share\n   of the predictor's variance the other predictors explain (0 if none).\n5. effect_basis and basis_note: where the effect comes from: the person stated it, a source (then source: its\n   citation, where in it, and a quote that states the effect's numbers, copied exactly; code checks the quote\n   holds them), or their smallest effect of interest. You never invent an effect size or take one from memory;\n   if the person has none, ask for the smallest effect that would matter to them.\nAdd scenarios across the effect sizes, SDs and dropout rates the person is unsure between, so they see how the\nsize moves.\n\nPrevious pass (a repair pass only; null on a first pass):\nScenarios: {{inputs.mlx_power_plan}}\nFailed checks sent back to you: {{gate_results}}\nFindings sent back to you: {{findings}}\nThe person's direction with them: {{inputs.person_direction}}\n\nOn a repair pass, start from your previous scenarios and change only what the failed checks, findings and the\nperson's direction name. Change nothing else. Where the person's direction adds, drops or changes a scenario, say\nso in that scenario's basis_note in their words (for example \"At the person's direction: drop the 80% ones if\nthere's a cap\"), so a blind checker sees it was their choice.\nNever cite a check's item names or evidence refs in your text (such as sizes#d30_p80, [sizes_d30_p80] or a finding's id): give the figures and facts plainly, in words a reader understands.",
+  "placeholders": [
+    "caps",
+    "findings",
+    "focus",
+    "gate_results",
+    "inputs.mlx_power_plan",
+    "inputs.person_direction"
+  ]
+}

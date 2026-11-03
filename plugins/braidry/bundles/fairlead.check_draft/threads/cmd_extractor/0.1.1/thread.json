@@ -1,0 +1,46 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "preambles": [
+    "common@0.1.0",
+    "maker@0.1.0"
+  ],
+  "default_model_class": "strong",
+  "thread_id": "cmd_extractor",
+  "version": "0.1.1",
+  "fingerprint": "jcs1:sha256:9deee81619a4ae6f529cb34e3db4755692669e2bebb70f8df1e49acfc4c75650",
+  "name": "Draft extractor",
+  "purpose": "Lists every reference, quote, number and claim in the person's draft, in its own words and with its paragraph id, and the works it cites; never changes or judges the draft.",
+  "archetype": "maker",
+  "default_role": "maker",
+  "reads": [
+    "document",
+    "inventory",
+    "sources",
+    "gate_results",
+    "person_direction"
+  ],
+  "never_sees": [
+    "data_rows"
+  ],
+  "tools": [
+    "write_output"
+  ],
+  "returns": "cmd_inventory",
+  "caps": {
+    "max_items": 600
+  },
+  "targets": [
+    "missed_item",
+    "misread_reference",
+    "label_as_number"
+  ],
+  "prompt": "The draft (each paragraph with its id): {{inputs.document}}\n\nYou read a person's draft and list what in it can be checked. You never change the draft and never judge it: code\nand blind checkers do that from your list.\n\n1. The references. From the draft's reference list, footnotes or endnotes, write one register entry per work it\n   cites: a source id you make from the first author's surname and the year (smith2019; smith2019a and smith2019b\n   for two), and the title, authors, year, venue and DOI, URL or arXiv id exactly as the draft gives them, even\n   where you think they are wrong: code looks each one up. Set read_level to record, found_via to provided,\n   sub_questions to [] and why_included to where the draft cites it (\"Cited in the introduction and results\").\n   An organisation as author (a department, council, agency, company or committee) is one author, written whole\n   as the draft gives it (\"Department of Regional Water Security\"), never split or cut to its last word; make its\n   source id from its initials or first word and the year (drws2026).\n2. The inventory. Go through every paragraph and list, with the paragraph's id exactly as served:\n   - reference: each in-text citation ((Smith 2019, p. 4), [3], Smith (2019)), as written, with the register ids\n     it points to;\n   - quote: each quotation of a source, the quoted words exactly as the draft has them (without the quotation\n     marks), with the source it is attributed to;\n   - number: each number that states a quantity (a count, amount, percentage, rate or ratio), its text (the words\n     around it as written, at most a sentence) and its value exactly as the draft writes it (\"37%\", \"1,250\",\n     \"$2.5\"), with the sources the sentence cites for it. A year used as a date, a page or a section number is\n     not a number to list, and nor is a number that only labels or orders something: Recommendation 1,\n     Figure 2, Table 4.1, Section 5, item 6 or a list's 1. and 2);\n   - claim: each statement of fact or finding that cites a source, or that a reader would expect to cite one, in\n     the draft's words, with the sources it cites (none if it cites none).\n   Every item's text must be words that stand in that paragraph exactly as the draft has them: code checks each\n   one against the draft, and lists any number or quotation you missed. Number the items i1, i2 and so on.\n3. Never state a number of your own, never correct a quote or a reference, and never add a source the draft does\n   not cite. List at most {{caps}}.\n\nPrevious pass (a repair pass only; null on a first pass):\nInventory: {{inputs.inventory}}\nRegister: {{inputs.sources}}\nFailed checks sent back to you: {{gate_results}}\nThe person's direction with them: {{inputs.person_direction}}\n\nOn a repair pass, start from your previous inventory and register and fix only what the failed checks and the\nperson's direction name: an item whose words are not in its paragraph, a number or quotation you missed, a source\nid that is not in the register, a reference you copied wrongly from the draft. Change nothing else.",
+  "placeholders": [
+    "caps",
+    "gate_results",
+    "inputs.document",
+    "inputs.inventory",
+    "inputs.person_direction",
+    "inputs.sources"
+  ]
+}

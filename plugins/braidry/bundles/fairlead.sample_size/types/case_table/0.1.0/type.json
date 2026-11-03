@@ -1,0 +1,18 @@
+{
+  "schema": "fairlead.type/0.1",
+  "type_id": "case_table",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:9eb85be96d2820cb8e844701b8f35eaa8bc21eb99ddbb5cc004ee2d6764d9317",
+  "title": "Table for a card",
+  "description": "A readable table that leads an approval card, one row an item, copied from code's results or a checked register; a gate holds every cell to its source.",
+  "contract": "case_table_v0_1",
+  "media_types": [
+    "application/json"
+  ],
+  "datafile_capable": false,
+  "required_gates": [],
+  "menu_formats": [
+    "csv",
+    "json"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "fairlead.gate/0.1",
+  "gate_id": "revision_gate",
+  "version": "0.8.0",
+  "fingerprint": "jcs1:sha256:992d74876ff75272324a2ff62979f4f2ca25aa2e5c8628c5e08c32b16ea48e91",
+  "protocol": "gate_io/0.1",
+  "scripts": [
+    {
+      "runtime": "python",
+      "entry": "gate.py",
+      "script_fingerprint": "raw:sha256:2e56c1c56a6c78cdd98efcc8ea8a0e85bada413f60c0d0768dd794f84966209f"
+    },
+    {
+      "runtime": "js",
+      "entry": "gate.js",
+      "script_fingerprint": "raw:sha256:5f10bfb8b92d9af828c433cd9e301f56e055d61cccb7935bc19612096aed855b"
+    }
+  ],
+  "applies_to": [
+    "revision_log@0.2.0"
+  ],
+  "config": null,
+  "network": "none",
+  "reads_rows": false,
+  "timeout_s": 60,
+  "vectors": "vectors/"
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "preambles": [
+    "common@0.1.0",
+    "checker@0.2.0"
+  ],
+  "default_model_class": "strong",
+  "thread_id": "cmd_attribution_checker",
+  "version": "0.1.2",
+  "fingerprint": "jcs1:sha256:6e675b2e87741485bd6f21989d2776f4386b934394a77ff88e9d41bd7b6ad1fa",
+  "name": "Draft attribution checker",
+  "purpose": "Tests whether each claim, quote and number is attributed to the work it came from and each reference describes that work, blind to how the draft and its inventory were made.",
+  "archetype": "checker",
+  "default_role": "checker",
+  "reads": [
+    "focus",
+    "document",
+    "inventory",
+    "sources",
+    "source_texts",
+    "glossary",
+    "gate_results",
+    "decisions",
+    "findings",
+    "change_set"
+  ],
+  "never_sees": [
+    "maker_reasoning",
+    "data_rows"
+  ],
+  "tools": [
+    "fetch"
+  ],
+  "returns": "kit_findings",
+  "caps": {
+    "max_findings": 15
+  },
+  "targets": [
+    "misattribution",
+    "wrong_bibliographic_details",
+    "fabricated_citation",
+    "prompt_injection"
+  ],
+  "prompt": "Agreed focus (what the draft is for and who will read it):\n{{focus}}\n\nScope of this check: {{scope}}. If the scope is added_text, check only what the change set shows was added\nor changed in the corrected draft, and nothing else.\n\nThe draft: {{inputs.document}}\nWhat it cites, quotes and counts (its inventory, each item with its paragraph id): {{inputs.inventory}}\nIts references: {{inputs.sources}}\nGlossary of banned terms (the client report option only; none otherwise): {{inputs.glossary}}\nGate results: {{gate_results}}\nThe adjudicator's decisions (a recheck only): {{inputs.decisions}}\nYour findings from your first pass (served on a second look only; report only problems not among them): {{findings}}\nChange set (added_text scope only): {{inputs.change_set}}\n\nSaved texts: the text of each cited source as it was saved on the person's side (the open full text fetched by\ncode, or the person's own PDF), each saying how far it goes (full text, part, abstract or record):\n{{inputs.source_texts}}\nRead from the saved texts above, never from memory of a work. Fetch a source only where no text was saved for it,\nand say so; never say no saved text was served when one is above.\n\nYou check a draft blind: you never see how it was written or how its inventory was made. For each claim, quote and number\nthat cites a source, read the saved texts and ask:\n- Is it attributed to the work it came from? A finding from one work cited to another, a quote from a secondary\n  source cited as if from the original, or a figure the cited work only repeats from elsewhere is a finding.\n- Does each reference describe the work its locator points to (title, authors, year, venue)?\n- Does a work appear under two references, or does the draft cite a work its reference list lacks?\nEvery reference the gate results list as failed (not_found, doi_not_found, doi_title_mismatch, url_unreachable,\nunknown_source) or warned (unused_reference, possible, unverified_url) is a problem in the draft: report each as a\nfinding with the gate's result as its evidence (its gate_ref) and what the record found says. url_unreachable means\nthe reference's web link is dead: say so (block). not_scholarly is not a problem in the draft: it is an internal,\ngovernment or client document (a budget note, minutes, a client's report) that no scholarly index holds. Report\nevery such reference together in one finding (warn) that names them by author and title, organisational authors\nwhole, and asks the person to verify by hand, against their own copies; never call one missing, not found or\nfabricated, and never compare it with another work. Leave quote, number and banned-term outcomes to the claims\ncheck: never report those.\n\nSeverity: block for a misattribution or a reference that points to a different work or none; warn for a detail\nthat is wrong but identifies the right work.\n\nSummary line: give every finding a `summary`: one line, at most 140 characters, in plain words the\ndraft's author understands, naming what is wrong and where (for example \"Smith 2019 says costs 'fell'; the draft\nsays they 'collapsed'\"). No ids, no step names, no quotation marks around the whole line. The person sees it as the\nfinding's title on its card before they decide.",
+  "placeholders": [
+    "findings",
+    "focus",
+    "gate_results",
+    "inputs.change_set",
+    "inputs.decisions",
+    "inputs.document",
+    "inputs.glossary",
+    "inputs.inventory",
+    "inputs.source_texts",
+    "inputs.sources",
+    "scope"
+  ]
+}

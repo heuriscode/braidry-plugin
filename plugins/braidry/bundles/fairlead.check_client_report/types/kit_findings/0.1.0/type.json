@@ -1,0 +1,17 @@
+{
+  "schema": "fairlead.type/0.1",
+  "type_id": "kit_findings",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:d81f01575a4348e569bb9da349185d3703c1b34cccbcb636cd60f6af7fed0091",
+  "title": "Findings",
+  "description": "Checker findings in kit braids: up to 15, most severe first, with how many more were found.",
+  "contract": "findings_v0_2",
+  "media_types": [
+    "application/json"
+  ],
+  "datafile_capable": false,
+  "required_gates": [],
+  "menu_formats": [
+    "json"
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "preambles": [
+    "common@0.1.0",
+    "checker@0.2.0"
+  ],
+  "default_model_class": "strong",
+  "thread_id": "cmd_claims_checker",
+  "version": "0.1.2",
+  "fingerprint": "jcs1:sha256:a99541a0c1686163d5e33e4f8de30e72822e8331d1e30d358230e3ccc622fb09",
+  "name": "Draft claims checker",
+  "purpose": "Tests the draft's claims, numbers and quotes against the saved texts of what they cite, for claims beyond the evidence, blind to how the draft and its inventory were made.",
+  "archetype": "checker",
+  "default_role": "checker",
+  "reads": [
+    "focus",
+    "document",
+    "inventory",
+    "sources",
+    "source_texts",
+    "glossary",
+    "gate_results",
+    "decisions",
+    "findings",
+    "change_set"
+  ],
+  "never_sees": [
+    "maker_reasoning",
+    "data_rows"
+  ],
+  "tools": [
+    "fetch"
+  ],
+  "returns": "kit_findings",
+  "caps": {
+    "max_findings": 15
+  },
+  "targets": [
+    "overstated_claim",
+    "misquote",
+    "number_misstated",
+    "unsourced_claim",
+    "banned_term",
+    "prompt_injection"
+  ],
+  "prompt": "Agreed focus (what the draft is for and who will read it):\n{{focus}}\n\nScope of this check: {{scope}}. If the scope is added_text, check only what the change set shows was added\nor changed in the corrected draft, and nothing else.\n\nThe draft: {{inputs.document}}\nWhat it cites, quotes and counts (its inventory, each item with its paragraph id): {{inputs.inventory}}\nIts references: {{inputs.sources}}\nGlossary of banned terms (the client report option only; none otherwise): {{inputs.glossary}}\nGate results: {{gate_results}}\nThe adjudicator's decisions (a recheck only): {{inputs.decisions}}\nYour findings from your first pass (served on a second look only; report only problems not among them): {{findings}}\nChange set (added_text scope only): {{inputs.change_set}}\n\nSaved texts: the text of each cited source as it was saved on the person's side (the open full text fetched by\ncode, or the person's own PDF), each saying how far it goes (full text, part, abstract or record):\n{{inputs.source_texts}}\nRead from the saved texts above, never from memory of a work. Fetch a source only where no text was saved for it,\nand say so; never say no saved text was served when one is above.\n\nYou check a draft blind: you never see how it was written or how its inventory was made. For each claim, number and quote\nthat cites a source, read the source's saved text and ask:\n- Does the draft claim more than the source shows: a finding stated more firmly or more widely (another\n  population, place or period), or as a cause where the source shows an association?\n- Is a number given as the source gives it, with its unit, base and period? A number rounded so far that it\n  changes the meaning is a finding.\n- Is a quote cut so that it says something the source does not?\n- Does a statement a reader would expect to be sourced cite nothing?\nCode has already checked whether each quote and number stands in the saved text; do not repeat that. Every item\nthe gate results list as failed or warned on a quote, a number or a banned term (quote_not_in_text,\nnumber_not_in_text, number_untraced, quote_unsourced, number_missed, quote_missed, banned_term and the like) is a\nproblem in the draft: report each as a finding with the gate's result as its evidence (its gate_ref), where in the\ndraft it stands, and what the saved text says instead where you can find it.\nAn item the gate results list as quote_unchecked or number_unchecked, or nothing_to_check, had no saved text to\ncheck against: never say it was checked or passed. Report those together in one finding (warn) saying how many\ncould not be checked and that the person should check them against their sources by hand. Leave reference\noutcomes (not_found, not_scholarly, url_unreachable and the like) to the attribution check: never report those.\n\nSeverity: block for a claim, number or quote its source contradicts or does not support; warn for one stated more\nstrongly than its source or missing a qualification the source gives.\n\nSummary line: give every finding a `summary`: one line, at most 140 characters, in plain words the\ndraft's author understands, naming what is wrong and where (for example \"Smith 2019 says costs 'fell'; the draft\nsays they 'collapsed'\"). No ids, no step names, no quotation marks around the whole line. The person sees it as the\nfinding's title on its card before they decide.",
+  "placeholders": [
+    "findings",
+    "focus",
+    "gate_results",
+    "inputs.change_set",
+    "inputs.decisions",
+    "inputs.document",
+    "inputs.glossary",
+    "inputs.inventory",
+    "inputs.source_texts",
+    "inputs.sources",
+    "scope"
+  ]
+}

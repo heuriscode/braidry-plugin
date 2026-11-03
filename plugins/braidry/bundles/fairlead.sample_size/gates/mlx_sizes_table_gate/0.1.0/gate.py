@@ -1,0 +1,759 @@
+# --- gatekit 0.4.0 (Python) --- embedded verbatim in every Python gate; tests/braids/test_gatekit.py checks it.
+# Gate I/O protocol gate_io/0.1 (BRAIDS_SPEC §3.8). Standard library only, so a gate is one self-contained file.
+import hashlib
+import json
+import os
+import re
+import sys
+import traceback
+import unicodedata
+import urllib.error
+import urllib.parse
+import urllib.request
+
+PROTOCOL = "gate_io/0.1"
+EXIT = {"pass": 0, "fail": 1, "warn": 2, "skipped": 3}
+
+
+class NetworkUnavailable(Exception):
+    """A network precondition is missing: the gate exits 3 (skipped) with the host in its evidence."""
+
+
+def canonical(value):
+    """Compact JSON with keys sorted by UTF-16 code units; integers, strings, booleans, null, lists and dicts only."""
+    if value is None:
+        return "null"
+    if value is True:
+        return "true"
+    if value is False:
+        return "false"
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, str):
+        return json.dumps(value, ensure_ascii=False)
+    if isinstance(value, list):
+        return "[" + ",".join(canonical(v) for v in value) + "]"
+    if isinstance(value, dict):
+        keys = sorted(value, key=lambda k: k.encode("utf-16-be"))
+        return "{" + ",".join(json.dumps(k, ensure_ascii=False) + ":" + canonical(value[k]) for k in keys) + "}"
+    raise TypeError("gatekit.canonical: unsupported type " + type(value).__name__)
+
+
+def fp_raw(data):
+    return "raw:sha256:" + hashlib.sha256(data).hexdigest()
+
+
+def fp_jcs(value):
+    return "jcs1:sha256:" + hashlib.sha256(canonical(value).encode("utf-8")).hexdigest()
+
+
+def pct(text, safe=""):
+    """Percent-encode UTF-8 bytes; only A-Z a-z 0-9 - . _ ~ and the characters in `safe` stay as they are."""
+    out = []
+    for byte in text.encode("utf-8"):
+        ch = chr(byte)
+        if ch.isascii() and (ch.isalnum() or ch in "-._~" or ch in safe):
+            out.append(ch)
+        else:
+            out.append("%%%02X" % byte)
+    return "".join(out)
+
+
+ENTITIES = {"amp": "&", "lt": "<", "gt": ">", "quot": '"', "apos": "'", "nbsp": " "}
+
+
+def decode_entities(text):
+    def one(m):
+        body = m.group(1)
+        if body.startswith("#x") or body.startswith("#X"):
+            return chr(int(body[2:], 16))
+        if body.startswith("#"):
+            return chr(int(body[1:]))
+        return ENTITIES.get(body, m.group(0))
+
+    return re.sub(r"&(#[0-9]{1,7}|#[xX][0-9a-fA-F]{1,6}|[a-z]{2,6});", one, text)
+
+
+def ascii_fold(text):
+    """NFKD, drop combining marks, lowercase A-Z only, everything outside a-z 0-9 becomes one space."""
+    text = "".join(c for c in unicodedata.normalize("NFKD", text) if not unicodedata.category(c).startswith("M"))
+    text = "".join(chr(ord(c) + 32) if "A" <= c <= "Z" else c for c in text)
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", text).split())
+
+
+def norm_text(text):
+    """Source text for quote matching: entities, tags and line-end hyphens removed, then folded."""
+    text = decode_entities(text)
+    text = re.sub(r"<[^>]*>", " ", text)
+    text = re.sub(r"-[ \t]*\r?\n[ \t]*", "", text)
+    return ascii_fold(text)
+
+
+def similarity(a, b):
+    """Integer percent similarity of two folded strings: floor(100 * (m - levenshtein) / m), m the longer length."""
+    a, b = ascii_fold(a), ascii_fold(b)
+    if not a and not b:
+        return 0
+    prev = list(range(len(b) + 1))
+    for i in range(1, len(a) + 1):
+        cur = [i] + [0] * len(b)
+        for j in range(1, len(b) + 1):
+            cost = 0 if a[i - 1] == b[j - 1] else 1
+            cur[j] = min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost)
+        prev = cur
+    m = max(len(a), len(b))
+    return (100 * (m - prev[len(b)])) // m
+
+
+
+_ASCII_WS = " \t\n\r\x0b\x0c"
+
+
+def id_str(value):
+    """An id as text, the same in both runtimes: None is "", booleans are true/false, integers in decimal."""
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    if isinstance(value, str):
+        return value
+    raise TypeError("gatekit.id_str: not an id: " + type(value).__name__)
+
+
+def strip_ascii(text):
+    """Strip ASCII whitespace only (str.strip and String.trim disagree on Unicode spaces)."""
+    return text.strip(_ASCII_WS)
+
+
+
+# Kit documents (gatekit 0.3.0): Fairlead-assigned ids and computed change sets (R1 D-1, D-2).
+_KIT_PREFIX = {"section": "sec", "paragraph": "par", "claim": "clm", "figure": "fig"}
+_KIT_ID_KEY = {"section": "section_id", "paragraph": "paragraph_id", "claim": "claim_id", "figure": "figure_id"}
+
+
+def _kit_items(doc):
+    """(kind, node, parent id, position path) for every id-bearing item, in document order."""
+    out = []
+    for si, sec in enumerate(doc.get("sections") or []):
+        out.append(("section", sec, None, "s" + str(si)))
+        for pi, par in enumerate(sec.get("paragraphs") or []):
+            ppath = "s" + str(si) + ".p" + str(pi)
+            out.append(("paragraph", par, sec.get("section_id"), ppath))
+            for ci, cl in enumerate(par.get("claims") or []):
+                out.append(("claim", cl, par.get("paragraph_id"), ppath + ".c" + str(ci)))
+            for fi, fg in enumerate(par.get("figures") or []):
+                out.append(("figure", fg, par.get("paragraph_id"), ppath + ".f" + str(fi)))
+    return out
+
+
+def assign_ids(prev, doc, salt):
+    """A copy of `doc` with an id on every new item, and the problems: minted_id (an id not in `prev`) and
+    duplicate_id. Ids are deterministic for a given salt and position."""
+    out = json.loads(json.dumps(doc))
+    known = set()
+    if prev is not None:
+        for kind, node, _parent, _path in _kit_items(prev):
+            known.add(node.get(_KIT_ID_KEY[kind]))
+    problems = []
+    seen = set()
+    items = _kit_items(out)
+    for kind, node, _parent, _path in items:
+        item_id = node.get(_KIT_ID_KEY[kind])
+        if item_id is None:
+            continue
+        if item_id in seen:
+            problems.append("duplicate_id:" + item_id)
+        elif item_id not in known:
+            problems.append("minted_id:" + item_id)
+        seen.add(item_id)
+    taken = known | seen
+    for kind, node, _parent, path in items:
+        key = _KIT_ID_KEY[kind]
+        if node.get(key) is not None:
+            continue
+        n = 0
+        while True:
+            digest = hashlib.sha256((salt + "|" + kind + "|" + path + "|" + str(n)).encode("utf-8")).hexdigest()
+            candidate = _KIT_PREFIX[kind] + "_" + digest[:8]
+            if candidate not in taken:
+                break
+            n += 1
+        node[key] = candidate
+        taken.add(candidate)
+    return out, problems
+
+
+def _kit_num(value):
+    """A number as JavaScript's String() writes it, so both runtimes show figures identically."""
+    if isinstance(value, int):
+        return str(value)
+    if value != value or value in (float("inf"), float("-inf")):
+        raise TypeError("gatekit: non-finite number")
+    if value == 0:
+        return "0"
+    sign = "-" if value < 0 else ""
+    mant, _sep, exp = repr(abs(value)).partition("e")
+    whole, _dot, frac = mant.partition(".")
+    raw = whole + frac
+    point = len(whole) + (int(exp) if exp else 0)
+    lead = len(raw) - len(raw.lstrip("0"))
+    digits = raw[lead:].rstrip("0")
+    n, k = point - lead, len(digits)
+    if k <= n <= 21:
+        text = digits + "0" * (n - k)
+    elif 0 < n <= 21:
+        text = digits[:n] + "." + digits[n:]
+    elif -6 < n <= 0:
+        text = "0." + "0" * (-n) + digits
+    else:
+        e = n - 1
+        text = (digits if k == 1 else digits[0] + "." + digits[1:]) + "e" + ("+" if e >= 0 else "-") + str(abs(e))
+    return sign + text
+
+
+def _kit_same(a, b):
+    """Structural equality on JSON values; numbers compare by value, booleans only with booleans."""
+    if isinstance(a, bool) or isinstance(b, bool):
+        return isinstance(a, bool) and isinstance(b, bool) and a == b
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        return a == b
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_kit_same(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return sorted(a) == sorted(b) and all(_kit_same(a[k], b[k]) for k in a)
+    return type(a) is type(b) and a == b
+
+
+def _kit_content(kind, node):
+    if kind == "section":
+        return {"heading": node.get("heading")}
+    if kind == "paragraph":
+        return {"text": node.get("text")}
+    if kind == "claim":
+        return {"text": node.get("text"), "kind": node.get("kind"), "support": node.get("support")}
+    keys = ("value", "unit", "source_id", "run_ref", "anchor")
+    return {k: node.get(k) for k in keys}
+
+
+def _kit_show(kind, node):
+    if kind == "section":
+        return node.get("heading")
+    if kind in ("paragraph", "claim"):
+        return node.get("text")
+    value = node.get("value")
+    shown = value if isinstance(value, str) else ("" if value is None else _kit_num(value))
+    return shown + (" " + node.get("unit") if node.get("unit") else "")
+
+
+def _kit_index(doc):
+    index = {}
+    order = []
+    for kind, node, parent, _path in _kit_items(doc):
+        item_id = node.get(_KIT_ID_KEY[kind])
+        if item_id is None:
+            raise ValueError("gatekit.change_set: unassigned id in a " + kind)
+        index[item_id] = (kind, node, parent)
+        order.append(item_id)
+    return index, order
+
+
+def change_set(before, after):
+    """{items, reordered}: every added, removed or changed item by id; reordering alone is only a flag."""
+    b_index, b_order = _kit_index(before)
+    a_index, a_order = _kit_index(after)
+    items = []
+    for item_id in a_order:
+        kind, node, parent = a_index[item_id]
+        if item_id not in b_index:
+            items.append({"id": item_id, "kind": kind, "change": "added", "fields": [], "before": None,
+                          "after": _kit_show(kind, node)})
+            continue
+        _kind, old, old_parent = b_index[item_id]
+        new_c, old_c = _kit_content(kind, node), _kit_content(kind, old)
+        fields = [k for k in new_c if not _kit_same(new_c[k], old_c[k])]
+        if parent != old_parent:
+            fields.append("parent")
+        fields.sort()
+        if fields:
+            items.append({"id": item_id, "kind": kind, "change": "changed", "fields": fields,
+                          "before": _kit_show(kind, old), "after": _kit_show(kind, node)})
+    for item_id in b_order:
+        if item_id not in a_index:
+            kind, old, _parent = b_index[item_id]
+            items.append({"id": item_id, "kind": kind, "change": "removed", "fields": [],
+                          "before": _kit_show(kind, old), "after": None})
+    common_b = [i for i in b_order if i in a_index]
+    common_a = [i for i in a_order if i in b_index]
+    return {"items": items, "reordered": common_b != common_a}
+
+
+
+# Citations (gatekit 0.4.0; R1 D-4): a bracket starting "[@" is parsed strictly; any other bracket is prose.
+_CITE_ID = r"[A-Za-z0-9_](?:[A-Za-z0-9_.:-]*[A-Za-z0-9_])?"
+_CITE_PART = re.compile("@(" + _CITE_ID + r")(?:, (?:p|pp|ch|sec|para)\. [^;\]]{1,40})?")
+_CITE_POSSIBLE = re.compile(r"(?:^|[ ;(])@[A-Za-z0-9_]")
+
+
+def parse_citations(text):
+    """{markers: [{text, ids}], malformed: [text], possible: [text]} in order of appearance."""
+    markers = []
+    malformed = []
+    possible = []
+    pos = 0
+    while True:
+        i = text.find("[", pos)
+        if i < 0:
+            break
+        j = text.find("]", i + 1)
+        if text.startswith("[@", i):
+            if j < 0:
+                malformed.append(text[i : i + 120])
+                break
+            ids = []
+            ok = True
+            for part in text[i + 1 : j].split(";"):
+                m = _CITE_PART.fullmatch(strip_ascii(part))
+                if not m:
+                    ok = False
+                    break
+                ids.append(m.group(1))
+            if ok:
+                markers.append({"text": text[i : j + 1], "ids": ids})
+            else:
+                malformed.append(text[i : j + 1])
+            pos = j + 1
+            continue
+        if j < 0:
+            break
+        inner = text.find("[", i + 1, j)
+        if inner >= 0:
+            pos = inner
+            continue
+        if _CITE_POSSIBLE.search(text[i + 1 : j]):
+            possible.append(text[i : j + 1])
+        pos = j + 1
+    return {"markers": markers, "malformed": malformed, "possible": possible}
+
+
+def fetch(gate_id, url):
+    """GET url. Returns (status, body). Replays from FAIRLEAD_CASSETTES/<gate_id>/<hex>.json when that is set;
+    a missing cassette is an error unless FAIRLEAD_CASSETTES_RECORD=1, which records it from the network."""
+    cassettes = os.environ.get("FAIRLEAD_CASSETTES")
+    path = None
+    if cassettes:
+        name = fp_jcs({"method": "GET", "url": url}).split(":")[-1] + ".json"
+        path = os.path.join(cassettes, gate_id, name)
+        if os.path.exists(path):
+            with open(path, encoding="utf-8") as fh:
+                c = json.load(fh)
+            return c["response"]["status"], c["response"]["body"]
+        if os.environ.get("FAIRLEAD_CASSETTES_RECORD") != "1":
+            raise RuntimeError("missing cassette for " + url)
+    req = urllib.request.Request(url, headers={"User-Agent": "fairlead-" + gate_id + "/0.1"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            status, ctype, body = resp.status, resp.headers.get("Content-Type", ""), resp.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as err:
+        status, ctype, body = err.code, err.headers.get("Content-Type", ""), err.read().decode("utf-8", "replace")
+    except (urllib.error.URLError, OSError):
+        raise NetworkUnavailable(urllib.parse.urlparse(url).hostname or url) from None
+    if path:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        cassette = {"gate_ref": gate_id, "request": {"method": "GET", "url": url},
+                    "response": {"status": status, "content_type": ctype, "body": body}}
+        with open(path, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(json.dumps(cassette, indent=1, ensure_ascii=False) + "\n")
+    return status, body
+
+
+def _run(gate_id, gate_ref, check):
+    args = sys.argv[1:]
+    if len(args) != 4 or args[0] != "--input" or args[2] != "--out":
+        sys.stderr.write("usage: gate --input <input.json> --out <result.json>\n")
+        return 4
+    with open(args[1], "rb") as fh:
+        gate_input = json.loads(fh.read().decode("utf-8"))
+    if gate_input.get("protocol") != PROTOCOL:
+        sys.stderr.write("unsupported protocol\n")
+        return 4
+    ports = ([gate_input["target"]] if gate_input.get("target") else []) + list(gate_input.get("extra_inputs") or [])
+    raw = {}
+    for port in ports:
+        with open(port["path"], "rb") as fh:
+            raw[port["path"]] = fh.read()
+
+    def load(port):
+        return json.loads(raw[port["path"]].decode("utf-8"))
+
+    try:
+        status, checked, failed, evidence = check(gate_input, load)
+    except NetworkUnavailable as exc:
+        status, checked, failed = "skipped", 0, 0
+        evidence = [{"ref": "network", "detail": "network unavailable: " + str(exc)}]
+    with open(os.path.abspath(__file__), "rb") as fh:
+        script_fp = fp_raw(fh.read())
+    result = {"gate_id": gate_id, "gate_ref": gate_ref, "status": status, "checked": checked, "failed": failed,
+              "script_fingerprint": script_fp,
+              "input_fingerprints": [fp_raw(raw[p["path"]]) for p in ports],
+              "evidence": evidence[:50]}
+    with open(args[3], "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(canonical(result))
+    return EXIT[status]
+
+
+def run(gate_id, gate_ref, check):
+    """gate_io/0.1 wrapper. check(gate_input, load) returns (status, checked, failed, evidence).
+    Exit 0 to 3 is the verdict; any other failure exits 4, which the runner counts as an error."""
+    try:
+        code = _run(gate_id, gate_ref, check)
+    except Exception:
+        traceback.print_exc()
+        code = 4
+    sys.exit(code)
+# --- end gatekit ---
+
+
+import math
+
+GATE_ID = "mlx_sizes_table_gate"
+GATE_REF = "mlx_sizes_table_gate@0.1.0"
+
+
+def show(value):
+    """A value as text, the same in both runtimes."""
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return str(value)
+
+
+# Wichura, M. J. (1988). Algorithm AS 241. Applied Statistics 37(3), 477-484.
+A = [2.5090809287301226727e+3, 3.3430575583588128105e+4, 6.7265770927008700853e+4, 4.5921953931549871457e+4, 1.3731693765509461125e+4, 1.9715909503065514427e+3, 1.3314166789178437745e+2, 3.3871328727963666080e+0]
+B = [5.2264952788528545610e+3, 2.8729085735721942674e+4, 3.9307895800092710610e+4, 2.1213794301586595867e+4, 5.3941960214247511077e+3, 6.8718700749205790830e+2, 4.2313330701600911252e+1, 1.0]
+C = [7.74545014278341407640e-4, 2.27238449892691845833e-2, 2.41780725177450611770e-1, 1.27045825245236838258e+0, 3.64784832476320460504e+0, 5.76949722146069140550e+0, 4.63033784615654529590e+0, 1.42343711074968357734e+0]
+D = [1.05075007164441684324e-9, 5.47593808499534494600e-4, 1.51986665636164571966e-2, 1.48103976427480074590e-1, 6.89767334985100004550e-1, 1.67638483018380384940e+0, 2.05319162663775882187e+0, 1.0]
+E = [2.01033439929228813265e-7, 2.71155556874348757815e-5, 1.24266094738807843860e-3, 2.65321895265761230930e-2, 2.96560571828504891230e-1, 1.78482653991729133580e+0, 5.46378491116411436990e+0, 6.65790464350110377720e+0]
+F = [2.04426310338993978564e-15, 1.42151175831644588870e-7, 1.84631831751005468180e-5, 7.86869131145613259100e-4, 1.48753612908506148525e-2, 1.36929880922735805310e-1, 5.99832206555887937690e-1, 1.0]
+
+
+def horner(cs, r):
+    acc = cs[0]
+    for c in cs[1:]:
+        acc = acc * r + c
+    return acc
+
+
+def z(p):
+    """The standard normal quantile at p (AS 241)."""
+    q = p - 0.5
+    if abs(q) <= 0.425:
+        r = 0.180625 - q * q
+        return horner(A, r) * q / horner(B, r)
+    r = p if q <= 0.0 else 1.0 - p
+    r = math.sqrt(-math.log(r))
+    if r <= 5.0:
+        r = r - 1.6
+        x = horner(C, r) / horner(D, r)
+    else:
+        r = r - 5.0
+        x = horner(E, r) / horner(F, r)
+    return -x if q < 0.0 else x
+
+
+def up(x):
+    return int(math.ceil(x - 1e-9))
+
+
+def sizes(s):
+    """(n1, n2, total) for a scenario, or (None, None, total) for a regression; None where it cannot be had."""
+    family = s.get("family")
+    za = z(1.0 - s["alpha"] / s["sides"])
+    zb = z(s["power"])
+    zz = (za + zb) * (za + zb)
+    if family == "two_means":
+        d, r = s["d"], s["allocation_ratio"]
+        if d == 0:
+            return None
+        n1 = (1.0 + 1.0 / r) * zz / (d * d)
+        a, b = up(n1), up(r * n1)
+        return a, b, a + b
+    if family == "two_proportions":
+        p1, p2, r = s["p1"], s["p2"], s["allocation_ratio"]
+        if p1 == p2:
+            return None
+        pbar = (p1 + r * p2) / (1.0 + r)
+        x = za * math.sqrt(pbar * (1.0 - pbar) * (1.0 + 1.0 / r))
+        y = zb * math.sqrt(p1 * (1.0 - p1) + p2 * (1.0 - p2) / r)
+        n1 = (x + y) * (x + y) / ((p1 - p2) * (p1 - p2))
+        a, b = up(n1), up(r * n1)
+        return a, b, a + b
+    if family == "logistic_continuous":
+        if s["odds_ratio"] == 1:
+            return None
+        beta = math.log(s["odds_ratio"])
+        rate = s["event_rate"]
+        n = zz / (rate * (1.0 - rate) * beta * beta) / (1.0 - s["r2_other"])
+        return None, None, up(n)
+    return None
+
+
+def computed(scenarios):
+    """[(scenario, sizes or None)], and the summary text of every computed size."""
+    out, parts = [], []
+    for s in scenarios:
+        n = sizes(s)
+        out.append((s, n))
+        if n is None:
+            continue
+        if n[0] is None:
+            parts.append("%s: total=%d" % (s.get("scenario_id"), n[2]))
+        else:
+            parts.append("%s: n1=%d n2=%d total=%d" % (s.get("scenario_id"), n[0], n[1], n[2]))
+    return out, "; ".join(parts)
+
+
+LANCZOS = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313,
+           -176.61503916999185, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6,
+           1.5056327351493116e-7]
+
+
+def log_gamma(a):
+    """ln Gamma(a) for a > 0.5 (Lanczos, g = 7)."""
+    a -= 1.0
+    x = LANCZOS[0]
+    for i in range(1, 9):
+        x += LANCZOS[i] / (a + i)
+    t = a + 7.5
+    return 0.9189385332046727 + (a + 0.5) * math.log(t) - t + math.log(x)
+
+
+def lower_gamma(a, x):
+    """The regularised lower incomplete gamma P(a, x): a series below a + 1, else a continued fraction."""
+    if x <= 0.0:
+        return 0.0
+    front = math.exp(-x + a * math.log(x) - log_gamma(a))
+    if x < a + 1.0:
+        term = 1.0 / a
+        total = term
+        for n in range(1, 1000):
+            term = term * x / (a + n)
+            total += term
+            if term < total * 1e-16:
+                break
+        return total * front
+    b = x + 1.0 - a
+    c = 1e300
+    d = 1.0 / b
+    h = d
+    for i in range(1, 1000):
+        an = -i * (i - a)
+        b += 2.0
+        d = an * d + b
+        d = 1e-300 if abs(d) < 1e-300 else d
+        c = b + an / c
+        c = 1e-300 if abs(c) < 1e-300 else c
+        d = 1.0 / d
+        step = d * c
+        h *= step
+        if abs(step - 1.0) < 1e-16:
+            break
+    return 1.0 - front * h
+
+
+def chi2_lower(p, k):
+    """The chi-square quantile at lower-tail p with k degrees of freedom, by bisection on P(k/2, x/2)."""
+    lo, hi = 0.0, k + 100.0 * math.sqrt(2.0 * k) + 100.0
+    for _ in range(200):
+        mid = (lo + hi) / 2.0
+        if lower_gamma(k / 2.0, mid / 2.0) < p:
+            lo = mid
+        else:
+            hi = mid
+    return (lo + hi) / 2.0
+
+
+def sd_used(basis):
+    """The SD a d is computed from: as given, or its one-sided upper confidence limit from the pilot."""
+    if basis.get("upper_limit") is None:
+        return basis["sd"]
+    n = basis.get("pilot_n")
+    return basis["sd"] * math.sqrt((n - 1) / chi2_lower(1.0 - basis["upper_limit"], n - 1))
+
+
+def effective(s):
+    """The scenario with d computed in code from its sd_basis, where it has one."""
+    basis = s.get("sd_basis")
+    if s.get("family") != "two_means" or not isinstance(basis, dict):
+        return s
+    if basis.get("upper_limit") is not None and basis.get("pilot_n") is None:
+        return s
+    out = dict(s)
+    out["d"] = basis["difference"] / sd_used(basis)
+    return out
+
+
+def recruit(s, n):
+    """Recruitment after dropout, per arm and in total: each arm's n / (1 - dropout), rounded up."""
+    keep = 1.0 - (s.get("dropout") or 0)
+    if n[0] is None:
+        return None, None, up(n[2] / keep)
+    a, b = up(n[0] / keep), up(n[1] / keep)
+    return a, b, a + b
+
+
+def computed2(scenarios):
+    """[(scenario, sizes, recruitment, sd used or None)], and the summary text of every computed figure."""
+    out, parts = [], []
+    for s in scenarios:
+        e = effective(s)
+        basis = s.get("sd_basis") if e is not s else None
+        used = sd_used(basis) if basis is not None else None
+        n = sizes(e)
+        r = recruit(s, n) if n is not None else None
+        out.append((s, n, r, used))
+        if n is None:
+            continue
+        tail = (" sd_used=%.2f d=%.3f" % (used, e["d"])) if used is not None else ""
+        drop = show(s.get("dropout") or 0)
+        if n[0] is None:
+            parts.append("%s: total=%d recruit_total=%d dropout=%s%s" % (s.get("scenario_id"), n[2], r[2], drop, tail))
+        else:
+            parts.append("%s: n1=%d n2=%d total=%d recruit1=%d recruit2=%d recruit_total=%d dropout=%s%s" % (
+                s.get("scenario_id"), n[0], n[1], n[2], r[0], r[1], r[2], drop, tail))
+    return out, "; ".join(parts)
+
+
+
+def clip(text, n):
+    """At most n characters, the last an ellipsis where it was cut."""
+    return text if len(text) <= n else text[: n - 1] + "…"
+
+
+def size_items(out):
+    """One evidence item per scenario code could size: completers, recruitment after dropout, any SD limit."""
+    items = []
+    for s, n, r, used in out:
+        if n is None:
+            continue
+        tail = (" sd_used=%.2f d=%.3f" % (used, effective(s)["d"])) if used is not None else ""
+        drop = show(s.get("dropout") or 0)
+        if n[0] is None:
+            detail = "total=%d recruit_total=%d dropout=%s%s" % (n[2], r[2], drop, tail)
+        else:
+            detail = "n1=%d n2=%d total=%d recruit1=%d recruit2=%d recruit_total=%d dropout=%s%s" % (
+                n[0], n[1], n[2], r[0], r[1], r[2], drop, tail)
+        items.append({"ref": clip("sizes#" + show(s.get("scenario_id")), 200), "detail": clip(detail, 400)})
+    return items
+
+
+def clipped(problems):
+    return [{"ref": clip(p["ref"], 200), "detail": clip(p["detail"], 400)} for p in problems]
+
+
+# The table's columns: each key's cell, in the words code writes it. Size cells are code's figures; an unsized
+# scenario's are NOT_SIZED. Any other column is refused, so the table carries no figure code has not checked.
+REQUIRED = ["scenario", "completers_per_arm", "completers_total", "recruit_per_arm", "recruit_total"]
+OPTIONAL = ["power", "alpha", "dropout", "sd_used"]
+NOT_SIZED = "not computed in this run"
+
+
+def by_port(gate_input, load, name):
+    for p in gate_input.get("extra_inputs") or []:
+        if p.get("port") == name:
+            return load(p)
+    return None
+
+
+def pct(x):
+    """A share as a percentage, to one decimal place where it has one: 0.8 is 80%, 0.125 is 12.5%."""
+    t = int(math.floor(x * 1000 + 0.5))
+    return str(t // 10) + ("" if t % 10 == 0 else "." + str(t % 10)) + "%"
+
+
+def cell_norm(text):
+    """A cell as compared: thousands commas dropped, spaces collapsed, lower case."""
+    text = re.sub(r"(?<=[0-9]),(?=[0-9]{3})", "", str(text))
+    return " ".join(text.split()).lower()
+
+
+def expected(s, n, r, used):
+    out = {"scenario": s.get("label") or "", "power": pct(s.get("power") or 0), "alpha": show(s.get("alpha")),
+           "dropout": pct(s.get("dropout") or 0), "sd_used": ("%.2f" % used) if used is not None else "not used"}
+    if n is None:
+        for k in ("completers_per_arm", "completers_total", "recruit_per_arm", "recruit_total"):
+            out[k] = NOT_SIZED
+    elif n[0] is None:
+        out.update(completers_per_arm="one group", completers_total=str(n[2]), recruit_per_arm="one group",
+                   recruit_total=str(r[2]))
+    else:
+        out.update(completers_per_arm="%d and %d" % (n[0], n[1]), completers_total=str(n[2]),
+                   recruit_per_arm="%d and %d" % (r[0], r[1]), recruit_total=str(r[2]))
+    return out
+
+
+def check(gate_input, load):
+    table = load(gate_input["target"])
+    plan = by_port(gate_input, load, "mlx_power_plan")
+    if plan is None:
+        return "fail", 0, 1, [{"ref": "summary", "detail": "missing_input"},
+                              {"ref": "mlx_power_plan", "detail": "missing_input"}]
+    scenarios = plan.get("scenarios") or []
+    out, _text = computed2(scenarios)
+    problems, warnings = [], []
+    cols = [str(c.get("key")) for c in table.get("columns") or []]
+    for k in REQUIRED:
+        if k not in cols:
+            problems.append({"ref": "column#" + k, "detail": "column_missing"})
+    if any(used is not None for _s, _n, _r, used in out) and "sd_used" not in cols:
+        problems.append({"ref": "column#sd_used", "detail": "column_missing"})
+    seen = []
+    for k in cols:
+        if k not in REQUIRED + OPTIONAL:
+            problems.append({"ref": "column#" + k, "detail": "column_unknown"})
+        elif k in seen:
+            problems.append({"ref": "column#" + k, "detail": "column_twice"})
+        seen.append(k)
+    if re.search("[0-9]", table.get("title") or ""):
+        problems.append({"ref": "title", "detail": "number_in_title"})
+    for c in table.get("columns") or []:
+        if re.search("[0-9]", c.get("label") or ""):
+            problems.append({"ref": "column#" + str(c.get("key")), "detail": "number_in_label"})
+    rows = {}
+    for row in table.get("rows") or []:
+        ref = str(row.get("ref"))
+        if ref in rows:
+            problems.append({"ref": "row#" + ref, "detail": "row_twice"})
+        else:
+            rows[ref] = row
+    ids = [str(s.get("scenario_id")) for s in scenarios]
+    for ref in rows:
+        if ref not in ids:
+            problems.append({"ref": "row#" + ref, "detail": "row_unknown"})
+    for s, n, r, used in out:
+        sid = str(s.get("scenario_id"))
+        if n is None:
+            warnings.append({"ref": "row#" + sid, "detail": "scenario_not_sized"})
+        row = rows.get(sid)
+        if row is None:
+            problems.append({"ref": "row#" + sid, "detail": "row_missing"})
+            continue
+        cells = row.get("cells") or []
+        if len(cells) != len(cols):
+            problems.append({"ref": "row#" + sid, "detail": "cells_not_columns"})
+            continue
+        want = expected(s, n, r, used)
+        for k, cell in zip(cols, cells):
+            if k in want and cell_norm(cell) != cell_norm(want[k]):
+                problems.append({"ref": "sizes#" + sid + "#" + k, "detail": "cell_mismatch; expected=" + want[k]})
+    summary = {"ref": "summary", "detail": "scenarios=%d rows=%d problems=%d warnings=%d" % (
+        len(scenarios), len(rows), len(problems), len(warnings))}
+    status = "fail" if problems else ("warn" if warnings else "pass")
+    return status, len(scenarios), len(problems), [summary] + clipped(problems) + clipped(warnings)
+
+
+run(GATE_ID, GATE_REF, check)

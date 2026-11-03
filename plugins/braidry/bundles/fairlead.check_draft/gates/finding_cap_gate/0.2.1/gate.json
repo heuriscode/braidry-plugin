@@ -1,0 +1,27 @@
+{
+  "schema": "fairlead.gate/0.1",
+  "gate_id": "finding_cap_gate",
+  "version": "0.2.1",
+  "fingerprint": "jcs1:sha256:03845b63f9e1f25431498c1392d85183eb7f57d8e54a2848a74b737ea6330a4f",
+  "protocol": "gate_io/0.1",
+  "scripts": [
+    {
+      "runtime": "python",
+      "entry": "gate.py",
+      "script_fingerprint": "raw:sha256:eaa08d26b1d18e64eefc62f346cd7d0679ae4bc1e96d516be43e254d57819075"
+    },
+    {
+      "runtime": "js",
+      "entry": "gate.js",
+      "script_fingerprint": "raw:sha256:7cfc31070b62acfac3f8d3a0963d3024900f2cd4afacf189cb175cae04891027"
+    }
+  ],
+  "applies_to": [
+    "kit_findings@0.1.0"
+  ],
+  "config": null,
+  "network": "none",
+  "reads_rows": false,
+  "timeout_s": 60,
+  "vectors": "vectors/"
+}

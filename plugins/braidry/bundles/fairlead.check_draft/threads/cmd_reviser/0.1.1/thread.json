@@ -1,0 +1,56 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "preambles": [
+    "common@0.1.0",
+    "reviser@0.2.0"
+  ],
+  "default_model_class": "strong",
+  "thread_id": "cmd_reviser",
+  "version": "0.1.1",
+  "fingerprint": "jcs1:sha256:243e795f40f6231cebed09a057e2215d4297a29f2f0e43e485dcb51afcbab9d8",
+  "name": "Draft reviser",
+  "purpose": "Writes a corrected copy of the person's draft applying only the findings they accepted, from the saved texts: a failed quote corrected to the source's words or removed, never paraphrased; an untraced figure corrected to the source's or removed; each change logged by paragraph id.",
+  "archetype": "reviser",
+  "default_role": "reviser",
+  "reads": [
+    "focus",
+    "document",
+    "inventory",
+    "sources",
+    "source_texts",
+    "glossary",
+    "decisions",
+    "findings",
+    "finding_choices",
+    "person_direction",
+    "gate_results"
+  ],
+  "never_sees": [
+    "data_rows"
+  ],
+  "tools": [
+    "write_output"
+  ],
+  "returns": "cmd_draft",
+  "caps": {
+    "max_items": 40
+  },
+  "targets": [
+    "misquote",
+    "adjudicator_introduced_error"
+  ],
+  "prompt": "Agreed focus (what the draft is for and who will read it):\n{{focus}}\n\nThe draft (each section and paragraph with its id): {{inputs.document}}\nIts inventory: {{inputs.inventory}}\nIts references: {{inputs.sources}}\nGlossary of banned terms (the client report option only; none otherwise): {{inputs.glossary}}\nAdjudicated decisions: {{inputs.decisions}}\nThe findings they decide: {{findings}}\nThe person's accept or reject on each adopted finding: {{inputs.finding_choices}}\nThe person's direction (empty unless they gave one): {{inputs.person_direction}}\nThe checks that failed, when your correction was sent back to be fixed: {{gate_results}}\n\nSaved texts: the text of each cited source as it was saved on the person's side (the open full text fetched by\ncode, or the person's own PDF), each saying how far it goes (full text, part, abstract or record):\n{{inputs.source_texts}}\nRead from the saved texts above, never from memory of a work. Fetch a source only where no text was saved for it,\nand say so; never say no saved text was served when one is above.\n\nYou write a corrected copy of the person's draft. Apply each adopted or partly adopted decision the person\naccepted, and only those; leave every finding the person rejected, and everything else, exactly as it is.\n1. Fix what the decision names and nothing more: a quote to the source's exact words from the saved text, a number\n   to what the source gives, a claim to the strength its source supports, an attribution to the right work, a\n   reference's details to the work's record, a banned term to the glossary's term to use instead. Keep the\n   person's voice, structure and wording everywhere else.\n2. Never add a claim, a number or a source the draft did not have. A number you write is one the saved text gives,\n   written as it gives it; a quote is words the saved text holds.\n3. Keep every section and paragraph id as served. A paragraph you add has a null id; never invent an id.\n4. Bring the inventory into line: each item you changed gets its new words and value, and an item you removed goes.\n   Change the register only where a decision corrected a reference.\n5. Write the revision log: one entry per decision you applied, with the ids of the paragraphs and sections it\n   changed, and in its summary what you did: corrected from the source (with the source's words or figure), or\n   removed and why.\n6. A quote that does not match its source: correct it to the source's exact words from the saved text and keep it\n   a quote, in quotation marks, credited as before; where the saved text holds no words that say it, remove the\n   claim. Never turn a failed quote into a paraphrase: never drop its quotation marks and keep its words.\n7. A figure that does not trace: correct it to the figure the saved text gives for the same thing (for example\n   $41,200 to $38,400 where the source gives $38,400); where the source gives none, remove the figure and any claim\n   resting on it, and say in the revision log that it was removed and why.\n8. Never relabel a claim to get past a finding (for example recasting it as \"the department's view\" or \"it is\n   understood that\") when its source does not support it: correct it to what the source supports, or remove it.\n\nOn a repair pass (failed checks above), fix only what failed, following the person's direction, and change nothing\nelse.\nNever cite a check's item names or evidence refs in your text (such as sizes#d30_p80, [sizes_d30_p80] or a finding's id): give the figures and facts plainly, in words a reader understands.",
+  "placeholders": [
+    "findings",
+    "focus",
+    "gate_results",
+    "inputs.decisions",
+    "inputs.document",
+    "inputs.finding_choices",
+    "inputs.glossary",
+    "inputs.inventory",
+    "inputs.person_direction",
+    "inputs.source_texts",
+    "inputs.sources"
+  ]
+}

@@ -1,9 +1,9 @@
 ---
 name: review
-description: Run Braidry's Literature scoping review braid - A scoping review you can defend: every reference checked, every claim tested by a blind checker. Use when the person asks for this, or types /braidry:review.
+description: Run Braidry's Literature review braid - A full review written from the full texts, every quote and claim checked. Time not yet measured: our estimate is 45 to 90 minutes (rapid: 20 to 40). Use when the person asks for this, or types /braidry:review.
 ---
 
-# Braidry: Literature scoping review
+# Braidry: Literature review
 
 You are running a Braidry **braid**: a fixed, checked process. The Braidry plugin's local server holds the plan and the run record; you drive it with the `braidry_*` tools, and the person makes every judgement call. Everything stays on this computer.
 

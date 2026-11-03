@@ -1,0 +1,19 @@
+{
+  "schema": "fairlead.type/0.1",
+  "type_id": "cmd_draft",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:e19cb100005cf2da8017efafeb6121fc94fff607e9d43a77d07a95abc7da6247",
+  "title": "The person's draft",
+  "description": "The person's own draft as Braidry reads it from Word, with Braidry's paragraph ids, or the corrected copy of it the reviser writes.",
+  "contract": "document_v0_1",
+  "media_types": [
+    "application/json"
+  ],
+  "datafile_capable": false,
+  "required_gates": [],
+  "menu_formats": [
+    "docx",
+    "md",
+    "json"
+  ]
+}

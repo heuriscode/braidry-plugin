@@ -1,18 +1,17 @@
 {
   "schema": "fairlead.braid_template/0.1",
   "template_id": "fairlead.lit_scoping_review",
-  "version": "0.4.9",
-  "fingerprint": "jcs1:sha256:b235a2817fa43f4907813b69cdfcf950cad356eaec0bb82e9a30ff5d4250b67a",
+  "version": "0.6.2",
+  "fingerprint": "jcs1:sha256:0993c6016dde876170cdd541eb4b1553e7e47f0bc123c602c261db87ae7746d3",
   "catalogue": {
     "command": "/fairlead:review",
-    "title": "Literature scoping review",
-    "for_when": "A scoping review you can defend: every reference checked, every claim tested by a blind checker.",
+    "title": "Literature review",
+    "for_when": "A full review written from the full texts, every quote and claim checked. Time not yet measured: our estimate is 45 to 90 minutes (rapid: 20 to 40).",
     "group": "understand",
-    "status": "testing",
-    "free": true,
+    "status": "in_design",
+    "free": false,
     "hosts": {
-      "claude_code": "testing",
-      "claude_web_plugin": "in_design"
+      "claude_code": "in_design"
     }
   },
   "parent": null,
@@ -24,8 +23,8 @@
   "inputs": [],
   "threads": [
     {
-      "thread_ref": "searcher@0.2.2",
-      "thread_fingerprint": "jcs1:sha256:b69ed1fae61cb399bcc2cb0ea0a6d7b29aa600d5ef511396ab027b001f36c430",
+      "thread_ref": "deep_searcher@0.1.1",
+      "thread_fingerprint": "jcs1:sha256:36851692a25fda377a1da8696284e560ca5303fd4386540cf2020ff51a8cfc2d",
       "role": "finder",
       "tools": [
         "scholarly_search",
@@ -34,39 +33,85 @@
         "write_output"
       ],
       "reads": [
-        "focus"
+        "focus",
+        "sources",
+        "search_record",
+        "gate_results",
+        "person_direction"
       ],
       "returns": "source_register",
       "caps": {
-        "max_items": 60
+        "max_items": 150
       }
     },
     {
-      "thread_ref": "extractor@0.1.3",
-      "thread_fingerprint": "jcs1:sha256:fce1594e0397af74f6725c54c0c00b564c0cf8384de6968617e8b99f0d455cba",
+      "thread_ref": "writer@0.1.2",
+      "thread_fingerprint": "jcs1:sha256:f30114d69b0c0a8a32db70fd655622ea7b0a34cd46ed2bc0f179c4b070a232dd",
       "role": "maker",
       "tools": [
-        "fetch",
         "write_output"
       ],
       "reads": [
         "focus",
         "sources",
         "search_record",
-        "draft",
         "evidence",
+        "source_texts",
+        "draft",
         "gate_results",
         "person_direction"
       ],
       "returns": "draft",
       "caps": {
-        "max_words": 3000,
-        "max_rows": 60
+        "max_words": 20000,
+        "max_rows": 150
       }
     },
     {
-      "thread_ref": "claims_checker@0.2.2",
-      "thread_fingerprint": "jcs1:sha256:fdda1a1d5f63069ed45637137a0c789b379dae7d7b3239c2b00870aeca4426ae",
+      "thread_ref": "deep_reviser@0.1.2",
+      "thread_fingerprint": "jcs1:sha256:ed6c08315290d0fdf1b54a08c4229ebd82a137bd10484616256d5b2c5a82b0c4",
+      "role": "reviser",
+      "tools": [
+        "fetch",
+        "write_output"
+      ],
+      "reads": [
+        "focus",
+        "draft",
+        "evidence",
+        "sources",
+        "search_record",
+        "decisions",
+        "findings",
+        "gate_results",
+        "person_direction",
+        "source_texts"
+      ],
+      "returns": "draft",
+      "caps": {
+        "max_words": 20000
+      }
+    },
+    {
+      "thread_ref": "reader@0.1.1",
+      "thread_fingerprint": "jcs1:sha256:3fc36e04306b50da7d50569e3f42fc080f1060cdd7dd89e4d5cf6777d7ea695f",
+      "role": "maker",
+      "tools": [
+        "write_output"
+      ],
+      "reads": [
+        "focus",
+        "sources",
+        "source_texts"
+      ],
+      "returns": "evidence",
+      "caps": {
+        "max_rows": 150
+      }
+    },
+    {
+      "thread_ref": "text_claims_checker@0.1.1",
+      "thread_fingerprint": "jcs1:sha256:4a1747f8cf766c6a34f457e0191012f3e26b8aeb55ce56481a1e2a92e3b182cc",
       "role": "checker",
       "tools": [
         "fetch"
@@ -78,7 +123,8 @@
         "sources",
         "search_record",
         "gate_results",
-        "diff"
+        "diff",
+        "source_texts"
       ],
       "returns": "findings",
       "caps": {
@@ -86,8 +132,8 @@
       }
     },
     {
-      "thread_ref": "coverage_checker@0.2.2",
-      "thread_fingerprint": "jcs1:sha256:3e73249e831610e94c20049f1d639660d3054b7439ea6f4464db9b4fb7e76be3",
+      "thread_ref": "text_coverage_checker@0.1.1",
+      "thread_fingerprint": "jcs1:sha256:d166f8d1867e99c060eeda37b232a6311c0dcedc6b6d7099c6186a2b11b1b910",
       "role": "checker",
       "tools": [
         "search",
@@ -99,7 +145,8 @@
         "evidence",
         "sources",
         "search_record",
-        "gate_results"
+        "gate_results",
+        "source_texts"
       ],
       "returns": "findings",
       "caps": {
@@ -127,30 +174,6 @@
       "caps": {
         "max_items": 40
       }
-    },
-    {
-      "thread_ref": "reviser@0.4.4",
-      "thread_fingerprint": "jcs1:sha256:7de34c6e8c88c07104e20f3a857e68abe69325ff4024931003395acecb9b66d5",
-      "role": "reviser",
-      "tools": [
-        "fetch",
-        "write_output"
-      ],
-      "reads": [
-        "focus",
-        "draft",
-        "evidence",
-        "sources",
-        "search_record",
-        "decisions",
-        "findings",
-        "gate_results",
-        "person_direction"
-      ],
-      "returns": "draft",
-      "caps": {
-        "max_words": 3000
-      }
     }
   ],
   "steps": [
@@ -176,35 +199,21 @@
     {
       "step_id": "s2",
       "kind": "make",
-      "thread_ref": "searcher@0.2.2",
+      "thread_ref": "deep_searcher@0.1.1",
       "needs": [
         "s1"
       ],
       "reads": [
-        "focus"
+        "focus",
+        "sources",
+        "search_record",
+        "gate_results",
+        "person_direction"
       ],
       "produces": [
         "search_record",
         "sources"
       ],
-      "typical_minutes": {
-        "low": 1,
-        "high": 4,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M63HJDQVKT67GEP83G8MT9YC"
-        ]
-      },
       "early_look": {
         "port": "sources",
         "list": "items",
@@ -218,43 +227,177 @@
       }
     },
     {
-      "step_id": "s3",
-      "kind": "make",
-      "thread_ref": "extractor@0.1.3",
+      "step_id": "s2g",
+      "kind": "gate",
+      "gate_ref": "cite_gate@0.6.0",
       "needs": [
         "s2"
       ],
       "reads": [
-        "focus",
-        "sources",
-        "search_record",
-        "draft",
-        "evidence",
-        "gate_results",
-        "person_direction"
-      ],
-      "produces": [
-        "evidence",
-        "draft",
         "sources"
       ],
-      "typical_minutes": {
-        "low": 1,
-        "high": 3,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M63HJDQVKT67GEP83G8MT9YC"
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s2e"
+      }
+    },
+    {
+      "step_id": "s2r",
+      "kind": "gate",
+      "gate_ref": "lit_record_gate@0.1.0",
+      "needs": [
+        "s2"
+      ],
+      "reads": [
+        "search_record",
+        "sources"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s2e"
+      }
+    },
+    {
+      "step_id": "s2e",
+      "kind": "decide",
+      "needs": [
+        "s2g",
+        "s2r"
+      ],
+      "reads": [
+        "gate_results"
+      ],
+      "options": [
+        {
+          "option_id": "remove",
+          "label": "Remove this source from the review",
+          "route": {
+            "action": "loop",
+            "to": "s2"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          },
+          "direction": "Remove this source from the included sources.",
+          "for_outcomes": [
+            "not_found",
+            "doi_not_found",
+            "doi_title_mismatch"
+          ]
+        },
+        {
+          "option_id": "correct",
+          "label": "Correct the reference to the record the check found",
+          "route": {
+            "action": "loop",
+            "to": "s2"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          },
+          "direction": "If the record the check found is the work you found, correct the reference to it; if it is a different work, remove this source.",
+          "for_outcomes": [
+            "doi_title_mismatch"
+          ]
+        },
+        {
+          "option_id": "verified",
+          "label": "It is right: I have checked this reference myself",
+          "route": {
+            "action": "continue"
+          },
+          "verifies": true,
+          "for_outcomes": [
+            "not_found",
+            "doi_not_found",
+            "doi_title_mismatch"
+          ]
+        },
+        {
+          "option_id": "fix",
+          "label": "Send these back to fix",
+          "route": {
+            "action": "loop",
+            "to": "s2"
+          },
+          "budget": {
+            "kind": "repair",
+            "max": 2
+          }
+        },
+        {
+          "option_id": "carry_on",
+          "label": "Carry on: the texts are fetched for the others, and the later checks look again",
+          "route": {
+            "action": "continue"
+          }
+        },
+        {
+          "option_id": "stop",
+          "label": "Stop the run",
+          "route": {
+            "action": "stop"
+          }
+        }
+      ],
+      "skip_when": {
+        "unless_failed": [
+          "s2g",
+          "s2r"
         ]
+      },
+      "produces": [
+        "person_direction"
+      ],
+      "case": [
+        "gate_results"
+      ],
+      "other": {
+        "as_option": "fix"
+      }
+    },
+    {
+      "step_id": "s2f",
+      "kind": "fetch",
+      "builtin": "full_texts",
+      "needs": [
+        "s2g",
+        "s2r",
+        "s2e"
+      ],
+      "reads": [
+        "sources",
+        "pdf_folder"
+      ],
+      "produces": [
+        "source_texts"
+      ]
+    },
+    {
+      "step_id": "s3",
+      "kind": "make",
+      "thread_ref": "reader@0.1.1",
+      "needs": [
+        "s2f"
+      ],
+      "reads": [
+        "focus",
+        "sources",
+        "source_texts"
+      ],
+      "produces": [
+        "evidence"
+      ],
+      "batch": {
+        "of": 4,
+        "port": "sources",
+        "list": "items"
       },
       "early_look": {
         "port": "evidence",
@@ -269,11 +412,34 @@
       }
     },
     {
+      "step_id": "s3w",
+      "kind": "make",
+      "thread_ref": "writer@0.1.2",
+      "needs": [
+        "s3"
+      ],
+      "reads": [
+        "focus",
+        "sources",
+        "search_record",
+        "evidence",
+        "source_texts",
+        "draft",
+        "gate_results",
+        "person_direction"
+      ],
+      "produces": [
+        "draft",
+        "evidence",
+        "sources"
+      ]
+    },
+    {
       "step_id": "s4",
       "kind": "gate",
       "gate_ref": "cite_gate@0.5.0",
       "needs": [
-        "s3"
+        "s3w"
       ],
       "reads": [
         "draft",
@@ -289,13 +455,14 @@
     {
       "step_id": "s4b",
       "kind": "gate",
-      "gate_ref": "quote_gate@0.2.0",
+      "gate_ref": "quote_gate@0.3.0",
       "needs": [
-        "s3"
+        "s3w"
       ],
       "reads": [
         "evidence",
-        "sources"
+        "sources",
+        "source_texts"
       ],
       "produces": [
         "gate_results"
@@ -307,13 +474,14 @@
     {
       "step_id": "s4c",
       "kind": "gate",
-      "gate_ref": "quote_gate@0.2.0",
+      "gate_ref": "quote_gate@0.3.0",
       "needs": [
-        "s3"
+        "s3w"
       ],
       "reads": [
         "draft",
-        "sources"
+        "sources",
+        "source_texts"
       ],
       "produces": [
         "gate_results"
@@ -327,10 +495,29 @@
       "kind": "gate",
       "gate_ref": "claim_rules_gate@0.3.0",
       "needs": [
-        "s3"
+        "s3w"
       ],
       "reads": [
         "draft",
+        "sources"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s4e"
+      }
+    },
+    {
+      "step_id": "s4r",
+      "kind": "gate",
+      "gate_ref": "lit_record_gate@0.1.0",
+      "needs": [
+        "s3w"
+      ],
+      "reads": [
+        "draft",
+        "search_record",
         "sources"
       ],
       "produces": [
@@ -347,7 +534,8 @@
         "s4",
         "s4b",
         "s4c",
-        "s4d"
+        "s4d",
+        "s4r"
       ],
       "reads": [
         "gate_results"
@@ -358,7 +546,7 @@
           "label": "Remove this source and the claims that rest only on it",
           "route": {
             "action": "loop",
-            "to": "s3"
+            "to": "s3w"
           },
           "budget": {
             "kind": "repair",
@@ -376,7 +564,7 @@
           "label": "Correct the reference to the record the check found",
           "route": {
             "action": "loop",
-            "to": "s3"
+            "to": "s3w"
           },
           "budget": {
             "kind": "repair",
@@ -405,7 +593,7 @@
           "label": "Send these back to fix",
           "route": {
             "action": "loop",
-            "to": "s3"
+            "to": "s3w"
           },
           "budget": {
             "kind": "repair",
@@ -432,7 +620,8 @@
           "s4",
           "s4b",
           "s4c",
-          "s4d"
+          "s4d",
+          "s4r"
         ]
       },
       "produces": [
@@ -448,12 +637,13 @@
     {
       "step_id": "s5a",
       "kind": "check",
-      "thread_ref": "claims_checker@0.2.2",
+      "thread_ref": "text_claims_checker@0.1.1",
       "needs": [
         "s4",
         "s4b",
         "s4c",
         "s4d",
+        "s4r",
         "s4e"
       ],
       "reads": [
@@ -462,41 +652,25 @@
         "evidence",
         "sources",
         "search_record",
-        "gate_results"
+        "gate_results",
+        "source_texts"
       ],
       "produces": [
         "findings"
       ],
       "scope": "full",
-      "parallel_group": "p1",
-      "typical_minutes": {
-        "low": 1,
-        "high": 2,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M63HJDQVKT67GEP83G8MT9YC"
-        ]
-      }
+      "parallel_group": "p1"
     },
     {
       "step_id": "s5b",
       "kind": "check",
-      "thread_ref": "coverage_checker@0.2.2",
+      "thread_ref": "text_coverage_checker@0.1.1",
       "needs": [
         "s4",
         "s4b",
         "s4c",
         "s4d",
+        "s4r",
         "s4e"
       ],
       "reads": [
@@ -505,31 +679,14 @@
         "evidence",
         "sources",
         "search_record",
-        "gate_results"
+        "gate_results",
+        "source_texts"
       ],
       "produces": [
         "findings"
       ],
       "scope": "full",
-      "parallel_group": "p1",
-      "typical_minutes": {
-        "low": 1,
-        "high": 2,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M63HJDQVKT67GEP83G8MT9YC"
-        ]
-      }
+      "parallel_group": "p1"
     },
     {
       "step_id": "s6",
@@ -550,25 +707,7 @@
       ],
       "produces": [
         "decisions"
-      ],
-      "typical_minutes": {
-        "low": 1,
-        "high": 2,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M63HJDQVKT67GEP83G8MT9YC"
-        ]
-      }
+      ]
     },
     {
       "step_id": "s6d",
@@ -618,7 +757,7 @@
     {
       "step_id": "s7",
       "kind": "revise",
-      "thread_ref": "reviser@0.4.4",
+      "thread_ref": "deep_reviser@0.1.2",
       "needs": [
         "s6d"
       ],
@@ -631,7 +770,8 @@
         "decisions",
         "findings",
         "gate_results",
-        "person_direction"
+        "person_direction",
+        "source_texts"
       ],
       "produces": [
         "draft",
@@ -639,25 +779,7 @@
         "sources",
         "search_record",
         "revision_log"
-      ],
-      "typical_minutes": {
-        "low": 1,
-        "high": 5,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M63HJDQVKT67GEP83G8MT9YC"
-        ]
-      }
+      ]
     },
     {
       "step_id": "s8",
@@ -680,13 +802,14 @@
     {
       "step_id": "s8b",
       "kind": "gate",
-      "gate_ref": "quote_gate@0.2.0",
+      "gate_ref": "quote_gate@0.3.0",
       "needs": [
         "s7"
       ],
       "reads": [
         "evidence",
-        "sources"
+        "sources",
+        "source_texts"
       ],
       "produces": [
         "gate_results"
@@ -698,13 +821,14 @@
     {
       "step_id": "s8c",
       "kind": "gate",
-      "gate_ref": "quote_gate@0.2.0",
+      "gate_ref": "quote_gate@0.3.0",
       "needs": [
         "s7"
       ],
       "reads": [
         "draft",
-        "sources"
+        "sources",
+        "source_texts"
       ],
       "produces": [
         "gate_results"
@@ -756,6 +880,25 @@
       }
     },
     {
+      "step_id": "s8r",
+      "kind": "gate",
+      "gate_ref": "lit_record_gate@0.1.0",
+      "needs": [
+        "s7"
+      ],
+      "reads": [
+        "draft",
+        "search_record",
+        "sources"
+      ],
+      "produces": [
+        "gate_results"
+      ],
+      "on_fail": {
+        "decide": "s8f"
+      }
+    },
+    {
       "step_id": "s8f",
       "kind": "decide",
       "needs": [
@@ -763,7 +906,8 @@
         "s8b",
         "s8c",
         "s8d",
-        "s8e"
+        "s8e",
+        "s8r"
       ],
       "reads": [
         "gate_results"
@@ -849,7 +993,8 @@
           "s8b",
           "s8c",
           "s8d",
-          "s8e"
+          "s8e",
+          "s8r"
         ]
       },
       "produces": [
@@ -865,13 +1010,14 @@
     {
       "step_id": "s9",
       "kind": "recheck",
-      "thread_ref": "claims_checker@0.2.2",
+      "thread_ref": "text_claims_checker@0.1.1",
       "needs": [
         "s8",
         "s8b",
         "s8c",
         "s8d",
         "s8e",
+        "s8r",
         "s8f"
       ],
       "reads": [
@@ -880,30 +1026,13 @@
         "evidence",
         "sources",
         "gate_results",
-        "diff"
+        "diff",
+        "source_texts"
       ],
       "produces": [
         "findings"
       ],
-      "scope": "added_text",
-      "typical_minutes": {
-        "low": 1,
-        "high": 2,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M63HJDQVKT67GEP83G8MT9YC"
-        ]
-      }
+      "scope": "added_text"
     },
     {
       "step_id": "s10",
@@ -985,8 +1114,8 @@
       "on_fail": "block"
     },
     {
-      "gate_ref": "quote_gate@0.2.0",
-      "gate_fingerprint": "jcs1:sha256:100b811d4f6ac3d5f86c42b08bb9cb8318556af6fcb46b8deb68e9cc99fb35f9",
+      "gate_ref": "quote_gate@0.3.0",
+      "gate_fingerprint": "jcs1:sha256:238bd1180fa632012c810def352a050a4dfbef7497759e415ac832574bd97060",
       "applies_to": [
         "evidence_table@0.1.0",
         "draft@0.1.0"
@@ -1017,6 +1146,25 @@
       "gate_fingerprint": "jcs1:sha256:916f6e4c12d59836f64eac1a3712e3f1f7284139f6da5148b1906d131338ec4c",
       "applies_to": [
         "option_map@0.1.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "cite_gate@0.6.0",
+      "gate_fingerprint": "jcs1:sha256:6273c3208c67ff9a61489edcbe1a3232115807841a19d673fb2375f426ee0412",
+      "applies_to": [
+        "source_register@0.1.0"
+      ],
+      "before_checks": true,
+      "on_fail": "block"
+    },
+    {
+      "gate_ref": "lit_record_gate@0.1.0",
+      "gate_fingerprint": "jcs1:sha256:5a8e1153a906d32c404517a7215bea189e9a69ec6f41feb92fe4dec301147fb9",
+      "applies_to": [
+        "search_record@0.1.0",
+        "draft@0.1.0"
       ],
       "before_checks": true,
       "on_fail": "block"
@@ -1160,6 +1308,22 @@
         "search_record"
       ],
       "format": "md"
+    },
+    {
+      "choice_id": "sources_ris",
+      "label": "Included sources (RIS, for Zotero or EndNote)",
+      "from_outputs": [
+        "sources"
+      ],
+      "format": "ris"
+    },
+    {
+      "choice_id": "sources_bibtex",
+      "label": "Included sources (BibTeX)",
+      "from_outputs": [
+        "sources"
+      ],
+      "format": "bibtex"
     }
   ],
   "variants": {},
@@ -1176,11 +1340,9 @@
         "steps": [
           "s2",
           "s3",
+          "s3w",
           "s5a",
-          "s5b",
-          "s6",
-          "s7",
-          "s9"
+          "s5b"
         ],
         "record_status": [
           {
@@ -1199,10 +1361,10 @@
         "action": "instruct_only",
         "steps": [
           "s1",
-          "s5a",
-          "s5b",
+          "s2e",
+          "s4e",
           "s6d",
-          "s9",
+          "s8f",
           "s10"
         ],
         "record_status": [
@@ -1260,92 +1422,44 @@
       "steps": [
         "s0",
         "s1"
-      ],
-      "typical_minutes": {
-        "low": 1,
-        "high": 3,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M64HTYJQTK298DTREXBHWNFF",
-          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
-          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
-          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
-          "run_01M65Q7QY0P3N2THVXTK43SPDS"
-        ]
-      }
+      ]
     },
     {
       "phase_id": "search",
-      "label": "Search for sources",
+      "label": "Search and screen",
       "steps": [
-        "s2"
-      ],
-      "typical_minutes": {
-        "low": 1,
-        "high": 4,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M64HTYJQTK298DTREXBHWNFF",
-          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
-          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
-          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
-          "run_01M65Q7QY0P3N2THVXTK43SPDS"
-        ]
-      }
+        "s2",
+        "s2g",
+        "s2r",
+        "s2e"
+      ]
     },
     {
-      "phase_id": "draft",
-      "label": "Read the sources and draft",
+      "phase_id": "texts",
+      "label": "Get the full texts",
       "steps": [
-        "s3",
+        "s2f"
+      ]
+    },
+    {
+      "phase_id": "read",
+      "label": "Read the sources",
+      "steps": [
+        "s3"
+      ]
+    },
+    {
+      "phase_id": "write",
+      "label": "Write the review",
+      "steps": [
+        "s3w",
         "s4",
         "s4b",
         "s4c",
         "s4d",
+        "s4r",
         "s4e"
-      ],
-      "typical_minutes": {
-        "low": 1,
-        "high": 8,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M64HTYJQTK298DTREXBHWNFF",
-          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
-          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
-          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
-          "run_01M65Q7QY0P3N2THVXTK43SPDS"
-        ]
-      }
+      ]
     },
     {
       "phase_id": "checks",
@@ -1355,33 +1469,11 @@
         "s5b",
         "s6",
         "s6d"
-      ],
-      "typical_minutes": {
-        "low": 1,
-        "high": 3,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M64HTYJQTK298DTREXBHWNFF",
-          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
-          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
-          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
-          "run_01M65Q7QY0P3N2THVXTK43SPDS"
-        ]
-      }
+      ]
     },
     {
       "phase_id": "revise",
-      "label": "Revise the draft",
+      "label": "Revise the review",
       "steps": [
         "s7",
         "s8",
@@ -1389,30 +1481,9 @@
         "s8c",
         "s8d",
         "s8e",
+        "s8r",
         "s8f"
-      ],
-      "typical_minutes": {
-        "low": 1,
-        "high": 8,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M64HTYJQTK298DTREXBHWNFF",
-          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
-          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
-          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
-          "run_01M65Q7QY0P3N2THVXTK43SPDS"
-        ]
-      }
+      ]
     },
     {
       "phase_id": "final",
@@ -1421,51 +1492,7 @@
         "s9",
         "s10",
         "s11"
-      ],
-      "typical_minutes": {
-        "low": 1,
-        "high": 6,
-        "from_run_ids": [
-          "run_01M623TF0XAC28GN6P3BB67RCT",
-          "run_01M629S94BV7B5VAYE08FWAJ6D",
-          "run_01M62K56JDRAYXD4G85KNZNY1N",
-          "run_01M62K56BFMHNJS12M29KQ4WDC",
-          "run_01M62VN2J06QHJAWQC100WDY21",
-          "run_01M62VN1XZQARSFYNDJW39YR22",
-          "run_01M62ZQBTQC65ABZSJN545KBHE",
-          "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-          "run_01M63HJGFWYP9TP6MWV22BXY6C",
-          "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-          "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-          "run_01M64HTYJQTK298DTREXBHWNFF",
-          "run_01M659XN2KQ9X0QD5KHQ92VVRT",
-          "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
-          "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
-          "run_01M65Q7QY0P3N2THVXTK43SPDS"
-        ]
-      }
+      ]
     }
-  ],
-  "typical_minutes": {
-    "low": 7,
-    "high": 21,
-    "from_run_ids": [
-      "run_01M623TF0XAC28GN6P3BB67RCT",
-      "run_01M629S94BV7B5VAYE08FWAJ6D",
-      "run_01M62K56JDRAYXD4G85KNZNY1N",
-      "run_01M62K56BFMHNJS12M29KQ4WDC",
-      "run_01M62VN2J06QHJAWQC100WDY21",
-      "run_01M62VN1XZQARSFYNDJW39YR22",
-      "run_01M62ZQBTQC65ABZSJN545KBHE",
-      "run_01M62ZQBP4G7AWAZKHG3VNA2QG",
-      "run_01M63HJGFWYP9TP6MWV22BXY6C",
-      "run_01M63HJDSZEQ3HZ9TTNN3W0NM9",
-      "run_01M63HJDQ7HGF03QQAQVMRTP9B",
-      "run_01M64HTYJQTK298DTREXBHWNFF",
-      "run_01M659XN2KQ9X0QD5KHQ92VVRT",
-      "run_01M65Q7QHJ6AEYQAW40ZE55ED7",
-      "run_01M65Q7QMYKQMYFXR9V2XVA1S6",
-      "run_01M65Q7QY0P3N2THVXTK43SPDS"
-    ]
-  }
+  ]
 }

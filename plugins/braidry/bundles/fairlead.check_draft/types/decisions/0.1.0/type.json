@@ -1,0 +1,18 @@
+{
+  "schema": "fairlead.type/0.1",
+  "type_id": "decisions",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:2ae2e7d5186580b63f3a29112a75fcaf4aa876f35a4a49c74ad604e364a15e64",
+  "title": "Adjudication",
+  "description": "A decision on every finding, with the evidence seen.",
+  "contract": "decisions",
+  "media_types": [
+    "application/json"
+  ],
+  "datafile_capable": false,
+  "required_gates": [],
+  "menu_formats": [
+    "json",
+    "table"
+  ]
+}

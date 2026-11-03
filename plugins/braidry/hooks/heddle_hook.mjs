@@ -532,7 +532,7 @@ function spawnGate(input, run, dataDir2) {
       hook_id: "BH-1",
       checks: [{ hook_id: "BH-1", check: "ticket_prompt", result: "deny", subject_fp: typeof facts.prompt_fp === "string" ? facts.prompt_fp : null }],
       facts,
-      refusal: "Heddle: a Heddle agent starts only for a step of an open run, with its ticket (start the run with the heddle:review skill)."
+      refusal: "Braidry: a Braidry agent starts only for a step of an open run, with its ticket (start the run with the heddle:review skill)."
     };
   }
   if (run.kind === "none" || run.kind === "closed")
@@ -542,7 +542,7 @@ function spawnGate(input, run, dataDir2) {
       hook_id: "BH-1",
       checks: [{ hook_id: "BH-1", check: "ticket_prompt", result: "deny", subject_fp: typeof facts.prompt_fp === "string" ? facts.prompt_fp : null }],
       facts,
-      refusal: "Heddle: resuming an agent is not allowed while a braid run is open; each step's subagent starts fresh with its ticket."
+      refusal: "Braidry: resuming an agent is not allowed while a braid run is open; each step's subagent starts fresh with its ticket."
     };
   }
   if (ROUTE_TOOLS.has(tool)) {
@@ -550,7 +550,7 @@ function spawnGate(input, run, dataDir2) {
       hook_id: "BH-1",
       checks: [{ hook_id: "BH-1", check: "agent_type", result: "deny", tool }],
       facts,
-      refusal: `Heddle: ${tool} is not allowed while a braid run is open; subagents start only through their step's ticket.`
+      refusal: `Braidry: ${tool} is not allowed while a braid run is open; subagents start only through their step's ticket.`
     };
   }
   const tickets = run.kind === "open" ? run.state.tickets : [];
@@ -574,13 +574,13 @@ function spawnGate(input, run, dataDir2) {
   }
   const failed = checks.find((c) => c.result === "deny");
   const reasons = {
-    ticket_prompt: run.kind === "invalid" ? "Heddle: the run state could not be verified, so no subagent may start." : "Heddle: during a braid run a subagent starts only with its step's ticket as the whole prompt (call heddle_ticket).",
-    agent_type: "Heddle: this ticket is for a different agent type.",
-    foreground: "Heddle: ticketed steps run in the foreground: start it again with run_in_background: false, set explicitly.",
-    gates_before_check: "Heddle: this check cannot start until its gates have passed (call heddle_gate first).",
-    decision_before_step: "Heddle: this step waits for the person's decision (ask them, then call heddle_decision)."
+    ticket_prompt: run.kind === "invalid" ? "Braidry: the run state could not be verified, so no subagent may start." : "Braidry: during a braid run a subagent starts only with its step's ticket as the whole prompt (call heddle_ticket).",
+    agent_type: "Braidry: this ticket is for a different agent type.",
+    foreground: "Braidry: ticketed steps run in the foreground: start it again with run_in_background: false, set explicitly.",
+    gates_before_check: "Braidry: this check cannot start until its gates have passed (call heddle_gate first).",
+    decision_before_step: "Braidry: this step waits for the person's decision (ask them, then call heddle_decision)."
   };
-  return { hook_id: "BH-1", checks, facts, refusal: failed ? reasons[failed.check] ?? "Heddle: refused" : null };
+  return { hook_id: "BH-1", checks, facts, refusal: failed ? reasons[failed.check] ?? "Braidry: refused" : null };
 }
 function pathGuard(input, run, dataDir2) {
   const tool = input.tool_name ?? "";
@@ -592,7 +592,7 @@ function pathGuard(input, run, dataDir2) {
       hook_id: "BH-2",
       checks: [{ hook_id: "BH-2", check: "caller_context", result: ok ? "allow" : "deny" }],
       facts,
-      refusal: ok ? null : "Heddle: this tool is for the step's subagent, not the main conversation."
+      refusal: ok ? null : "Braidry: this tool is for the step's subagent, not the main conversation."
     };
   }
   const fileTool = WRITE_TOOLS.has(tool) || READ_TOOLS.has(tool) || SHELL_TOOLS.has(tool);
@@ -616,7 +616,7 @@ function pathGuard(input, run, dataDir2) {
     if (!bad)
       return { hook_id: "BH-2", checks: checks2, facts, refusal: null };
     checks2.push({ hook_id: "BH-2", check: "protected_path", result: "deny" });
-    return { hook_id: "BH-2", checks: checks2, facts, refusal: "Heddle: that path is private to the Heddle plugin." };
+    return { hook_id: "BH-2", checks: checks2, facts, refusal: "Braidry: that path is private to the Braidry plugin." };
   }
   const state = run.kind === "open" ? run.state : null;
   const secret = [n(dataDir2)];
@@ -638,25 +638,25 @@ function pathGuard(input, run, dataDir2) {
     const cf = c.split(BS).join("/");
     const named = (roots) => roots.some((r) => spellings(r).some((s) => c.includes(s) || cf.includes(s.split(BS).join("/"))));
     const byName = /claude_plugin_data|plugins[/\\]data/i.test(command) || localUncOrDevice(command);
-    verdict("protected_path", byName || named(protectedRoots), "Heddle: that command reaches a protected or private path.");
+    verdict("protected_path", byName || named(protectedRoots), "Braidry: that command reaches a protected or private path.");
     if (datafiles.length)
-      verdict("datafile_path", named(datafiles), "Heddle: that command names a declared datafile, which stays out of the AI's context.");
+      verdict("datafile_path", named(datafiles), "Braidry: that command names a declared datafile, which stays out of the AI's context.");
     return { hook_id: "BH-2", checks, facts, refusal };
   }
   const rawPaths = pathsOf(tool, ti);
   const paths = rawPaths.map(n);
   const covers = (p, root) => within(p, root) || within(root, p);
   if (rawPaths.some(localUncOrDevice)) {
-    verdict("protected_path", true, "Heddle: device and network paths to this computer are not allowed during a braid run.");
+    verdict("protected_path", true, "Braidry: device and network paths to this computer are not allowed during a braid run.");
   } else if (WRITE_TOOLS.has(tool)) {
-    verdict("protected_path", paths.some((p) => protectedRoots.some((r) => within(p, r))), "Heddle: that path is protected during a braid run.");
+    verdict("protected_path", paths.some((p) => protectedRoots.some((r) => within(p, r))), "Braidry: that path is protected during a braid run.");
   } else if (tool === "Grep" || tool === "Glob") {
-    verdict("protected_path", paths.some((p) => secret.some((r) => covers(p, r))), "Heddle: that search would reach files private to the Heddle plugin.");
+    verdict("protected_path", paths.some((p) => secret.some((r) => covers(p, r))), "Braidry: that search would reach files private to the Braidry plugin.");
   } else {
-    verdict("protected_path", paths.some((p) => secret.some((r) => within(p, r))), "Heddle: that file is private to the Heddle plugin.");
+    verdict("protected_path", paths.some((p) => secret.some((r) => within(p, r))), "Braidry: that file is private to the Braidry plugin.");
   }
   if (datafiles.length) {
-    verdict("datafile_path", paths.some((p) => datafiles.some((d) => within(p, d))), "Heddle: that datafile stays out of the AI's context; its pipeline reads it.");
+    verdict("datafile_path", paths.some((p) => datafiles.some((d) => within(p, d))), "Braidry: that datafile stays out of the AI's context; its pipeline reads it.");
   }
   return { hook_id: "BH-2", checks, facts, refusal };
 }
@@ -780,11 +780,11 @@ function stopGuard(run, input, dataDir2) {
       checks: [{ hook_id: "BH-5", check: "run_open_at_stop", result: "allow" }],
       facts: {},
       refusal: null,
-      stdout: JSON.stringify({ systemMessage: `Heddle: ${steps} still working. Call heddle_wait for its progress and post it; the run carries on when it hands back.` })
+      stdout: JSON.stringify({ systemMessage: `Braidry: ${steps} still working. Call heddle_wait for its progress and post it; the run carries on when it hands back.` })
     };
   }
   const open = run.kind === "open" && input.stop_hook_active !== true;
-  const reason = "Heddle: a braid run is still open. Carry on with heddle_next. If the person has said to stop, record it with heddle_decision (kind abandon); don't ask them whether to stop unless they raised it.";
+  const reason = "Braidry: a braid run is still open. Carry on with heddle_next. If the person has said to stop, record it with heddle_decision (kind abandon); don't ask them whether to stop unless they raised it.";
   return {
     hook_id: "BH-5",
     checks: [{ hook_id: "BH-5", check: "run_open_at_stop", result: open ? "deny" : "allow" }],
@@ -802,7 +802,7 @@ function neutralQuestion(input, run) {
   if (steered) {
     return {
       ...allow,
-      refusal: "Heddle: judgement calls are asked neutrally. Remove any 'recommended' label or note from the options, list them in the order the step gives, and put the adjudicator's recommendation in your summary as information."
+      refusal: "Braidry: judgement calls are asked neutrally. Remove any 'recommended' label or note from the options, list them in the order the step gives, and put the adjudicator's recommendation in your summary as information."
     };
   }
   return caseShown(input, run.state);
@@ -820,7 +820,7 @@ function caseShown(input, state) {
     if (questions.some((q) => q.question === fallback))
       return { ...allow, facts: { case_block: "in_question" } };
     if (questions.some((q) => typeof q.question === "string" && anchorForm(q.question) === anchorForm(fallback))) {
-      return { ...allow, facts: { case_block: "missing" }, refusal: `Heddle: copy the fallback question exactly as it is${where}, character for character; an answer to a near copy can't be recorded as the card's.` };
+      return { ...allow, facts: { case_block: "missing" }, refusal: `Braidry: copy the fallback question exactly as it is${where}, character for character; an answer to a near copy can't be recorded as the card's.` };
     }
   }
   if (!questions.some((q) => q.question === want.question))

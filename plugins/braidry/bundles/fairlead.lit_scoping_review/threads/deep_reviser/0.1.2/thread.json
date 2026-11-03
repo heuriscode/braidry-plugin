@@ -1,0 +1,57 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "thread_id": "deep_reviser",
+  "version": "0.1.2",
+  "fingerprint": "jcs1:sha256:ed6c08315290d0fdf1b54a08c4229ebd82a137bd10484616256d5b2c5a82b0c4",
+  "name": "Deep review reviser",
+  "purpose": "Applies the adjudicated decisions to the full review, evidence table and sources from the saved texts, keeping its length; changes only what a finding, decision or the person's direction names, quotes what each change answers, and logs every change for the recheck.",
+  "archetype": "reviser",
+  "default_role": "reviser",
+  "reads": [
+    "focus",
+    "draft",
+    "evidence",
+    "sources",
+    "search_record",
+    "decisions",
+    "findings",
+    "gate_results",
+    "person_direction",
+    "source_texts"
+  ],
+  "never_sees": [
+    "data_rows"
+  ],
+  "tools": [
+    "fetch",
+    "write_output"
+  ],
+  "returns": "draft",
+  "caps": {
+    "max_words": 20000
+  },
+  "default_model_class": "strong",
+  "targets": [
+    "overstated_claim",
+    "misquote",
+    "adjudicator_introduced_error"
+  ],
+  "preambles": [
+    "common@0.1.0",
+    "reviser@0.2.0"
+  ],
+  "prompt": "Agreed focus:\n{{focus}}\n\nAdjudicated decisions: {{inputs.decisions}}\nThe findings they decide (adjudicated findings only): {{findings}}\nReview: {{inputs.draft}}\nEvidence table: {{inputs.evidence}}\nIncluded sources: {{inputs.sources}}\nSearch record: {{inputs.search_record}}\nSaved texts (each source as saved on the person's side): {{inputs.source_texts}}\n\nChange only what a finding, a decision or the person's direction names. In each revision log entry, quote the finding id\nit answers (copied as the findings give it) or the person's direction (their words). Leave every other paragraph,\nheading, claim, reference, row and search record line byte for byte as you were served it: never reword, reflow,\nre-punctuate or tidy text that nothing names, even to improve it.\nApply each adopted or partly adopted decision, and only those, within {{caps}}. A work added by a decision goes into the included sources with its locator and honest read level, and into the evidence table, and into the search record's screening log, before the review cites it. In paragraph text, cite as [source_id] or [source_id, p.N]. Write the revision log: one entry per decision, and every range you added or changed, using these locations: /sections/<i>/paragraphs/<j> (or /sections/<i>/heading) for review text, /references/<ref_id> for a reference entry, sources#<source_id> for an included source, evidence#<source_id> for an evidence-table row. Indices count from 0. List removed entries too, with kind changed. When you remove or insert a paragraph, cover the whole section with /sections/<i>, because the later paragraphs shift. Leave everything else as it is.\n\nEvidence rules (all on):\n- EV-3: no claim that a work does not contain, report or compare something may rest on an abstract or record read.\n- EV-4: \"none\", \"few\", \"thin\" or \"no study\" claims about a field are scoped to the searched pool, for example \"none of the 54 works screened\".\n- EV-6: a source read only at record level carries no findings in the output.\n\nFailed checks sent back to you (a repair pass only; none on the first pass): {{gate_results}}\nThe person's direction with them: {{inputs.person_direction}}\n\nOn a repair pass (failed checks above), the review, evidence table and included sources above are your last revision; apply no decision again. Repair each failed item, following the person's direction where it is given:\n- A source whose DOI record has a different title (doi_title_mismatch, with the record's title after found=): if the DOI record is the work you read, correct the title in the included sources and in its reference entry to the DOI record's title. If the DOI points to a different work, correct the DOI to the work you read, or treat the source as one that cannot be verified.\n- A source that cannot be verified (not_found, doi_not_found): drop it from the included sources, its reference entry and its evidence-table row, and remove every claim that rests only on it and its brackets in the text. A claim with other support keeps that support and loses only this source.\n- A citation that resolves to no reference entry (unresolved_citation), a reference not in the included sources (reference_not_in_register), or a duplicate id: point it at the right entry, or remove it and every claim that rests only on it.\n- An evidence claim with no support (unsupported_claim): anchor it to a source you read, or remove it.\n- A quote the quote check did not find in the text you read: replace it with the exact words at the anchor you give, or remove the quote marks and keep a paraphrase you can anchor, or remove the claim.\n- A claim-rule failure: fix the claim so it meets the rule the check names (tag, anchor, support, scope), or remove it.\n- A record check failure (count_hedged, reading_level_stated): in the review, give a hedged count exactly from the search record or register, or remove it, and take reading levels from the evidence table; in the search record you returned (search_record:L<line>), give a hedged number exactly or remove it, and say reading depth is recorded from the saved texts. Any line you add to the search record keeps counts exact and states no reading depth. The review states the register's included count; where the search record's differs, call its figure the count at screening.\nFix or remove each failing item the checks list, and change nothing else: every other paragraph, claim, row, reference, tag and anchor stays exactly as it was. Never add a source or a claim on a repair pass, and never guess: if an item cannot be fixed from what you read, remove it. A warning is not a failure; leave warned items alone.\nLog each repair in the revision log as its own entry, with adjudication_ref naming the gate step as step_id (the step_id in the served check's result) and the failing item's ref from the check as finding_id, and list every range you changed, as above.\n\nThe person's direction says which choice it came with (its option_id):\n- change: before your first pass, the person changed some of the adjudicated decisions. Apply the decisions as the person changed them: where the person's words and a decision differ, follow the person over the adjudicator, and apply nothing the person rejected. Log each changed decision as its own entry, saying in its summary that the person changed it.\n- send_back: after the re-check, the person sent the re-check's findings back to you. The findings above are the re-check's findings on your last revision, which the review, evidence table and included sources above are. Fix each finding as the person's words say, apply no decision again, and change nothing else: only the paragraphs a re-check finding or the person's words name change, and every other paragraph stays byte for byte. Log each fix as its own entry, with adjudication_ref naming the re-check's step and the finding's id, and quote the finding id or the person's words it answers in its summary.\n- fix: failed checks were sent back; repair them as above. If no failed checks are given above, the direction was given to an earlier step, not to you: ignore it.\n- remove and correct: failed checks were sent back with a choice for each item, given in the person's direction: remove the source and every claim that rests only on it, or correct the reference to the record the check found. Repair each item as its choice says and change nothing else.\n- verified, against an item in the person's direction: the person checked that item themselves. Leave it exactly as it is.\nA direction with any other option_id, or none, is not for you: work from the adjudicated decisions.\n\nReturn only what you change (Braidry 0.2.7). The task names the outputs you were served and can carry forward.\n- An output you leave exactly as served: call braidry_output for it with `unchanged: true` instead of writing it out\n  again.\n- An output you change in a few places: return `patch`, a JSON Patch (RFC 6902: add, remove, replace, test) of\n  the version you were served, with JSON Pointer paths. After a refusal, a patch changes what you returned,\n  unless you add `base: \"served\"`.\n- An output you rewrite, or one you were not served: return it in full.\nEvery change you make is still logged as before; carrying forward changes how you return outputs, never what\nyou change.\n\nSaved texts: the text of each included source as it was saved on the person's side (source_texts: the open full\ntext fetched by code, or the person's own PDF), served with your task in pages; each item says its read level (full\ntext, part, abstract or record). Read from the saved text, never from memory of a work. Keep the review at its length: fix what the decisions name, and do not shorten what they do not.\nNever cite a check's item names or evidence refs in your text (such as sizes#d30_p80, [sizes_d30_p80] or a finding's id): give the figures and facts plainly, in words a reader understands.",
+  "placeholders": [
+    "caps",
+    "findings",
+    "focus",
+    "gate_results",
+    "inputs.decisions",
+    "inputs.draft",
+    "inputs.evidence",
+    "inputs.person_direction",
+    "inputs.search_record",
+    "inputs.source_texts",
+    "inputs.sources"
+  ]
+}

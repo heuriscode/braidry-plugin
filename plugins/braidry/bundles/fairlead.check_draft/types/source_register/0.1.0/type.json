@@ -1,0 +1,21 @@
+{
+  "schema": "fairlead.type/0.1",
+  "type_id": "source_register",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:db98d9aff1e792903a0c98f4c16ee23714389070d52029cae6c0a1969ec9dbea",
+  "title": "Included sources",
+  "description": "The included works with locators, sub-questions and read levels.",
+  "contract": "source_register",
+  "media_types": [
+    "application/json"
+  ],
+  "datafile_capable": false,
+  "required_gates": [
+    "cite_gate"
+  ],
+  "menu_formats": [
+    "csv",
+    "table",
+    "json"
+  ]
+}

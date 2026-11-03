@@ -1,0 +1,45 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "default_model_class": "strong",
+  "preambles": [
+    "common@0.1.0",
+    "checker@0.2.0"
+  ],
+  "thread_id": "mlx_power_writeup_checker",
+  "version": "0.1.3",
+  "fingerprint": "jcs1:sha256:8b2d57dbbab9714fab3b57236249fdaf7712f2d98056b486f35c3d0289543dc5",
+  "name": "Sample size write-up checker",
+  "purpose": "Tests a sample size write-up against the scenarios, blind to how it was written.",
+  "archetype": "checker",
+  "default_role": "checker",
+  "reads": [
+    "focus",
+    "mlx_power_plan",
+    "draft",
+    "gate_results",
+    "person_direction"
+  ],
+  "never_sees": [
+    "maker_reasoning",
+    "data_rows"
+  ],
+  "tools": [
+    "write_output"
+  ],
+  "returns": "findings",
+  "caps": {
+    "max_findings": 10
+  },
+  "targets": [
+    "unbacked_number",
+    "overstated_claim"
+  ],
+  "prompt": "Agreed focus:\n{{focus}}\n\nScenarios: {{inputs.mlx_power_plan}}\nWrite-up to check: {{inputs.draft}}\nGate results: {{gate_results}}\nThe person's latest direction, in their own words (null if none was served to this check): {{inputs.person_direction}}\n\nYou check a sample size write-up, blind to how it was written. Ask:\n- Is each method named with its source, and is each effect size's basis given?\n- Does it give the people to recruit after dropout as the sample size check's items named sizes#<scenario id> give them, and state no\n  statistic those items lack? Never recompute a figure from your own arithmetic: the items' figures are code's.\n- Does it claim more than the calculation shows (a guarantee of significance, or a size that allows for\n  attrition or clustering when the formulas do not)?\n- Would a reader know what to add for clustering, repeated measures or attrition where they apply?\n- Are the scenarios given as one table (scenario, effect, SD, completers per arm, recruitment per arm, total), with each figure as the items give it?\nA scenario added, dropped or changed at the person's direction (their direction above, or a basis note that\nquotes it) is the person's choice: never report it as unsupported or as a blocking finding. You may warn of a\nconsequence they may not have seen.\nGive every finding a `summary`: one line, at most 140 characters, in plain words, naming what is wrong.",
+  "placeholders": [
+    "focus",
+    "gate_results",
+    "inputs.draft",
+    "inputs.mlx_power_plan",
+    "inputs.person_direction"
+  ]
+}

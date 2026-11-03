@@ -7,8 +7,8 @@
     {
       "name": "braidry",
       "source": "./plugins/braidry",
-      "description": "Braidry braids for Claude Code: a literature review with code-checked references, blind checkers and an honest run record.",
-      "version": "0.4.0"
+      "description": "Braidry braids for Claude Code (Literature review, Check my draft, Check a client report, Sample size and power): checked processes with blind checkers and an honest run record.",
+      "version": "0.4.1"
     }
   ]
 }

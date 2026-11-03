@@ -1,0 +1,34 @@
+{
+  "schema": "fairlead.gate/0.1",
+  "gate_id": "quote_gate",
+  "version": "0.3.0",
+  "fingerprint": "jcs1:sha256:238bd1180fa632012c810def352a050a4dfbef7497759e415ac832574bd97060",
+  "protocol": "gate_io/0.1",
+  "scripts": [
+    {
+      "runtime": "python",
+      "entry": "gate.py",
+      "script_fingerprint": "raw:sha256:5e86e6785af47b7693ad875b7fc3e772783e475d99ccef82896137dddc97c5f4"
+    },
+    {
+      "runtime": "js",
+      "entry": "gate.js",
+      "script_fingerprint": "raw:sha256:47c2c902ac9b43bba8057c8917ade327809b7be147fbc55fa95135a1f80c9f76"
+    }
+  ],
+  "applies_to": [
+    "evidence_table@0.1.0",
+    "draft@0.1.0"
+  ],
+  "config": null,
+  "network": {
+    "allow": [
+      "api.crossref.org",
+      "api.openalex.org",
+      "export.arxiv.org"
+    ]
+  },
+  "reads_rows": false,
+  "timeout_s": 300,
+  "vectors": "vectors/"
+}

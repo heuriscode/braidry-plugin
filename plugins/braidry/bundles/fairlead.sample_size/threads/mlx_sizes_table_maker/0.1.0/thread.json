@@ -1,0 +1,37 @@
+{
+  "schema": "fairlead.thread/0.1",
+  "preambles": [
+    "common@0.1.0",
+    "maker@0.1.0"
+  ],
+  "default_model_class": "strong",
+  "thread_id": "mlx_sizes_table_maker",
+  "version": "0.1.0",
+  "fingerprint": "jcs1:sha256:13953c701b525b31f1262ad315ab1143bfef6e33c33e5417c8dc33caa983285d",
+  "name": "Sizes table maker",
+  "purpose": "Copies each scenario's sizes as code computed them into a table the person reads before confirming the scenarios; code holds every cell to its own figures.",
+  "archetype": "maker",
+  "default_role": "maker",
+  "reads": [
+    "mlx_power_plan",
+    "gate_results",
+    "mlx_sizes_table",
+    "person_direction"
+  ],
+  "never_sees": [],
+  "tools": [
+    "write_output"
+  ],
+  "returns": "case_table",
+  "caps": {
+    "max_rows": 6
+  },
+  "targets": [],
+  "prompt": "Scenarios: {{inputs.mlx_power_plan}}\nGate results (the sample size check's items named sizes#<scenario id> hold each scenario's sizes as code computed\nthem): {{gate_results}}\n\nCopy each scenario's sizes into one table the person reads before they confirm the scenarios. You compute nothing:\nevery cell is copied from the scenario or its sizes item, and code checks each cell against what it computes.\n1. title: a plain title with no figures, such as \"Sample sizes by scenario\".\n2. columns, in this order, each with this key and label: scenario \"Scenario\", power \"Power\", completers_per_arm\n   \"Completers per arm\", completers_total \"Completers in total\", recruit_per_arm \"To recruit per arm\",\n   recruit_total \"To recruit in total\", dropout \"Dropout\", and sd_used \"SD used\" when any sizes item gives sd_used.\n   No other column, and no figure in the title or a label.\n3. rows: one a scenario, in the plan's order, ref its scenario_id, cells in the columns' order:\n   - scenario: its label, copied exactly;\n   - power and dropout: as percentages (0.8 is 80%, 0.125 is 12.5%, 0 is 0%);\n   - completers_per_arm: \"<n1> and <n2>\", or \"one group\" when the item gives only a total; completers_total: total;\n   - recruit_per_arm: \"<recruit1> and <recruit2>\", or \"one group\"; recruit_total: recruit_total;\n   - sd_used: the item's sd_used as written (two decimal places), or \"not used\" when the item gives none;\n   - a scenario with no sizes item: \"not computed in this run\" in each completers and recruit cell.\n\nPrevious pass (a repair pass only; null on a first pass):\nTable: {{inputs.mlx_sizes_table}}\nThe person's direction with the failed checks: {{inputs.person_direction}}\n\nOn a repair pass, correct each cell the failed checks name to what they say code computed, and change nothing else.\nNever cite a check's item names or evidence refs in your text (such as sizes#d30_p80, [sizes_d30_p80] or a finding's id): give the figures and facts plainly, in words a reader understands.",
+  "placeholders": [
+    "gate_results",
+    "inputs.mlx_power_plan",
+    "inputs.mlx_sizes_table",
+    "inputs.person_direction"
+  ]
+}
