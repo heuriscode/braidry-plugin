@@ -57,9 +57,11 @@ Then:
 - **Decide.** Claude shows you what the checks found, and the work itself where you are approving it. You decide what changes.
 - **Choose your results.** For example a Word document, Markdown, a web page or a spreadsheet file.
 
-Some braids take a while, because each step does real work. In our test runs of this release (one run of each, 3 November 2026, Sonnet), the literature review took 40 minutes, Check my draft 13 minutes, Check a client report 10 minutes and Sample size and power 5 minutes. You can leave a run going and come back when Claude asks you something.
+Some braids take a while, because each step does real work. In our test runs of this release (one run of each, on the 0.4.1 build, 3 November 2026, Sonnet; run IDs below), the literature review took 40 minutes, Check my draft 13 minutes, Check a client report 10 minutes and Sample size and power 5 minutes. You can leave a run going and come back when Claude asks you something.
 
 **It uses your Claude usage.** Braidry runs on your own Claude account. On a Pro or Max plan it counts towards your plan's usage limits like any other Claude Code work. If you pay by the token, those test runs cost, at API rates: literature review US$12.83, Check my draft US$2.79, Check a client report US$2.00, and Sample size and power US$1.26.
+
+These figures are measured from one run each, not averages, and your runs will differ with the topic, the files and the model. The runs: literature review `run_01M6GMAY66GD2KX51GNHT1H99B` (2,422 seconds), Check my draft `run_01M6GMB8YJ80027SMMPAZTVV19` (756 seconds), Check a client report `run_01M6GMBJBFXP932XCC5HM0FY35` (585 seconds), Sample size and power `run_01M6GMB92B2VNC5FCF7XWAXNQ1` (321 seconds).
 
 ## What you get
 
