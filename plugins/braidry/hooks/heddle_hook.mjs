@@ -445,14 +445,14 @@ function norm(p, cwd) {
   const abs = real(resolve(isAbsolute(s) ? s : resolve(cwd, s)));
   return WIN ? abs.replaceAll("/", BS).toLowerCase() : abs;
 }
-function localUncOrDevice(text) {
-  if (!WIN)
+function localUncOrDevice(text, anyPlatform = false) {
+  if (!WIN && !anyPlatform)
     return false;
   const t = text.toLowerCase();
   if (/[/\\]{2}[?.][/\\](?![a-z]:)/.test(t))
     return true;
   const hosts = ["localhost", "127.0.0.1", "::1", "[::1]", "0:0:0:0:0:0:0:1", hostname().toLowerCase()];
-  return hosts.some((h) => new RegExp(`(^|[^/\\\\])[/\\\\]{2}${h.replace(/[.[\]:]/g, (ch) => `\\${ch}`)}[/\\\\]`).test(t));
+  return hosts.some((h) => new RegExp(`(^|[^/\\\\:])[/\\\\]{2}${h.replace(/[.[\]:]/g, (ch) => `\\${ch}`)}[/\\\\]`).test(t));
 }
 function expandHome(command) {
   const home = homedir();
@@ -637,7 +637,7 @@ function pathGuard(input, run, dataDir2) {
     const c = expandHome(WIN ? command.toLowerCase() : command);
     const cf = c.split(BS).join("/");
     const named = (roots) => roots.some((r) => spellings(r).some((s) => c.includes(s) || cf.includes(s.split(BS).join("/"))));
-    const byName = /claude_plugin_data|plugins[/\\]data/i.test(command) || localUncOrDevice(command);
+    const byName = /claude_plugin_data|plugins[/\\]data/i.test(command) || localUncOrDevice(command, true);
     verdict("protected_path", byName || named(protectedRoots), "Braidry: that command reaches a protected or private path.");
     if (datafiles.length)
       verdict("datafile_path", named(datafiles), "Braidry: that command names a declared datafile, which stays out of the AI's context.");
@@ -646,7 +646,7 @@ function pathGuard(input, run, dataDir2) {
   const rawPaths = pathsOf(tool, ti);
   const paths = rawPaths.map(n);
   const covers = (p, root) => within(p, root) || within(root, p);
-  if (rawPaths.some(localUncOrDevice)) {
+  if (rawPaths.some((p) => localUncOrDevice(p))) {
     verdict("protected_path", true, "Braidry: device and network paths to this computer are not allowed during a braid run.");
   } else if (WRITE_TOOLS.has(tool)) {
     verdict("protected_path", paths.some((p) => protectedRoots.some((r) => within(p, r))), "Braidry: that path is protected during a braid run.");

@@ -2,12 +2,12 @@
 
 Braidry runs **braids**: structured, checked processes that your own Claude carries out, step by step, with every reference checked by code and every claim tested by a separate checker that never sees how the work was made. You make every judgement call. At the end you get your results and a **run record** that says plainly which checks were enforced and which were only asked for.
 
-This tester release (0.4.1) has four braids:
+This tester release (0.4.2) has four braids:
 
-- **Literature review** (`/braidry:review`): a scoping review of the evidence on your question, with every reference checked by code and every quote matched against the source's text wherever that text could be read.
-- **Check my draft** (`/braidry:check-draft`): checks a draft's references, quotes and numbers against the documents it cites, and gives you a corrected draft.
-- **Check a client report** (`/braidry:check-client-report`): the same checks for a report going to a client, against its sources and your house style guide.
-- **Sample size and power** (`/braidry:sample-size`): how many people a study needs, with every figure computed in code.
+- **Literature review** (`/braidry:review`): a scoping review of the evidence on your question, with every reference checked by code and every quote matched against the source's text wherever that text could be read. *Independent review: changes requested (6 November 2026). Not yet suitable for client deliverables.*
+- **Check my draft** (`/braidry:check-draft`): checks a draft's references, quotes and numbers against the documents it cites, and gives you a corrected draft. *Independent review: changes requested (6 November 2026). Not yet suitable for client deliverables.*
+- **Check a client report** (`/braidry:check-client-report`): the same checks for a report going to a client, against its sources and your house style guide. *Independent review: changes requested (6 November 2026). Not yet suitable for client deliverables.*
+- **Sample size and power** (`/braidry:sample-size`): how many people a study needs, with every figure computed in code. *Independent review: changes requested (6 November 2026). Not yet suitable for client deliverables.*
 
 Thank you for testing it. Setting it up takes a few minutes.
 
@@ -17,7 +17,7 @@ Thank you for testing it. Setting it up takes a few minutes.
 - **Node.js 22 or later.** Braidry's checks run on it. To check, type `node --version`. If you don't have it, install the LTS version from https://nodejs.org.
 - **On Windows: Git for Windows** (https://git-scm.com/download/win). Claude Code needs it to install plugins and to run Braidry's hooks.
 
-Braidry does not need an account. Everything it makes stays on your computer. You can connect it to a Braidry Online account if you choose, but this release sends nothing from your runs to Braidry Online.
+Braidry does not need an account. Everything it makes stays on your computer. You can connect it to a Braidry Online account if you choose. Once connected, it sends nothing from your runs unless you choose one of three things: answering a decision on another device (the question is sealed to your own devices; the braid's name and the step number are sent in plain form); a Test me certificate, where Braidry asks first and, only if you agree, sends the run's content-free summary for a validation receipt; or a step of a team flow you accepted (the hand-off is sealed to the next person, and a content-free summary marks the step done). Other runs send nothing.
 
 ## Install
 

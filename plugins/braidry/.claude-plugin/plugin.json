@@ -1,7 +1,7 @@
 {
   "name": "braidry",
-  "version": "0.4.1",
-  "description": "Braidry braids: structured, checked AI processes that run on your own Claude. Every claim checked by a blind checker, every gate run on your machine, and a run record that says honestly what was enforced.",
+  "version": "0.4.2",
+  "description": "Braidry braids: structured, checked AI processes that run on your own Claude. Claims are checked by separate checkers where the AI tool allows, gates run on the user's computer, and the run record states which practices were enforced.",
   "author": {
     "name": "Heuris Pty Ltd"
   },
